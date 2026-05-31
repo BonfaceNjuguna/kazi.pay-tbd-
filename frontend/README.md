@@ -60,7 +60,8 @@ src/
 
 ## Design tokens
 
-Source of truth is `tailwind.config.ts`. Tokens were extracted from the three
-prototype HTML files at the repo root (`kazipay_landing.html`,
-`kazipay_prototype.html`, `kazipay_client.html`). See the file's header comment
-for the mapping.
+Source of truth is the `@theme` block in `src/index.css` (Tailwind 4's
+CSS-based config replaced the old `tailwind.config.ts`). Tokens were extracted
+from the three prototype HTML files at the repo root (`kazipay_landing.html`,
+`kazipay_prototype.html`, `kazipay_client.html`). See the file's header
+comment for the mapping.

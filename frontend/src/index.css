@@ -7,9 +7,164 @@
 @import '@fontsource/manrope/800.css';
 @import '@fontsource/manrope/900.css';
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+/*
+ * KaziPay design tokens — Tailwind 4 `@theme` directive.
+ *
+ * Source of truth for these values:
+ *   - kazipay_prototype.html  (creative-facing dark theme)
+ *   - kazipay_client.html     (client-facing light theme)
+ *   - kazipay_landing.html    (marketing dark theme)
+ *   - CLAUDE.md               (product-level constraints)
+ *
+ * Naming convention (each `--color-*` becomes bg-*/text-*/border-* utilities):
+ *   --color-dark-surface           → bg-dark-surface, text-dark-surface, ...
+ *   --color-lime, --color-lime-hover, --color-lime-bg → bg-lime, bg-lime-hover, bg-lime-bg
+ *   --color-light-surface          → bg-light-surface, ...
+ *
+ * Themes apply via `data-theme="dark"` or `data-theme="light"` on a parent
+ * element (default: dark on <html>). See the `@layer base` block below.
+ *
+ * Migration history:
+ *   2026-05-31  Migrated from Tailwind 3 (tailwind.config.ts) to Tailwind 4
+ *               (@theme directive). Classes did not change — token names map
+ *               1:1 to utility names per Tailwind 4 conventions.
+ */
+@theme {
+  /* fonts */
+  --font-sans:
+    'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    sans-serif;
+
+  /* type scale (explicit since Tailwind 4 defaults differ from prototypes) */
+  --text-2xs: 10px;
+  --text-2xs--line-height: 14px;
+  --text-xs: 11px;
+  --text-xs--line-height: 16px;
+  --text-sm: 12px;
+  --text-sm--line-height: 18px;
+  --text-base: 13px;
+  --text-base--line-height: 20px;
+  --text-md: 14px;
+  --text-md--line-height: 22px;
+  --text-lg: 15px;
+  --text-lg--line-height: 24px;
+  --text-xl: 16px;
+  --text-xl--line-height: 24px;
+  --text-2xl: 18px;
+  --text-2xl--line-height: 26px;
+  --text-3xl: 22px;
+  --text-3xl--line-height: 28px;
+  --text-4xl: 24px;
+  --text-4xl--line-height: 30px;
+  --text-5xl: 32px;
+  --text-5xl--line-height: 36px;
+  --text-6xl: 44px;
+  --text-6xl--line-height: 48px;
+  --text-7xl: 64px;
+  --text-7xl--line-height: 64px;
+  --text-8xl: 96px;
+  --text-8xl--line-height: 96px;
+
+  /* tracking */
+  --tracking-tightest: -1px;
+  --tracking-tighter: -0.5px;
+  --tracking-tight: -0.3px;
+  --tracking-normal: 0;
+  --tracking-wide: 0.5px;
+  --tracking-wider: 1px;
+
+  /* radii */
+  --radius-sm: 6px;
+  --radius: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+
+  /* ── Dark theme (creative-facing) ─────────────── */
+  --color-dark-surface: #141414;
+  --color-dark-surface-raised: #1c1c1c;
+  --color-dark-surface-input: #222222;
+  --color-dark-surface-chip: #2a2a2a;
+  --color-dark-t1: #f0ede8;
+  --color-dark-t2: #999894;
+  --color-dark-t3: #666560;
+  --color-dark-border: rgba(255, 255, 255, 0.07);
+  --color-dark-border-hover: rgba(255, 255, 255, 0.14);
+
+  /* ── Light theme (client share view) ──────────── */
+  --color-light-surface: #f6f6f4;
+  --color-light-surface-raised: #ffffff;
+  --color-light-surface-input: #f6f6f4;
+  --color-light-surface-chip: #eeedeb;
+  --color-light-t1: #141414;
+  --color-light-t2: #666460;
+  --color-light-t3: #aaaca8;
+  --color-light-border: rgba(0, 0, 0, 0.08);
+  --color-light-border-hover: rgba(0, 0, 0, 0.14);
+
+  /* ── Accents (work on both surfaces) ──────────── */
+  --color-lime: #d4f53c;
+  --color-lime-hover: #b8d632;
+  --color-lime-bg: rgba(212, 245, 60, 0.08);
+  --color-lime-bg-strong: rgba(212, 245, 60, 0.15);
+  --color-lime-border: rgba(212, 245, 60, 0.2);
+
+  --color-purple: #8b5cf6;
+  --color-purple-hover: #7c3aed;
+  --color-purple-bg: rgba(139, 92, 246, 0.1);
+  --color-purple-border: rgba(139, 92, 246, 0.2);
+
+  /* ── Semantic ─────────────────────────────────── */
+  --color-success: #34d399;
+  --color-success-light: #0a9a6a;
+  --color-success-bg: rgba(52, 211, 153, 0.1);
+  --color-success-bg-light: rgba(10, 154, 106, 0.08);
+  --color-warning: #f59e0b;
+  --color-warning-light: #d97706;
+  --color-warning-bg: rgba(245, 158, 11, 0.1);
+  --color-warning-bg-light: rgba(217, 119, 6, 0.08);
+  --color-danger: #ef4444;
+  --color-danger-bg: rgba(239, 68, 68, 0.1);
+
+  /* ── Shadows ──────────────────────────────────── */
+  --shadow-soft: 0 2px 12px rgba(0, 0, 0, 0.06);
+  --shadow-raised: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-deep: 0 40px 120px rgba(0, 0, 0, 0.6);
+  --shadow-chip: 0 16px 48px rgba(0, 0, 0, 0.4);
+  --shadow-lime-glow: 0 8px 32px rgba(212, 245, 60, 0.25);
+  --shadow-purple-glow: 0 8px 32px rgba(139, 92, 246, 0.25);
+
+  /* ── Transition durations ─────────────────────── */
+  --duration-fast: 150ms;
+
+  /* ── Animations (keyframes defined below) ─────── */
+  --animate-fade-up: fade-up 0.4s ease forwards;
+  --animate-pulse: pulse 2s infinite;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
 
 @layer base {
   html,
@@ -24,27 +179,29 @@
     text-rendering: optimizeLegibility;
   }
 
-  /* ── Theme surfaces ──
-     Apply theme by setting data-theme="dark" or data-theme="light" on a
-     container (defaulting to dark on <html>). The body color/bg are set in
-     index.html for the initial paint to avoid flashing.
-  */
+  /*
+   * Theme surfaces. Initial paint background/color is set in index.html via
+   * Tailwind classes on <body> to avoid a flash. These rules keep things in
+   * sync if the theme attribute is flipped at runtime.
+   */
   [data-theme='dark'] {
     color-scheme: dark;
-    background-color: theme('colors.dark.surface');
-    color: theme('colors.dark.t1');
+    background-color: var(--color-dark-surface);
+    color: var(--color-dark-t1);
   }
 
   [data-theme='light'] {
     color-scheme: light;
-    background-color: theme('colors.light.surface');
-    color: theme('colors.light.t1');
+    background-color: var(--color-light-surface);
+    color: var(--color-light-t1);
   }
 
-  /* Focus ring — visible on both themes, defaults to lime since it carries
-     enough contrast on both #141414 and #F6F6F4. */
+  /*
+   * Focus ring — visible on both themes. Lime has acceptable contrast on
+   * both #141414 and #F6F6F4.
+   */
   *:focus-visible {
-    outline: 2px solid theme('colors.lime.DEFAULT');
+    outline: 2px solid var(--color-lime);
     outline-offset: 2px;
     border-radius: 4px;
   }

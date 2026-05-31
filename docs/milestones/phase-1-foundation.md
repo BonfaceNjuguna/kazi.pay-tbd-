@@ -129,9 +129,9 @@ These are tempting to scope-creep into Phase 1 but must wait:
 
 **Status:** 🟡 In progress (scaffold landed; awaiting first install + dev-server smoke test)
 
-- [x] Vite + React 18 + TypeScript + TailwindCSS — `frontend/{vite.config.ts, tsconfig.json, tailwind.config.ts, postcss.config.js, index.html, src/main.tsx, src/App.tsx, src/index.css}`
+- [x] Vite + React 19 + TypeScript 6 + TailwindCSS 4 — `frontend/{vite.config.ts, tsconfig.json, eslint.config.js, index.html, src/main.tsx, src/App.tsx, src/index.css}`
 - [x] Manrope font loaded (all weights, self-hosted) — via `@fontsource/manrope` imported in `src/index.css`
-- [x] Tailwind theme tokens — `frontend/tailwind.config.ts` (extracted from all three prototypes; see file header comment for source mapping). Both dark and light theme tokens included.
+- [x] Tailwind theme tokens — `frontend/src/index.css` `@theme` block (extracted from all three prototypes; see file header comment for source mapping). Both dark and light theme tokens included.
 - [x] Dark-mode creative theme + light-mode client tokens — both shipped together since the light tokens are tiny additions and avoid a follow-up rebuild when Phase 2.7 lands.
 - [x] React Router v6 with route definitions — `src/routes.tsx` (placeholder pages per surface)
 - [x] `@tanstack/react-query` configured — `src/lib/query-client.ts` with KaziPay-specific defaults (30s stale, no focus refetch on client surface, no mutation retries)
@@ -147,10 +147,11 @@ These are tempting to scope-creep into Phase 1 but must wait:
 - Monorepo confirmed as the layout. Root: `pnpm-workspace.yaml`, `package.json`, `tsconfig.base.json`, `.editorconfig`, `.gitignore`, `.nvmrc`, `.prettierrc`. Backend folder is a placeholder (`backend/package.json` with no-op scripts) — implemented in §§ 1.1–1.6.
 - **Sidebar conflict resolved in favour of CLAUDE.md.** `kazipay_prototype.html` renders a 220px sidebar; CLAUDE.md says "no sidebar — top nav only". The React `CreativeLayout` uses a top nav. The prototype is reference for visuals only — that decision is documented inline in `src/layouts/CreativeLayout.tsx`.
 - **CDN conflict resolved in favour of CLAUDE.md.** Prototypes pull Manrope from Google Fonts and `kazipay_prototype.html` pulls Tabler icons. Both replaced — Manrope is self-hosted via `@fontsource/manrope`; icons are inline SVG in `src/components/ui/icons.tsx`.
-- **Two-theme strategy.** Single Tailwind config holds both dark (`dark-*`) and light (`light-*`) token namespaces. Theme is set per-route by the layout via `document.documentElement.dataset.theme`. The `:focus-visible` ring uses lime since it has acceptable contrast on both `#141414` and `#F6F6F4`.
+- **Two-theme strategy.** Tailwind 4 `@theme` block in `src/index.css` holds both dark (`--color-dark-*`) and light (`--color-light-*`) token namespaces. Theme is set per-route by the layout via `document.documentElement.dataset.theme`. The `:focus-visible` ring uses lime since it has acceptable contrast on both `#141414` and `#F6F6F4`.
 - **Type strictness above the AGENTS.md baseline.** `tsconfig.base.json` enables `noUncheckedIndexedAccess`, `noImplicitOverride`, and `noFallthroughCasesInSwitch`. These caught no issues in scaffold code; if they slow down feature work the team can revisit.
 - **MSW pattern.** Worker lazy-imported in `lib/msw.ts` so production bundle doesn't carry it. `msw init public/` must be run once after `pnpm install` to generate `public/mockServiceWorker.js` (gitignored — runtime artifact, not source). README documents this.
 - **Money helper + smoke test landed.** `src/utils/money.ts` formats integer KES cents per ADR-003/-004; `money.test.ts` proves Vitest is wired.
+- **Post-scaffold dep refresh (2026-05-31, `fix/update-packages`).** Took every major-version Dependabot PR in a single branch since no real screens exist yet (small blast radius). React 18→19, TypeScript 5→6, Vite 5→8, Vitest 2→4, Tailwind 3→4, ESLint 8→10, zustand 4→5, jsdom 24→29, plus paired @types and plugin bumps. Two config-format migrations were required: Tailwind 3 `tailwind.config.ts` → Tailwind 4 `@theme` block in `src/index.css` (plus `@tailwindcss/vite` plugin, dropped `postcss.config.js` + `autoprefixer` + `postcss`); ESLint 8 `.eslintrc.cjs` → ESLint 9+ `eslint.config.js` flat config (plus combined `typescript-eslint` package). Utility class names in components unchanged. Also dropped a stray `frontend/package-lock.json` Dependabot had created (this is a pnpm project) and added it to `frontend/.gitignore`.
 - **Out of scope for 1.7 (intentional, per the phase's Non-Deliverables block):** no real screens, no API integration, no Docker, no backend code.
 
 ---

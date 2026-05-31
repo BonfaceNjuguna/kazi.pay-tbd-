@@ -145,12 +145,13 @@ frontend/
 ├── nginx.conf                      # NGINX config for serving static build
 ├── package.json
 ├── tsconfig.json
-├── vite.config.ts
-├── tailwind.config.ts              # Theme tokens: #141414, #D4F53C, #8B5CF6, Manrope
+├── vite.config.ts                  # Includes @tailwindcss/vite plugin
+├── eslint.config.js                # ESLint 9+ flat config
 ├── index.html
-├── public/
-│   └── fonts/                      # Self-hosted Manrope weights
+├── public/                         # Manrope ships via @fontsource (npm, not /public)
 └── src/
+    ├── index.css                   # Tailwind 4 @theme tokens live here
+    │                                  (#141414, #D4F53C, #8B5CF6, Manrope, etc.)
     ├── main.tsx                    # React root, QueryClient, Router setup
     ├── routes.tsx                  # Centralized route definitions (React Router v6)
     ├── assets/
