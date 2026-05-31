@@ -70,6 +70,12 @@ main
 
   > **Note:** a status check only appears in this dropdown **after it has run at least once** against any PR or push. If you don't see it, push a dummy change that triggers the workflow once.
 
+  > ⚠ **Do NOT add these to required-checks** even though they show up in the dropdown:
+  > - `.github/dependabot.yml` — GitHub's auto-generated Dependabot config validator. Only runs on PRs that touch `dependabot.yml`. Marking it required deadlocks every other PR ("Expected — Waiting for status to be reported" forever).
+  > - `Build frontend image` / `Build backend image` (before Phase 1.2) — same reason, the workflow is path-filtered to Dockerfile changes.
+  >
+  > **Rule of thumb:** only mark a check as required if its workflow runs on **every** PR to main. Path-filtered workflows that are also required-checks will block PRs that don't match the paths. Our `CI` workflow deliberately has no paths filter for this reason — see `ci-and-security.md`.
+
 #### Other merge rules
 
 - ☑ **Require conversation resolution before merging** — every PR comment must be resolved before merge

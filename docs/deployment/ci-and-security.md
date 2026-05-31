@@ -32,9 +32,9 @@ For the branch-protection rules that **enforce** these checks against the trunk,
 | `Test` | `pnpm test` | Vitest, single run. Each workspace's tests run via `pnpm -r test`. |
 | `Build` | `pnpm build` | Type-checks then produces a Vite production bundle |
 
-**Triggers:** PRs to `main` or pushes to `main` that touch any of `frontend/**`, `backend/**`, `package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `tsconfig.base.json`.
+**Triggers:** every PR to `main` and every push to `main`. **No paths filter** — see the workflow file's header comment for why. Briefly: branch protection marks these jobs as required, and a `paths`-filtered required check deadlocks any PR that doesn't match the paths ("Expected — Waiting for status to be reported" forever). Running ~2–3 minutes of CI on docs-only PRs is cheaper than un-mergeable PRs.
 
-**Skips:** docs-only PRs, prototype HTML changes, and `.github/`-only changes do **not** trigger CI — those are reviewed visually.
+**Skips:** nothing is skipped at the workflow level. If a future optimization is needed for genuinely doc-only PRs, the right pattern is a "sentinel job" that always runs and reports success, with the expensive jobs gated on a path-change check — and branch protection requiring only the sentinel.
 
 **Concurrency:** in-progress runs are cancelled when a new commit lands on the same branch. Saves CI minutes during iterative pushes.
 
