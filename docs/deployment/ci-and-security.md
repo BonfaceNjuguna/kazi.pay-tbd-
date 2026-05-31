@@ -55,7 +55,7 @@ For the branch-protection rules that **enforce** these checks against the trunk,
 
 **Triggers:** PR/push to `main` touching `frontend/Dockerfile`, `frontend/.dockerignore`, `frontend/nginx.conf`, `backend/Dockerfile`, `backend/.dockerignore`, `docker-compose.yml`, or `docker-compose.dev.yml`.
 
-**Per-image guards:** each job is wrapped in `if: hashFiles('<path>/Dockerfile') != ''`. Until Phase 1.2 lands the Dockerfiles, the jobs show as **skipped** (not failed) — branch protection treats skipped checks as passing.
+**Per-image guards:** each job checks `hashFiles('<path>/Dockerfile') != ''` at **step level** (after checkout — `hashFiles` cannot be evaluated at job level since the workspace isn't checked out yet). Until Phase 1.2 lands the Dockerfiles, the build steps are skipped and the job emits a `::notice::` explaining why; the job still ends green so branch protection sees it pass.
 
 **Caching:** uses GitHub Actions cache scoped per image. First build is slow; subsequent builds re-use layers.
 
