@@ -37,7 +37,7 @@ Per the **Documentation Rules** in `AGENTS.md`, the PR that lands code also upda
 
 | Phase | Name | Status | Target | Coded | Verified |
 |-------|------|--------|--------|-------|----------|
-| 1 | Foundation & Auth | 🟡 In Progress | Q3 2026 | ~20% (1.1 + 1.7) | 0% |
+| 1 | Foundation & Auth | 🟡 In Progress | Q3 2026 | ~30% (1.1 + 1.7 + 1.10) | 0% |
 | 2 | Projects, Documents & Signing | ⬜ Pending | Q4 2026 | 0% | 0% |
 | 3 | Payments, WhatsApp & Pro Tier | ⬜ Pending | Q1 2027 | 0% | 0% |
 | 4 | eTIMS, Polish & Launch | ⬜ Pending | Q2 2027 | 0% | 0% |
@@ -62,7 +62,7 @@ Per the **Documentation Rules** in `AGENTS.md`, the PR that lands code also upda
 - 🟡 1.7 Frontend scaffold _(Vite + Tailwind + tokens + Manrope + routes + UI primitives + MSW shipped — see milestone doc for notes; awaits first `pnpm install` + dev-server smoke test)_
 - ⬜ 1.8 Auth UI
 - ⬜ 1.9 Dashboard zero-state + Brand Settings page
-- ⬜ 1.10 CI pipeline
+- 🟡 1.10 CI pipeline & security _(CI + Docker + CodeQL + Gitleaks + Dependabot + PR template + CODEOWNERS placeholder + branch-protection guide all landed; required-status-checks must be set in GitHub UI per `docs/deployment/main-branch-protection.md`)_
 
 → Full scope: [`docs/milestones/phase-1-foundation.md`](./milestones/phase-1-foundation.md)
 

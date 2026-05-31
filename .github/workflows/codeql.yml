@@ -1,0 +1,53 @@
+name: CodeQL
+
+# Static analysis for JavaScript/TypeScript using GitHub's CodeQL.
+# Critical for KaziPay because:
+#   - We render AI-generated HTML on the public client share page (XSS surface)
+#   - We handle M-Pesa callbacks (input-validation + injection surface)
+#   - Hardcoded secrets in source would be catastrophic
+#
+# Runs on every PR/push to main (incremental) plus a weekly full scan.
+# Findings appear under Security → Code scanning in the GitHub UI.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    # Weekly Monday 06:00 UTC = 09:00 EAT (Africa/Nairobi)
+    - cron: '0 6 * * 1'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: Analyze ${{ matrix.language }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          # security-and-quality covers more than the default security suite.
+          # Worth the extra scan time; we're a small codebase.
+          queries: security-and-quality
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:${{ matrix.language }}'

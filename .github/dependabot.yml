@@ -1,0 +1,131 @@
+# Dependabot configuration.
+#
+# Weekly dependency updates across npm (root + each workspace), GitHub Actions,
+# and Docker. Patch + minor updates are grouped per ecosystem into a single
+# weekly PR to keep review fatigue down. Major bumps come as individual PRs
+# since they may need code changes.
+#
+# Schedule: Monday 06:00 Africa/Nairobi (start-of-week, before deep work).
+#
+# See docs/deployment/ci-and-security.md for triage guidance.
+
+version: 2
+
+updates:
+  # ── npm: root tooling (prettier, typescript) ──
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Africa/Nairobi
+    open-pull-requests-limit: 5
+    groups:
+      patch-minor:
+        update-types:
+          - patch
+          - minor
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+    labels:
+      - dependencies
+      - npm
+
+  # ── npm: frontend workspace ──
+  - package-ecosystem: npm
+    directory: '/frontend'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Africa/Nairobi
+    open-pull-requests-limit: 10
+    groups:
+      patch-minor:
+        update-types:
+          - patch
+          - minor
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+    labels:
+      - dependencies
+      - npm
+      - frontend
+
+  # ── npm: backend workspace (activates when backend lands in Phase 1.6) ──
+  - package-ecosystem: npm
+    directory: '/backend'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Africa/Nairobi
+    open-pull-requests-limit: 10
+    groups:
+      patch-minor:
+        update-types:
+          - patch
+          - minor
+    commit-message:
+      prefix: chore
+      prefix-development: chore
+      include: scope
+    labels:
+      - dependencies
+      - npm
+      - backend
+
+  # ── GitHub Actions: keep `uses: ...` references current ──
+  - package-ecosystem: github-actions
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Africa/Nairobi
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    labels:
+      - dependencies
+      - github-actions
+
+  # ── Docker: frontend image base (activates when Dockerfile lands in Phase 1.2) ──
+  - package-ecosystem: docker
+    directory: '/frontend'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Africa/Nairobi
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore
+      include: scope
+    labels:
+      - dependencies
+      - docker
+      - frontend
+
+  # ── Docker: backend image base (activates when Dockerfile lands in Phase 1.2) ──
+  - package-ecosystem: docker
+    directory: '/backend'
+    schedule:
+      interval: weekly
+      day: monday
+      time: '06:00'
+      timezone: Africa/Nairobi
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: chore
+      include: scope
+    labels:
+      - dependencies
+      - docker
+      - backend

@@ -1,0 +1,43 @@
+name: Gitleaks
+
+# Per-PR secret scan. Catches accidentally committed M-Pesa keys, JWT keys,
+# WhatsApp tokens, AI provider keys, generic high-entropy strings, etc.
+#
+# Notes:
+# - Free for personal accounts and public repos. For org-owned private repos,
+#   gitleaks-action requires a license key. Set it as a repo secret named
+#   GITLEAKS_LICENSE — the action picks it up automatically.
+# - Custom rules (e.g. for M-Pesa-style consumer keys) can be added in a
+#   .gitleaks.toml at the repo root. Not needed yet — defaults cover the
+#   commonly-leaked formats.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Scan for secrets
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so it can scan every commit added by this PR,
+          # not just the merge result.
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # GITLEAKS_LICENSE only required for org-owned private repos.
+          # Leave commented for personal accounts and public repos.
+          # GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
