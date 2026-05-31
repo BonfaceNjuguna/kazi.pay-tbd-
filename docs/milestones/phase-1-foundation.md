@@ -127,17 +127,31 @@ These are tempting to scope-creep into Phase 1 but must wait:
 
 ### 1.7 — Frontend Scaffold
 
-- [ ] Vite + React 18 + TypeScript + TailwindCSS
-- [ ] Manrope font loaded (all weights, self-hosted)
-- [ ] Tailwind theme tokens: `#141414` background, `#D4F53C` lime, `#8B5CF6` purple
-- [ ] Dark-mode creative theme as default; light-mode tokens reserved for client-facing surface (Phase 2)
-- [ ] React Router v6 with route definitions in `src/routes.tsx`
-- [ ] `@tanstack/react-query` configured with default stale time
-- [ ] Zustand auth store (user, token, subscription tier, login/logout actions)
-- [ ] Axios instance with auth header injection + refresh interceptor
-- [ ] Base UI components: `Button`, `Input`, `Card`, `Modal`, `Spinner`, `Badge`
-- [ ] Layout components: `AppLayout` (top nav, no sidebar), `AuthLayout`
-- [ ] Inline SVG icon set (no CDN, no icon font)
+**Status:** 🟡 In progress (scaffold landed; awaiting first install + dev-server smoke test)
+
+- [x] Vite + React 18 + TypeScript + TailwindCSS — `frontend/{vite.config.ts, tsconfig.json, tailwind.config.ts, postcss.config.js, index.html, src/main.tsx, src/App.tsx, src/index.css}`
+- [x] Manrope font loaded (all weights, self-hosted) — via `@fontsource/manrope` imported in `src/index.css`
+- [x] Tailwind theme tokens — `frontend/tailwind.config.ts` (extracted from all three prototypes; see file header comment for source mapping). Both dark and light theme tokens included.
+- [x] Dark-mode creative theme + light-mode client tokens — both shipped together since the light tokens are tiny additions and avoid a follow-up rebuild when Phase 2.7 lands.
+- [x] React Router v6 with route definitions — `src/routes.tsx` (placeholder pages per surface)
+- [x] `@tanstack/react-query` configured — `src/lib/query-client.ts` with KaziPay-specific defaults (30s stale, no focus refetch on client surface, no mutation retries)
+- [x] Zustand auth store — `src/store/auth.store.ts` (skeleton; populated in Phase 1.8)
+- [x] Axios instance with auth header injection + refresh interceptor — `src/lib/api.ts` (refresh stubbed until backend /auth/refresh lands in Phase 1.4)
+- [x] Base UI components — `src/components/ui/{Button,Input,Card,Badge,Checkbox,Modal,Spinner}.tsx`
+- [x] Layout components — `src/layouts/{CreativeLayout,ClientLayout,AuthLayout}.tsx`
+- [x] Inline SVG icon set — `src/components/ui/icons.tsx` (18 icons; add more as screens need them)
+- [x] **MSW (Mock Service Worker) wired** — `src/lib/msw.ts` + `src/mocks/{browser,handlers}.ts`. Dev-only; lazy-imported so it doesn't ship in production. Real handlers added alongside each screen.
+
+**Implementation notes (kept for future agents):**
+
+- Monorepo confirmed as the layout. Root: `pnpm-workspace.yaml`, `package.json`, `tsconfig.base.json`, `.editorconfig`, `.gitignore`, `.nvmrc`, `.prettierrc`. Backend folder is a placeholder (`backend/package.json` with no-op scripts) — implemented in §§ 1.1–1.6.
+- **Sidebar conflict resolved in favour of CLAUDE.md.** `kazipay_prototype.html` renders a 220px sidebar; CLAUDE.md says "no sidebar — top nav only". The React `CreativeLayout` uses a top nav. The prototype is reference for visuals only — that decision is documented inline in `src/layouts/CreativeLayout.tsx`.
+- **CDN conflict resolved in favour of CLAUDE.md.** Prototypes pull Manrope from Google Fonts and `kazipay_prototype.html` pulls Tabler icons. Both replaced — Manrope is self-hosted via `@fontsource/manrope`; icons are inline SVG in `src/components/ui/icons.tsx`.
+- **Two-theme strategy.** Single Tailwind config holds both dark (`dark-*`) and light (`light-*`) token namespaces. Theme is set per-route by the layout via `document.documentElement.dataset.theme`. The `:focus-visible` ring uses lime since it has acceptable contrast on both `#141414` and `#F6F6F4`.
+- **Type strictness above the AGENTS.md baseline.** `tsconfig.base.json` enables `noUncheckedIndexedAccess`, `noImplicitOverride`, and `noFallthroughCasesInSwitch`. These caught no issues in scaffold code; if they slow down feature work the team can revisit.
+- **MSW pattern.** Worker lazy-imported in `lib/msw.ts` so production bundle doesn't carry it. `msw init public/` must be run once after `pnpm install` to generate `public/mockServiceWorker.js` (gitignored — runtime artifact, not source). README documents this.
+- **Money helper + smoke test landed.** `src/utils/money.ts` formats integer KES cents per ADR-003/-004; `money.test.ts` proves Vitest is wired.
+- **Out of scope for 1.7 (intentional, per the phase's Non-Deliverables block):** no real screens, no API integration, no Docker, no backend code.
 
 ---
 

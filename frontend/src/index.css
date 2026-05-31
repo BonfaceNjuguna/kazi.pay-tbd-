@@ -1,0 +1,62 @@
+/* Self-hosted Manrope via @fontsource — no Google Fonts CDN at runtime. */
+@import '@fontsource/manrope/300.css';
+@import '@fontsource/manrope/400.css';
+@import '@fontsource/manrope/500.css';
+@import '@fontsource/manrope/600.css';
+@import '@fontsource/manrope/700.css';
+@import '@fontsource/manrope/800.css';
+@import '@fontsource/manrope/900.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ── Theme surfaces ──
+     Apply theme by setting data-theme="dark" or data-theme="light" on a
+     container (defaulting to dark on <html>). The body color/bg are set in
+     index.html for the initial paint to avoid flashing.
+  */
+  [data-theme='dark'] {
+    color-scheme: dark;
+    background-color: theme('colors.dark.surface');
+    color: theme('colors.dark.t1');
+  }
+
+  [data-theme='light'] {
+    color-scheme: light;
+    background-color: theme('colors.light.surface');
+    color: theme('colors.light.t1');
+  }
+
+  /* Focus ring — visible on both themes, defaults to lime since it carries
+     enough contrast on both #141414 and #F6F6F4. */
+  *:focus-visible {
+    outline: 2px solid theme('colors.lime.DEFAULT');
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
+
+@layer utilities {
+  /* Inline-SVG sizing helper — used by the icon set so SVGs scale with text. */
+  .icon {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: -0.125em;
+    flex-shrink: 0;
+  }
+}

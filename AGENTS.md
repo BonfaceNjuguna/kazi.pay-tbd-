@@ -266,6 +266,40 @@ Every action that affects money, signed documents, or the creative's tier writes
 | API routes | kebab-case | `/api/v1/projects` |
 | Env vars | UPPER_SNAKE | `DATABASE_URL` |
 
+### Branching & Workflow
+
+**`main` is the holy grail.** It is the source of truth, must always be deployable, and is never committed to directly. All work — code, docs, ADRs, anything — goes through a feature branch and a pull request.
+
+Every change follows the same sequence, no exceptions:
+
+1. **`git checkout main`** — start from the trunk.
+2. **`git pull --ff-only origin main`** — get the latest. Refuse to start work on a stale main; if the fast-forward fails, sort out the divergence before branching.
+3. **`git checkout -b <prefix>/<short-name>`** — create your branch off the freshly-pulled main.
+4. **Do the work** on the branch. Update the docs in the same branch per the Documentation Rules below — roadmap status, milestone notes, ADRs, vision register.
+5. **`git push -u origin <prefix>/<short-name>`** then open a PR (`gh pr create --base main`). PR title uses the same conventional-commits format as the merge commit.
+6. **Review → CI green → merge** the PR into `main`. Then **delete the branch** locally (`git branch -d`) and on the remote (`git push origin --delete`).
+7. **Back to step 1** for the next change. Never reuse a merged branch.
+
+Branch naming convention:
+
+| Prefix | When to use | Example |
+|--------|-------------|---------|
+| `feature/` | New functionality, scaffold work, larger refactors | `feature/phase-1.8-auth-ui` |
+| `fix/` | Bug fixes against existing functionality | `fix/share-link-rate-limit-off-by-one` |
+| `docs/` | Documentation-only changes (no code) | `docs/adr-006-mpesa-callback` |
+| `chore/` | Tooling, deps, CI, build config | `chore/upgrade-vite-to-5.5` |
+| `refactor/` | Internal restructure with no behaviour change | `refactor/extract-project-service` |
+
+Rules:
+
+- **Never `git push` to `main` directly.** Never `git commit` while checked out on `main`. If you discover you've already committed locally on main, create the feature branch from your current HEAD, then `git reset --hard origin/main` on main to recover.
+- **Never merge a PR without CI green.** Lint, typecheck, tests, build. No "I'll fix it after merge."
+- **One milestone, one fix, or one decision per branch.** Phase 1.8 and Phase 1.9 are two branches, not one. Easier to review, easier to revert, easier to roll back.
+- **Branches are cheap; delete them after merge.** A long-lived feature branch drifts from `main`. If scope grows beyond ~a week of work, split it.
+- **If `main` has moved since you branched, rebase your branch onto the latest `main`** (or merge `main` into your branch) before opening the PR — so the PR diff reflects only your changes.
+- **Never `--force` push to `main`.** Force-pushing a feature branch is allowed (only your own work is affected); force-pushing main is destructive to everyone.
+- **Never skip hooks** (`--no-verify`, `--no-gpg-sign`) without explicit human approval. If a pre-commit hook fails, fix the underlying issue.
+
 ### Git Commit Format (Conventional Commits)
 
 ```
@@ -366,7 +400,8 @@ Agents are allowed to update these inline as part of the same PR that lands the 
 1. **Read `CLAUDE.md` first** for product context, then this file, then `docs/dev-roadmap.md` to understand current phase.
 2. **Check the relevant milestone file** in `docs/milestones/` before implementing features.
 3. **Check `docs/decisions/`** before proposing architecture changes — decisions may already be settled.
-4. **Follow the Coding Standards above strictly.** No new patterns without an ADR. No frontend-only enforcement of backend rules. No undocumented schema changes.
-5. **Update the docs in the same PR as the code** — see Documentation Rules above. Roadmap status, milestone notes, ADRs, vision register.
-6. **Respect the "what NOT to build" list in CLAUDE.md** — KaziPay is not a general document generator, not an HR tool, not a marketing-asset builder.
-7. When in doubt, keep it simple. Prefer explicit over clever.
+4. **Always branch from a freshly-pulled `main` before writing any code.** Never commit to `main`. See **Branching & Workflow** under Coding Standards for the exact sequence (`checkout main` → `pull` → `checkout -b feature/...` → work → push → PR → merge → delete branch).
+5. **Follow the Coding Standards above strictly.** No new patterns without an ADR. No frontend-only enforcement of backend rules. No undocumented schema changes.
+6. **Update the docs in the same PR as the code** — see Documentation Rules above. Roadmap status, milestone notes, ADRs, vision register.
+7. **Respect the "what NOT to build" list in CLAUDE.md** — KaziPay is not a general document generator, not an HR tool, not a marketing-asset builder.
+8. When in doubt, keep it simple. Prefer explicit over clever.

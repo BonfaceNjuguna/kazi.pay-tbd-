@@ -1,0 +1,30 @@
+import { useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
+
+/**
+ * Centered-card layout for login / register / password reset.
+ * Dark theme (same surface as the creative app), no nav.
+ */
+export function AuthLayout() {
+  useEffect(() => {
+    document.documentElement.dataset.theme = 'dark';
+  }, []);
+
+  return (
+    <div className="grid min-h-full place-items-center bg-dark-surface px-4 py-12">
+      <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <span className="text-3xl font-extrabold tracking-tighter">
+            kazi<span className="text-lime">pay</span>
+          </span>
+          <p className="mt-2 text-base text-dark-t2">
+            Get the project formalised, get paid, and have proof of everything.
+          </p>
+        </div>
+        <div className="rounded-lg border border-dark-border bg-dark-surface-raised p-6 shadow-raised">
+          <Outlet />
+        </div>
+      </div>
+    </div>
+  );
+}
