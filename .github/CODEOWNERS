@@ -1,0 +1,45 @@
+# CODEOWNERS — KaziPay
+#
+# This file determines who is automatically requested for review on PRs.
+# Branch protection can enforce "require review from Code Owners" once real
+# owners are listed here.
+#
+# Reference:
+#   https://docs.github.com/en/repositories/managing-your-repositories-settings-and-features/customizing-your-repository/about-code-owners
+#
+# Format:
+#   <path-pattern>  @<github-username-or-team>
+#
+# Order matters — the LAST matching pattern wins.
+
+# ── Catch-all ──
+# Uncomment and set when there's a default reviewer for everything.
+# *                              @your-github-handle
+
+# ── Architecture and decisions ──
+# /docs/decisions/               @your-tech-lead
+# /AGENTS.md                     @your-tech-lead
+# /CLAUDE.md                     @your-product-lead
+
+# ── Backend ──
+# /backend/                      @your-backend-lead
+# /backend/src/integrations/     @your-backend-lead @your-security-lead
+
+# ── Frontend ──
+# /frontend/                     @your-frontend-lead
+
+# ── Infrastructure ──
+# /.github/                      @your-infra-lead
+# /docker-compose*.yml           @your-infra-lead
+# /backend/Dockerfile            @your-infra-lead
+# /frontend/Dockerfile           @your-infra-lead
+
+# ── Sensitive surfaces ──
+# Payment and signing logic — extra scrutiny.
+# /backend/src/services/payments.service.ts        @your-backend-lead @your-security-lead
+# /backend/src/services/signing.service.ts         @your-backend-lead @your-security-lead
+# /backend/src/integrations/mpesa/                 @your-backend-lead @your-security-lead
+
+# ── Until a team is assigned ──
+# Leave this file with only comments. Branch-protection "require review from
+# Code Owners" is a no-op until at least one owner is matched by a pattern.

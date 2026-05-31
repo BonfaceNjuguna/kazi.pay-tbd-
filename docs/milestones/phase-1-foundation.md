@@ -179,14 +179,40 @@ These are tempting to scope-creep into Phase 1 but must wait:
 
 ---
 
-### 1.10 — CI Pipeline
+### 1.10 — CI Pipeline & Security
 
-- [ ] GitHub Actions workflow on PR:
-  - Lint check
-  - TypeScript typecheck
-  - Unit tests
-  - Docker build check
-- [ ] Status checks required before merge to `main`
+**Status:** 🟡 In progress (all workflows + Dependabot + branch-protection guide landed on `feature/phase-1.10-ci-and-security`. CI itself won't go green until `feature/phase-1.7-frontend-scaffold` merges first — see PR description.)
+
+- [x] GitHub Actions CI workflow (`.github/workflows/ci.yml`):
+  - [x] Lint check (`pnpm lint`, ESLint `--max-warnings 0`)
+  - [x] TypeScript typecheck (`pnpm typecheck`)
+  - [x] Unit tests (`pnpm test`, Vitest)
+  - [x] Build (`pnpm build`)
+- [x] Docker build check (`.github/workflows/docker.yml`) — guarded by `hashFiles('<path>/Dockerfile')` so it shows as skipped (not failed) until Phase 1.2 lands the Dockerfiles
+- [x] CodeQL static analysis (`.github/workflows/codeql.yml`) — every PR + weekly Mon 06:00 UTC, `security-and-quality` query set
+- [x] Gitleaks secret scan (`.github/workflows/gitleaks.yml`) — every PR + push to main
+- [x] Dependabot weekly updates (`.github/dependabot.yml`) — npm (root + workspaces), github-actions, docker (frontend + backend). Mon 06:00 EAT. Patch + minor grouped per ecosystem.
+- [x] Pull request template (`.github/pull_request_template.md`) — workflow checklist + Documentation Rules checklist + test plan + breaking-changes prompt
+- [x] CODEOWNERS placeholder (`.github/CODEOWNERS`) — commented out until real owners are assigned
+- [x] CI & security reference (`docs/deployment/ci-and-security.md`)
+- [x] Main branch-protection guide (`docs/deployment/main-branch-protection.md`)
+- [ ] **Required status checks configured in GitHub UI** — manual one-time step by a repo admin; follow `docs/deployment/main-branch-protection.md`. Can't be done in YAML.
+
+**Implementation notes:**
+- All workflows use `paths` filters so docs-only and `.github/`-only PRs don't trigger code-level CI (those PRs are reviewed visually). This means the very PR landing the CI doesn't trigger its own CI, by design — honest.
+- CI will fail on the first PR that adds `package.json` to `main` if `pnpm-lock.yaml` isn't committed alongside it. Phase 1.7's PR includes the lockfile — verify before merge.
+- Dependabot npm uses native pnpm support (added 2024); pnpm-lock.yaml is treated correctly as the lockfile source.
+- Gitleaks-action is free for personal accounts and public repos. If the repo becomes an organization-owned private repo later, add `GITLEAKS_LICENSE` as a repo secret and uncomment the matching line in `gitleaks.yml`. Documented in the branch-protection guide.
+- CodeQL uses the `security-and-quality` query set (broader than the default `security-extended`). Scan time is acceptable given codebase size; revisit if it grows past 30 minutes per run.
+- Branch protection itself **cannot be configured in YAML** in non-org repos (org-level Rulesets are YAML-able but require an org plan). The guide documents the GitHub UI clicks step-by-step plus how to verify the protection actually works.
+- Concurrency groups cancel in-progress runs when a new commit lands on the same branch — saves CI minutes during iterative pushes.
+- All workflows have `permissions: contents: read` (or the minimum required) instead of inheriting the default token. Minimises blast radius if a transitive dep is compromised.
+
+**Deliberately not in scope here:**
+- Bundle-size budget enforcement — Phase 4.5 prep
+- a11y check (axe / pa11y) — Phase 1.9+ when real screens exist
+- Playwright E2E — Phase 4.4
+- `npm audit` hard-fail on high/critical CVEs — too noisy at current dep tree size; relying on Dependabot security PRs instead
 
 ---
 
