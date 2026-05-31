@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kazipay — Review & Sign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F6F6F4;
+  --white:#FFFFFF;
+  --card:#FFFFFF;
+  --border:rgba(0,0,0,0.08);
+  --border-md:rgba(0,0,0,0.14);
+  --text:#141414;
+  --t2:#666460;
+  --t3:#AAACA8;
+  --lime:#D4F53C;
+  --lime-dark:#AACC2E;
+  --lime-bg:rgba(212,245,60,0.12);
+  --purple:#8B5CF6;
+  --purple-bg:rgba(139,92,246,0.08);
+  --green:#0A9A6A;
+  --green-bg:rgba(10,154,106,0.08);
+  --green-light:#E6F7F1;
+  --amber:#D97706;
+  --amber-bg:rgba(217,119,6,0.08);
+  --dark:#141414;
+  --r1:8px;--r2:14px;--r3:20px;--r4:28px;
+  --f:'Manrope',sans-serif;
+  --shadow:0 2px 12px rgba(0,0,0,0.06);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.1);
+}
+
+html,body{
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--f);
+  font-size:14px;
+  line-height:1.6;
+}
+
+/* ── HEADER ── */
+.header{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:14px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  box-shadow:var(--shadow);
+}
+.logo{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-0.3px;}
+.logo em{color:var(--lime-dark);font-style:normal;}
+.header-secure{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--t2);}
+
+/* ── MAIN ── */
+.wrap{max-width:520px;margin:0 auto;padding:24px 16px 80px;}
+
+/* ── SENDER CARD ── */
+.sender-card{
+  background:var(--white);border-radius:var(--r3);
+  padding:22px;margin-bottom:16px;
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:16px;
+}
+.sender-avatar{
+  width:52px;height:52px;border-radius:50%;
+  background:var(--purple-bg);
+  border:2px solid rgba(139,92,246,0.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:800;color:var(--purple);flex-shrink:0;
+}
+.sender-sent{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:3px;}
+.sender-name{font-size:16px;font-weight:800;color:var(--text);}
+.sender-role{font-size:12px;color:var(--t2);}
+
+/* ── PROJECT CARD ── */
+.project-card{
+  background:var(--dark);color:#F0EDE8;
+  border-radius:var(--r3);padding:22px;margin-bottom:16px;
+  box-shadow:var(--shadow-lg);
+}
+.project-title{font-size:18px;font-weight:800;letter-spacing:-0.3px;margin-bottom:12px;}
+.project-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;}
+.project-row .label{color:#999;}
+.project-row .value{font-weight:700;}
+.project-highlight{
+  margin-top:12px;padding:10px 14px;
+  background:rgba(212,245,60,0.1);border-radius:var(--r2);
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:600;color:var(--lime);
+}
+
+/* ── PROGRESS ── */
+.progress-card{
+  background:var(--white);border-radius:var(--r3);
+  padding:18px 22px;margin-bottom:16px;
+  box-shadow:var(--shadow);
+}
+.progress-title{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.progress-bar-wrap{display:flex;gap:4px;margin-bottom:12px;}
+.progress-seg{flex:1;height:6px;border-radius:3px;background:#EEEDEB;transition:background .3s;}
+.progress-seg.done{background:var(--green);}
+.progress-seg.active{background:var(--purple);}
+.progress-label{font-size:11px;color:var(--t3);text-align:center;}
+
+/* ── DOCUMENT BLOCKS ── */
+.doc-block{
+  background:var(--white);border-radius:var(--r3);
+  margin-bottom:10px;box-shadow:var(--shadow);
+  overflow:hidden;border:1px solid var(--border);
+  transition:border-color .2s;
+}
+.doc-block.read{border-color:rgba(10,154,106,0.3);}
+.doc-header{
+  display:flex;align-items:center;gap:12px;
+  padding:16px 20px;cursor:pointer;
+  transition:background .15s;
+}
+.doc-header:hover{background:rgba(0,0,0,0.02);}
+.doc-icon{
+  width:38px;height:38px;border-radius:var(--r2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.doc-name{font-size:14px;font-weight:700;flex:1;}
+.doc-status{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
+.doc-status.unread{background:#EEEDEB;color:var(--t2);}
+.doc-status.done{background:var(--green-bg);color:var(--green);}
+.doc-chevron{font-size:18px;color:var(--t3);transition:transform .2s;}
+.doc-block.open .doc-chevron{transform:rotate(180deg);}
+.doc-body{
+  display:none;padding:0 20px 20px;
+  border-top:1px solid var(--border);
+}
+.doc-block.open .doc-body{display:block;}
+.doc-content{
+  font-size:13px;line-height:1.8;color:var(--t2);
+  padding:16px 0;
+}
+.doc-content h4{color:var(--text);font-size:14px;margin:16px 0 6px;font-weight:700;}
+.doc-content h4:first-child{margin-top:0;}
+.doc-content ul{padding-left:18px;margin:6px 0;}
+.doc-content li{margin-bottom:4px;}
+.doc-content .amount{font-size:16px;font-weight:800;color:var(--text);}
+.doc-content table{width:100%;border-collapse:collapse;margin:10px 0;}
+.doc-content table th{text-align:left;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.5px;padding:8px 0;border-bottom:1px solid var(--border);}
+.doc-content table td{padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.doc-content table tr:last-child td{border-bottom:none;}
+.doc-actions{display:flex;gap:8px;padding-top:12px;border-top:1px solid var(--border);}
+.doc-btn{
+  flex:1;padding:10px;border-radius:var(--r2);
+  font-family:var(--f);font-size:12px;font-weight:600;
+  cursor:pointer;text-align:center;transition:all .15s;
+  border:1px solid var(--border);background:var(--white);color:var(--text);
+}
+.doc-btn:hover{border-color:var(--border-md);}
+.doc-btn.primary{
+  background:var(--green);color:white;border-color:var(--green);
+}
+.doc-btn.primary:hover{background:#088a5e;}
+.doc-btn.done-btn{
+  background:var(--green-light);color:var(--green);border-color:rgba(10,154,106,0.2);
+  pointer-events:none;
+}
+
+/* ── LOCKED NOTICE ── */
+.locked-notice{
+  background:var(--white);border-radius:var(--r3);
+  padding:20px;margin-bottom:16px;
+  box-shadow:var(--shadow);text-align:center;
+  border:1px dashed var(--border-md);
+}
+.locked-notice.hidden{display:none;}
+.locked-icon{font-size:28px;margin-bottom:8px;opacity:0.4;}
+.locked-text{font-size:13px;color:var(--t2);}
+.locked-text strong{color:var(--text);}
+
+/* ── SIGNATURE ── */
+.sig-section{
+  background:var(--white);border-radius:var(--r3);
+  padding:24px;margin-bottom:16px;
+  box-shadow:var(--shadow);
+  display:none;
+  animation:slideUp .4s ease;
+}
+.sig-section.visible{display:block;}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.sig-title{font-size:16px;font-weight:800;margin-bottom:4px;}
+.sig-sub{font-size:12px;color:var(--t2);margin-bottom:16px;}
+.sig-input{
+  width:100%;padding:12px 16px;
+  border:1px solid var(--border-md);border-radius:var(--r2);
+  font-family:var(--f);font-size:14px;color:var(--text);
+  background:var(--bg);outline:none;
+  transition:border-color .2s;
+}
+.sig-input:focus{border-color:var(--purple);}
+.sig-preview{
+  margin:12px 0;padding:16px;
+  background:var(--bg);border-radius:var(--r2);
+  text-align:center;min-height:60px;
+  font-family:'Brush Script MT','Segoe Script','Comic Sans MS',cursive;
+  font-size:28px;font-style:italic;color:var(--text);
+  opacity:0;transition:opacity .3s;
+}
+.sig-preview.visible{opacity:1;}
+.sig-agree{font-size:11px;color:var(--t2);margin-bottom:14px;line-height:1.6;}
+.sig-btn{
+  width:100%;padding:14px;border:none;border-radius:var(--r2);
+  background:var(--dark);color:#F0EDE8;
+  font-family:var(--f);font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .15s;
+  opacity:0.4;pointer-events:none;
+}
+.sig-btn.ready{opacity:1;pointer-events:auto;}
+.sig-btn.ready:hover{background:#2a2a2a;}
+
+/* ── M-PESA ── */
+.mpesa-row{
+  background:var(--white);border-radius:var(--r3);
+  padding:16px 20px;margin-bottom:16px;
+  box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:12px;
+}
+.mpesa-icon{font-size:22px;color:var(--green);flex-shrink:0;}
+.mpesa-text{font-size:12px;color:var(--t2);}
+.mpesa-text strong{color:var(--text);display:block;font-size:13px;margin-bottom:2px;}
+
+/* ── CONFIRMATION ── */
+.confirm-wrap{display:none;animation:slideUp .5s ease;}
+.confirm-card{
+  background:var(--white);border-radius:var(--r3);
+  padding:32px 24px;text-align:center;
+  box-shadow:var(--shadow-lg);
+}
+.confirm-check{
+  width:64px;height:64px;border-radius:50%;
+  background:var(--green-bg);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;font-size:28px;color:var(--green);
+}
+.confirm-title{font-size:20px;font-weight:800;margin-bottom:6px;}
+.confirm-sub{font-size:13px;color:var(--t2);margin-bottom:20px;}
+.confirm-details{
+  background:var(--bg);border-radius:var(--r2);
+  padding:16px;margin-bottom:20px;text-align:left;
+}
+.confirm-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;}
+.confirm-row .label{color:var(--t2);}
+.confirm-row .value{font-weight:700;}
+.confirm-dl{
+  width:100%;padding:12px;border:1px solid var(--border);
+  border-radius:var(--r2);background:var(--white);
+  font-family:var(--f);font-size:13px;font-weight:600;
+  color:var(--text);cursor:pointer;
+  transition:all .15s;margin-bottom:10px;
+}
+.confirm-dl:hover{border-color:var(--border-md);}
+.confirm-payment{
+  padding:14px;border-radius:var(--r2);
+  background:rgba(10,154,106,0.06);
+  border:1px solid rgba(10,154,106,0.15);
+  font-size:12px;color:var(--green);
+  text-align:center;font-weight:600;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">kazi<em>pay</em></div>
+  <div class="header-secure">
+    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#0A9A6A" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+    Secure document
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="wrap" id="main-content">
+
+  <!-- SENDER -->
+  <div class="sender-card">
+    <div class="sender-avatar">RK</div>
+    <div>
+      <div class="sender-sent">Sent by</div>
+      <div class="sender-name">Rowlex Karimi</div>
+      <div class="sender-role">Graphic Designer · Nairobi</div>
+    </div>
+  </div>
+
+  <!-- PROJECT -->
+  <div class="project-card">
+    <div class="project-title">Brand identity redesign</div>
+    <div class="project-row"><span class="label">Client</span><span class="value">Luxe Nails</span></div>
+    <div class="project-row"><span class="label">Total value</span><span class="value">KES 45,000</span></div>
+    <div class="project-row"><span class="label">Timeline</span><span class="value">3 weeks</span></div>
+    <div class="project-highlight">
+      <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+      Deposit: KES 22,500 (50%)
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-card">
+    <div class="progress-title">📄 Reading progress</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-seg" id="seg-1"></div>
+      <div class="progress-seg" id="seg-2"></div>
+      <div class="progress-seg" id="seg-3"></div>
+      <div class="progress-seg" id="seg-4"></div>
+    </div>
+    <div class="progress-label" id="progress-text">0 of 4 documents read</div>
+  </div>
+
+  <!-- DOC 1: QUOTATION -->
+  <div class="doc-block" id="doc-1">
+    <div class="doc-header" onclick="toggleDoc(1)">
+      <div class="doc-icon" style="background:rgba(212,245,60,0.12);color:#AACC2E;">📋</div>
+      <div class="doc-name">Quotation</div>
+      <span class="doc-status unread" id="status-1">Unread</span>
+      <div class="doc-chevron">▾</div>
+    </div>
+    <div class="doc-body">
+      <div class="doc-content">
+        <h4>Quote for Brand Identity Redesign</h4>
+        <p>Prepared for <strong>Luxe Nails</strong> by Rowlex Karimi</p>
+        <table>
+          <thead><tr><th>Item</th><th style="text-align:right;">Amount</th></tr></thead>
+          <tbody>
+            <tr><td>Primary logo + variations</td><td style="text-align:right;font-weight:600;">KES 12,000</td></tr>
+            <tr><td>Brand colour palette & typography</td><td style="text-align:right;font-weight:600;">KES 5,000</td></tr>
+            <tr><td>Brand guidelines PDF</td><td style="text-align:right;font-weight:600;">KES 8,000</td></tr>
+            <tr><td>Business card design</td><td style="text-align:right;font-weight:600;">KES 5,000</td></tr>
+            <tr><td>Social media templates (5)</td><td style="text-align:right;font-weight:600;">KES 8,000</td></tr>
+            <tr><td>Stationery design</td><td style="text-align:right;font-weight:600;">KES 7,000</td></tr>
+          </tbody>
+        </table>
+        <div style="display:flex;justify-content:space-between;padding:12px 0;border-top:2px solid #141414;margin-top:8px;">
+          <strong>Total</strong>
+          <span class="amount">KES 45,000</span>
+        </div>
+        <p style="margin-top:8px;">Payment: 50% deposit before work begins, 50% on completion.<br>Quote valid for 14 days from date of issue.</p>
+      </div>
+      <div class="doc-actions">
+        <button class="doc-btn" onclick="downloadDoc(1)">⬇ Download</button>
+        <button class="doc-btn primary" id="read-btn-1" onclick="markRead(1)">✓ I've read this</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOC 2: SCOPE OF WORK -->
+  <div class="doc-block" id="doc-2">
+    <div class="doc-header" onclick="toggleDoc(2)">
+      <div class="doc-icon" style="background:rgba(139,92,246,0.08);color:#8B5CF6;">📑</div>
+      <div class="doc-name">Scope of work</div>
+      <span class="doc-status unread" id="status-2">Unread</span>
+      <div class="doc-chevron">▾</div>
+    </div>
+    <div class="doc-body">
+      <div class="doc-content">
+        <h4>Scope of Work — Brand Identity Redesign</h4>
+        <h4>Deliverables</h4>
+        <ul>
+          <li><strong>Primary logo</strong> — 3 initial concepts, 2 rounds of revision on chosen direction, final files in AI, PNG, SVG, PDF</li>
+          <li><strong>Logo variations</strong> — horizontal lockup, stacked, icon-only, mono versions</li>
+          <li><strong>Colour palette</strong> — primary, secondary, accent colours with HEX, RGB, CMYK and Pantone values</li>
+          <li><strong>Typography</strong> — heading and body typeface selection with usage guidelines</li>
+          <li><strong>Brand guidelines</strong> — 12-16 page PDF covering logo usage, clear space, colour, typography, do's and don'ts</li>
+          <li><strong>Business cards</strong> — front and back design, print-ready files</li>
+          <li><strong>Social media templates</strong> — 5 templates for Instagram (posts and stories) in Canva-editable format</li>
+          <li><strong>Stationery</strong> — letterhead and envelope design, print-ready</li>
+        </ul>
+        <h4>Timeline</h4>
+        <p>Week 1: Research, moodboard, initial concepts<br>Week 2: Refinement, brand system development<br>Week 3: Final deliverables, handover</p>
+        <h4>Revisions</h4>
+        <p>2 rounds of revisions included. Additional rounds billed at KES 3,000 per round.</p>
+      </div>
+      <div class="doc-actions">
+        <button class="doc-btn" onclick="downloadDoc(2)">⬇ Download</button>
+        <button class="doc-btn primary" id="read-btn-2" onclick="markRead(2)">✓ I've read this</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOC 3: CONTRACT -->
+  <div class="doc-block" id="doc-3">
+    <div class="doc-header" onclick="toggleDoc(3)">
+      <div class="doc-icon" style="background:rgba(10,154,106,0.08);color:#0A9A6A;">📝</div>
+      <div class="doc-name">Service contract</div>
+      <span class="doc-status unread" id="status-3">Unread</span>
+      <div class="doc-chevron">▾</div>
+    </div>
+    <div class="doc-body">
+      <div class="doc-content">
+        <h4>Service Agreement</h4>
+        <p>This agreement is between <strong>Rowlex Karimi</strong> ("Designer") and <strong>Luxe Nails</strong> ("Client"), represented by Sarah Ochieng.</p>
+        <h4>Payment Terms</h4>
+        <p>Total project fee: KES 45,000. A 50% deposit (KES 22,500) is required before work begins. The remaining balance is due upon delivery of final files. Late payments incur a 5% monthly fee.</p>
+        <h4>Intellectual Property</h4>
+        <p>All intellectual property rights transfer to the Client upon receipt of full payment. Until final payment, all work remains the property of the Designer.</p>
+        <h4>Cancellation</h4>
+        <p>Either party may cancel with 14 days written notice. If cancelled by the Client after work has begun, the deposit is non-refundable and any additional work completed will be billed proportionally.</p>
+        <h4>Governing Law</h4>
+        <p>This agreement shall be governed by the laws of the Republic of Kenya. Disputes shall be resolved through mediation before any court proceedings.</p>
+      </div>
+      <div class="doc-actions">
+        <button class="doc-btn" onclick="downloadDoc(3)">⬇ Download</button>
+        <button class="doc-btn primary" id="read-btn-3" onclick="markRead(3)">✓ I've read this</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOC 4: NDA -->
+  <div class="doc-block" id="doc-4">
+    <div class="doc-header" onclick="toggleDoc(4)">
+      <div class="doc-icon" style="background:rgba(217,119,6,0.08);color:#D97706;">🔒</div>
+      <div class="doc-name">NDA</div>
+      <span class="doc-status unread" id="status-4">Unread</span>
+      <div class="doc-chevron">▾</div>
+    </div>
+    <div class="doc-body">
+      <div class="doc-content">
+        <h4>Non-Disclosure Agreement</h4>
+        <p>This mutual non-disclosure agreement is entered into by <strong>Rowlex Karimi</strong> and <strong>Luxe Nails</strong>.</p>
+        <h4>Confidential Information</h4>
+        <p>Both parties agree to keep confidential any business information, trade secrets, client lists, pricing structures, marketing strategies, and unreleased brand materials shared during the course of this project.</p>
+        <h4>Duration</h4>
+        <p>This NDA remains in effect for 2 years from the date of signing. Obligations survive termination of the service agreement.</p>
+        <h4>Exceptions</h4>
+        <p>Information that is already publicly available, independently developed, or required by law to be disclosed is exempt from this agreement.</p>
+        <h4>Portfolio Usage</h4>
+        <p>The Designer may include completed work in their professional portfolio and social media after the project is publicly launched, unless the Client requests otherwise in writing.</p>
+      </div>
+      <div class="doc-actions">
+        <button class="doc-btn" onclick="downloadDoc(4)">⬇ Download</button>
+        <button class="doc-btn primary" id="read-btn-4" onclick="markRead(4)">✓ I've read this</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCKED NOTICE -->
+  <div class="locked-notice" id="locked-notice">
+    <div class="locked-icon">🔒</div>
+    <div class="locked-text"><strong>Almost there.</strong><br>Read all 4 documents above to unlock signing.</div>
+  </div>
+
+  <!-- SIGNATURE SECTION -->
+  <div class="sig-section" id="sig-section">
+    <div class="sig-title">Sign to confirm</div>
+    <div class="sig-sub">By signing you agree to the quotation, scope of work, service contract, and NDA above.</div>
+    <input class="sig-input" id="sig-input" type="text" placeholder="Type your full name to sign" oninput="updateSig()">
+    <div class="sig-preview" id="sig-preview"></div>
+    <div class="sig-agree">By clicking "Confirm and sign" you confirm that you have read and agree to all four documents above. This constitutes a legally binding electronic signature under Kenyan law.</div>
+    <button class="sig-btn" id="sig-btn" onclick="confirmSign()">Confirm and sign</button>
+  </div>
+
+  <!-- M-PESA -->
+  <div class="mpesa-row">
+    <div class="mpesa-icon">📱</div>
+    <div class="mpesa-text">
+      <strong>Deposit: KES 22,500 via M-Pesa</strong>
+      You will receive an M-Pesa prompt immediately after signing.
+    </div>
+  </div>
+
+</div>
+
+<!-- CONFIRMATION SCREEN -->
+<div class="wrap confirm-wrap" id="confirm-wrap">
+  <div class="confirm-card">
+    <div class="confirm-check">✓</div>
+    <div class="confirm-title">Signed and confirmed</div>
+    <div class="confirm-sub">All documents have been signed successfully</div>
+    <div class="confirm-details">
+      <div class="confirm-row"><span class="label">Project</span><span class="value">Brand identity redesign</span></div>
+      <div class="confirm-row"><span class="label">Signed by</span><span class="value" id="confirm-signer">—</span></div>
+      <div class="confirm-row"><span class="label">Date</span><span class="value" id="confirm-date">—</span></div>
+      <div class="confirm-row"><span class="label">Reference</span><span class="value">KP-2024-0047</span></div>
+    </div>
+    <button class="confirm-dl" onclick="downloadSigned()">⬇ Download signed documents</button>
+    <div class="confirm-payment">📱 An M-Pesa payment request for KES 22,500 has been sent to your phone</div>
+  </div>
+</div>
+
+<script>
+var readState = [false, false, false, false];
+var signerName = '';
+
+function toggleDoc(n) {
+  var block = document.getElementById('doc-' + n);
+  block.classList.toggle('open');
+}
+
+function markRead(n) {
+  if (readState[n - 1]) return;
+  readState[n - 1] = true;
+
+  // Update status badge
+  var status = document.getElementById('status-' + n);
+  status.className = 'doc-status done';
+  status.textContent = 'Read ✓';
+
+  // Update button
+  var btn = document.getElementById('read-btn-' + n);
+  btn.className = 'doc-btn done-btn';
+  btn.textContent = '✓ Done';
+
+  // Mark doc block
+  document.getElementById('doc-' + n).classList.add('read');
+
+  // Update progress
+  var count = readState.filter(function(r) { return r; }).length;
+  for (var i = 1; i <= 4; i++) {
+    var seg = document.getElementById('seg-' + i);
+    seg.className = 'progress-seg' + (readState[i - 1] ? ' done' : '');
+  }
+  document.getElementById('progress-text').textContent = count + ' of 4 documents read';
+
+  // Close current doc
+  document.getElementById('doc-' + n).classList.remove('open');
+
+  // Auto-open next unread
+  if (count < 4) {
+    setTimeout(function() {
+      for (var j = 0; j < 4; j++) {
+        if (!readState[j]) {
+          toggleDoc(j + 1);
+          break;
+        }
+      }
+    }, 300);
+  }
+
+  // Check if all read
+  if (count === 4) {
+    document.getElementById('locked-notice').classList.add('hidden');
+    document.getElementById('sig-section').classList.add('visible');
+    setTimeout(function() {
+      document.getElementById('sig-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 400);
+  }
+}
+
+function updateSig() {
+  signerName = document.getElementById('sig-input').value.trim();
+  var preview = document.getElementById('sig-preview');
+  var btn = document.getElementById('sig-btn');
+
+  if (signerName.length > 1) {
+    preview.textContent = signerName;
+    preview.classList.add('visible');
+    btn.classList.add('ready');
+  } else {
+    preview.classList.remove('visible');
+    btn.classList.remove('ready');
+  }
+}
+
+function confirmSign() {
+  if (signerName.length < 2) return;
+
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-KE', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) +
+    ' at ' + now.toLocaleTimeString('en-KE', { hour: '2-digit', minute: '2-digit' });
+
+  document.getElementById('confirm-signer').textContent = signerName;
+  document.getElementById('confirm-date').textContent = dateStr;
+
+  document.getElementById('main-content').style.display = 'none';
+  document.getElementById('confirm-wrap').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function downloadDoc(n) {
+  var names = { 1: 'Quotation', 2: 'Scope of Work', 3: 'Service Contract', 4: 'NDA' };
+  alert('Downloading ' + names[n] + '...\n\n(In the real product, a PDF would download here)');
+}
+
+function downloadSigned() {
+  alert('Downloading signed documents...\n\n(In the real product, a complete signed PDF package would download here)');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KaziPay — Get Paid. Every Time.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#141414;--bg2:#1a1a1a;--bg3:#202020;--bg4:#252525;
+  --lime:#D4F53C;--lime-dim:#b8d930;
+  --purple:#8B5CF6;--purple-dim:#7c3aed;
+  --green:#28c840;
+  --text:#f0f0f0;--text-muted:#888;--text-dim:#444;
+  --border:rgba(255,255,255,0.07);
+  --border-lime:rgba(212,245,60,0.2);
+  --border-purple:rgba(139,92,246,0.2);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+
+/* ═══ NAV ═══ */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 5%;height:68px;display:flex;align-items:center;justify-content:space-between;background:rgba(20,20,20,0.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--border);transition:background .3s}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-mark{width:32px;height:32px;background:var(--lime);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.nav-logo-mark svg{width:18px;height:18px}
+.nav-wordmark{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.5px}
+.nav-wordmark span{color:var(--lime)}
+.nav-links{display:flex;align-items:center;gap:28px;list-style:none}
+.nav-links a{color:var(--text-muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--lime)!important;color:#141414!important;padding:9px 20px!important;border-radius:8px;font-weight:700!important;transition:background .2s,transform .15s!important}
+.nav-cta:hover{background:#c5e832!important;transform:translateY(-1px)}
+.mob-cta{display:none;background:var(--lime);color:#141414;padding:8px 16px;border-radius:8px;font-weight:700;font-size:13px;text-decoration:none}
+
+/* ═══ HERO ═══ */
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 5% 0;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 30%,transparent 80%)}
+.hero-orb{position:absolute;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(212,245,60,.06) 0%,transparent 70%);top:-300px;left:50%;transform:translateX(-50%);pointer-events:none}
+.hero-orb-pur{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.05) 0%,transparent 70%);bottom:-100px;left:-100px;pointer-events:none}
+.hero-content{position:relative;max-width:780px;width:100%}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(212,245,60,.08);border:1px solid var(--border-lime);border-radius:100px;padding:6px 14px 6px 8px;margin-bottom:28px;opacity:0;animation:fadeUp .6s ease forwards .1s}
+.badge-dot{width:6px;height:6px;background:var(--lime);border-radius:50%;animation:pulse 2s infinite}
+.hero-badge span{font-size:12px;font-weight:600;color:var(--lime);letter-spacing:.5px;text-transform:uppercase}
+.hero-h1{font-size:clamp(44px,7vw,96px);font-weight:900;line-height:.95;letter-spacing:-4px;margin-bottom:24px;opacity:0;animation:fadeUp .7s ease forwards .2s}
+.hero-h1 em{font-style:normal;color:var(--lime)}
+.strike{position:relative;color:var(--text-dim)}
+.strike::after{content:'';position:absolute;left:0;right:0;top:50%;height:4px;background:var(--purple);transform:translateY(-50%) scaleX(0);transform-origin:left;animation:strikeAnim .5s ease forwards 1s}
+.hero-sub{font-size:17px;color:var(--text-muted);line-height:1.7;max-width:560px;margin:0 auto 36px;opacity:0;animation:fadeUp .7s ease forwards .35s}
+.hero-sub strong{color:var(--text);font-weight:600}
+.hero-btns{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;opacity:0;animation:fadeUp .7s ease forwards .5s}
+.btn-lime{display:inline-flex;align-items:center;gap:8px;background:var(--lime);color:#141414;padding:15px 32px;border-radius:12px;font-size:15px;font-weight:800;text-decoration:none;transition:background .2s,transform .15s,box-shadow .2s}
+.btn-lime:hover{background:#c5e832;transform:translateY(-2px);box-shadow:0 8px 32px rgba(212,245,60,.25)}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;color:var(--text-muted);padding:15px 22px;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;border:1px solid var(--border);transition:color .2s,border-color .2s}
+.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.15)}
+.hero-proof{margin-top:36px;display:flex;align-items:center;justify-content:center;gap:14px;opacity:0;animation:fadeUp .7s ease forwards .65s}
+.proof-faces{display:flex}
+.proof-face{width:30px;height:30px;border-radius:50%;border:2px solid var(--bg);margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#141414}
+.proof-face:first-child{margin-left:0}
+.proof-txt{font-size:12px;color:var(--text-muted);line-height:1.4;text-align:left}
+.proof-txt strong{color:var(--text);font-weight:700;display:block}
+
+/* ─── HERO UI — full width below ─── */
+.hero-ui-wrap{position:relative;width:100%;max-width:1000px;margin:52px auto 0;opacity:0;animation:fadeUp .9s ease forwards .8s;padding-bottom:60px}
+/* fade bottom edge into bg */
+.hero-ui-wrap::after{content:'';position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to bottom,transparent,var(--bg));pointer-events:none;z-index:2}
+.ui-win{background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04)}
+.ui-bar{background:var(--bg3);padding:11px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.ui-dots{display:flex;gap:5px}
+.ui-dot{width:10px;height:10px;border-radius:50%}
+.ui-dot.r{background:#ff5f57}.ui-dot.y{background:#febc2e}.ui-dot.g{background:#28c840}
+.ui-bar-title{flex:1;text-align:center;font-size:11px;font-weight:600;color:var(--text-dim)}
+.ui-body{padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dash-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.dash-greet{font-size:13px;font-weight:700}.dash-greet span{color:var(--lime)}
+.dash-new{background:var(--lime);color:#141414;font-size:9px;font-weight:800;padding:5px 10px;border-radius:6px;display:flex;align-items:center;gap:4px}
+.dash-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.ds{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px 10px}
+.ds-val{font-size:18px;font-weight:900;letter-spacing:-1px}
+.ds-val.lime{color:var(--lime)}.ds-val.pur{color:var(--purple)}
+.ds-label{font-size:8px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.dash-section-label{font-size:9px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.proj-row{display:flex;align-items:center;gap:9px;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:10px 11px;margin-bottom:6px;opacity:0;transform:translateX(-8px);transition:opacity .4s,transform .4s}
+.proj-row.in{opacity:1;transform:translateX(0)}
+.pr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.pr-info{flex:1;min-width:0}
+.pr-name{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr-sub{font-size:8px;color:var(--text-muted);margin-top:1px}
+.pr-amt{font-size:11px;font-weight:800;color:var(--lime)}
+.pr-badge{font-size:8px;font-weight:700;padding:2px 7px;border-radius:100px}
+.pr-badge.act{background:rgba(212,245,60,.1);color:var(--lime)}
+.pr-badge.pen{background:rgba(139,92,246,.1);color:var(--purple)}
+.pr-badge.dft{background:rgba(255,255,255,.06);color:var(--text-muted)}
+
+/* right panel in dashboard */
+.dash-right{display:flex;flex-direction:column;gap:10px}
+.dash-right-card{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px}
+.drc-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:10px}
+.drc-doc-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:10px}
+.drc-doc-row:last-child{border-bottom:none}
+.drc-doc-icon{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.drc-doc-icon svg{width:10px;height:10px}
+.drc-doc-name{flex:1;font-weight:600}
+.drc-doc-status{font-size:8px;font-weight:700;padding:2px 7px;border-radius:100px}
+.activity-row{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text-muted);padding:5px 0;border-bottom:1px solid var(--border)}
+.activity-row:last-child{border-bottom:none}
+.act-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.act-time{margin-left:auto;font-size:8px;color:var(--text-dim)}
+
+/* floating chips — repositioned for center layout */
+.hero-chip{position:absolute;border-radius:13px;padding:11px 14px;display:flex;align-items:center;gap:10px;box-shadow:0 16px 48px rgba(0,0,0,.4);z-index:3}
+.chip-signed{top:20px;left:-20px;background:var(--bg3);border:1px solid rgba(139,92,246,.35);animation:floatB 3.5s ease-in-out infinite 1s}
+.chip-mpesa{top:20px;right:-20px;background:var(--bg3);border:1px solid rgba(212,245,60,.3);animation:floatA 3s ease-in-out infinite}
+.chip-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chip-icon svg{width:15px;height:15px}
+.chip-icon.lime{background:rgba(212,245,60,.12)}.chip-icon.lime svg{color:var(--lime)}
+.chip-icon.pur{background:rgba(139,92,246,.15)}.chip-icon.pur svg{color:var(--purple)}
+.chip-title{font-size:11px;font-weight:700}
+.chip-sub{font-size:9px;color:var(--text-muted);margin-top:1px}
+.chip-amt{font-size:14px;font-weight:900;color:var(--lime);margin-top:2px}
+
+/* ═══ STATS BAR ═══ */
+.stats-bar{padding:0 5%;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stats-inner{display:grid;grid-template-columns:repeat(4,1fr);max-width:1100px;margin:0 auto}
+.stat-item{padding:36px 0;display:flex;flex-direction:column;align-items:center;text-align:center;border-right:1px solid var(--border);position:relative;opacity:0;transform:translateY(16px);transition:opacity .6s,transform .6s}
+.stat-item:last-child{border-right:none}
+.stat-item.visible{opacity:1;transform:translateY(0)}
+.stat-num{font-size:clamp(28px,3.5vw,44px);font-weight:900;letter-spacing:-2px;line-height:1}
+.stat-num.lime{color:var(--lime)}.stat-num.pur{color:var(--purple)}
+.stat-label{font-size:13px;color:var(--text-muted);margin-top:6px;font-weight:500}
+.stat-label strong{color:var(--text);font-weight:700}
+
+/* ═══ PAIN ═══ */
+.pain{padding:100px 5%;background:var(--bg2);position:relative;overflow:hidden}
+.pain::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,transparent,var(--purple),transparent)}
+.pain-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;max-width:1100px;margin:0 auto}
+.section-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--purple);margin-bottom:18px}
+.pain-h{font-size:clamp(30px,4vw,50px);font-weight:900;line-height:1.1;letter-spacing:-2px}
+.pain-h em{font-style:normal;color:var(--purple)}
+.pain-items{display:flex;flex-direction:column}
+.pain-item{display:flex;align-items:flex-start;gap:14px;padding:20px 0;border-bottom:1px solid var(--border);opacity:0;transform:translateX(20px);transition:opacity .5s,transform .5s}
+.pain-item.visible{opacity:1;transform:translateX(0)}
+.pain-item:last-child{border-bottom:none}
+.pain-ico{width:38px;height:38px;min-width:38px;border-radius:10px;background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.2);display:flex;align-items:center;justify-content:center;margin-top:2px}
+.pain-ico svg{width:16px;height:16px;color:var(--purple)}
+.pain-item h3{font-size:14px;font-weight:700;margin-bottom:4px}
+.pain-item p{font-size:13px;color:var(--text-muted);line-height:1.6}
+
+/* ═══ HOW IT WORKS — TABS ═══ */
+.how{padding:120px 5%;background:var(--bg)}
+.section-header{text-align:center;max-width:620px;margin:0 auto 60px}
+.section-title{font-size:clamp(28px,4vw,50px);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:14px}
+.section-title em{font-style:normal;color:var(--lime)}
+.section-desc{font-size:16px;color:var(--text-muted);line-height:1.65}
+
+.how-tabs-nav{display:flex;max-width:1100px;margin:0 auto 40px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:6px;gap:4px}
+.how-tab-btn{flex:1;padding:12px 10px;border-radius:10px;background:none;border:none;cursor:pointer;font-family:'Manrope',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.how-tab-btn svg{width:14px;height:14px;flex-shrink:0}
+.how-tab-btn.active{background:var(--bg3);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.how-tab-btn.active svg{color:var(--lime)}
+
+.how-panels{max-width:1100px;margin:0 auto}
+.how-panel{display:none;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.how-panel.active{display:grid}
+.how-panel-text{}
+.how-panel-step{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--lime);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.how-panel-step::before{content:'';width:22px;height:2px;background:var(--lime)}
+.how-panel-title{font-size:clamp(22px,2.8vw,32px);font-weight:900;letter-spacing:-1px;margin-bottom:14px}
+.how-panel-desc{font-size:15px;color:var(--text-muted);line-height:1.7}
+.how-panel-desc strong{color:var(--lime);font-weight:600}
+.how-panel-ui{position:relative}
+
+/* step UI windows */
+.step-win{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.45)}
+.step-bar{background:var(--bg3);padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.step-dots{display:flex;gap:4px}
+.step-dot{width:8px;height:8px;border-radius:50%;background:var(--border)}
+.step-bar-title{font-size:10px;color:var(--text-dim);font-weight:600;margin:0 auto}
+.step-body{padding:16px}
+
+/* Step 1 AI */
+.ai-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.ai-ico{width:34px;height:34px;border-radius:9px;background:rgba(212,245,60,.1);border:1px solid var(--border-lime);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ai-ico svg{width:16px;height:16px;color:var(--lime)}
+.ai-ttl{font-size:12px;font-weight:700}.ai-sub{font-size:10px;color:var(--text-muted)}
+.ai-prompt{background:var(--bg3);border:1px solid var(--border-lime);border-radius:9px;padding:10px 12px;margin-bottom:12px;font-size:11px;color:var(--text-muted);line-height:1.6}
+.ai-prompt span{color:var(--text)}
+.ai-rows{display:flex;flex-direction:column;gap:6px}
+.ai-row{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;background:var(--bg3);border:1px solid var(--border);font-size:10px}
+.ai-row.done{border-color:rgba(212,245,60,.2)}
+.ai-row.active{border-color:rgba(139,92,246,.3)}
+.ai-chk{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ai-chk.done{background:rgba(212,245,60,.15)}.ai-chk.done svg{color:var(--lime);width:9px;height:9px}
+.ai-chk.spin{background:rgba(139,92,246,.15)}.ai-chk.spin svg{color:var(--purple);width:9px;height:9px;animation:spin 1s linear infinite}
+.ai-chk.q{background:rgba(255,255,255,.04)}.ai-chk.q svg{color:var(--text-dim);width:9px;height:9px}
+.ai-row-label{flex:1;font-weight:600}
+.ai-row-status{font-size:9px}
+.ai-prog-wrap{margin-top:12px}
+.ai-prog-bg{height:3px;background:var(--border);border-radius:100px;overflow:hidden}
+.ai-prog-fill{height:100%;background:var(--lime);border-radius:100px;animation:progFill 3s ease forwards 1s;width:0}
+.ai-prog-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text-muted);margin-top:5px}
+
+/* Step 2 WhatsApp */
+.wa-to{display:flex;align-items:center;gap:9px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.wa-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#141414;flex-shrink:0}
+.wa-nm{font-size:11px;font-weight:700}.wa-ph{font-size:9px;color:var(--text-muted)}
+.wa-bubble{background:var(--bg3);border-radius:10px 10px 10px 3px;padding:10px 12px;border:1px solid var(--border);font-size:10px;color:var(--text-muted);line-height:1.6;margin-bottom:8px}
+.wa-bubble strong{color:var(--text)}
+.wa-link-card{background:rgba(212,245,60,.06);border:1px solid var(--border-lime);border-radius:9px;padding:8px 10px;display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.wa-link-ico{width:26px;height:26px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wa-link-ico svg{width:12px;height:12px;color:#141414}
+.wa-link-label{font-size:10px;font-weight:700;color:var(--lime)}
+.wa-link-sub{font-size:8px;color:var(--text-muted)}
+.wa-ts{font-size:8px;color:var(--text-dim);text-align:right;margin-bottom:10px}
+.wa-send-btn{background:var(--lime);color:#141414;border-radius:9px;padding:9px;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;animation:sendPulse 2.5s ease-in-out infinite 2s}
+
+/* Step 3 M-Pesa */
+.mp-header{display:flex;align-items:center;gap:9px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.mp-logo{width:32px;height:32px;background:#00A651;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:900;color:#fff;flex-shrink:0}
+.mp-title{font-size:11px;font-weight:700}.mp-sub{font-size:9px;color:var(--text-muted)}
+.mp-amt-block{text-align:center;padding:14px 0}
+.mp-amt-lbl{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:4px}
+.mp-amt{font-size:28px;font-weight:900;letter-spacing:-2px}
+.mp-amt span{font-size:12px;color:var(--text-muted);margin-right:2px}
+.mp-pct{font-size:10px;color:var(--lime);font-weight:600;margin-top:3px}
+.mp-breakdown{display:flex;flex-direction:column;gap:5px;padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:10px}
+.mp-row{display:flex;justify-content:space-between;font-size:10px}
+.mp-row .l{color:var(--text-muted)}.mp-row .v{font-weight:700}.mp-row .v.lime{color:var(--lime)}
+.mp-btn{background:#00A651;color:#fff;border-radius:9px;padding:9px;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px}
+.mp-receipt-chip{position:absolute;bottom:-18px;right:-18px;background:var(--bg3);border:1px solid rgba(212,245,60,.3);border-radius:11px;padding:9px 12px;display:flex;align-items:center;gap:8px;animation:floatA 3s ease-in-out infinite .5s;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.mp-r-ico{width:26px;height:26px;background:rgba(212,245,60,.1);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.mp-r-ico svg{width:12px;height:12px;color:var(--lime)}
+.mp-r-title{font-size:10px;font-weight:700}.mp-r-sub{font-size:8px;color:var(--text-muted)}
+
+/* Step 4 Invoice */
+.inv-top{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:10px}
+.inv-brand{font-size:13px;font-weight:900;letter-spacing:-.5px}.inv-brand span{color:var(--lime)}
+.inv-badge{background:rgba(212,245,60,.1);border:1px solid var(--border-lime);border-radius:6px;padding:3px 8px;font-size:9px;font-weight:700;color:var(--lime)}
+.inv-meta{display:flex;justify-content:space-between;margin-bottom:10px}
+.inv-lbl{font-size:8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:3px}
+.inv-val{font-size:11px;font-weight:700}
+.inv-big{font-size:22px;font-weight:900;letter-spacing:-1px;color:var(--lime)}
+.inv-lines{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.inv-line{display:flex;justify-content:space-between;font-size:10px;padding:5px 0;border-bottom:1px solid var(--border)}
+.inv-line:last-child{border:none;font-weight:700;font-size:11px}
+.inv-line .l{color:var(--text-muted)}.inv-line:last-child .l{color:var(--text)}
+.rem-log{display:flex;flex-direction:column;gap:5px}
+.rem-lbl{font-size:8px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--text-dim);margin-bottom:3px}
+.rem-item{display:flex;align-items:center;gap:7px;font-size:9px;color:var(--text-muted);padding:5px 8px;background:var(--bg3);border-radius:7px;opacity:0;animation:slideIn .4s ease forwards}
+.rem-item:nth-child(2){animation-delay:.2s}
+.rem-item:nth-child(3){animation-delay:.5s}
+.rem-item:nth-child(4){animation-delay:.8s}
+.rem-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.rem-item .t{margin-left:auto;color:var(--text-dim);font-size:8px}
+
+/* ═══ CONTEXT STRIP ═══ */
+.ctx-strip{padding:26px 5%;background:rgba(212,245,60,.04);border-top:1px solid var(--border-lime);border-bottom:1px solid var(--border-lime);overflow:hidden}
+.ctx-ticker{display:flex;gap:56px;animation:ticker 22s linear infinite;white-space:nowrap;width:max-content}
+.ctx-item{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:600;color:var(--text-muted)}
+.ctx-item svg{width:15px;height:15px;color:var(--lime);flex-shrink:0}
+.ctx-item span{color:var(--lime)}
+
+/* ═══ DOCS ═══ */
+.docs{padding:120px 5%;background:var(--bg2)}
+.docs-grid{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.docs-text .section-label{text-align:left}
+.docs-section-title{font-size:clamp(26px,3.5vw,42px);font-weight:900;letter-spacing:-2px;line-height:1.1;margin-bottom:18px}
+.docs-section-title em{font-style:normal;color:var(--lime)}
+.docs-desc{font-size:15px;color:var(--text-muted);line-height:1.7;margin-bottom:32px}
+.doc-phases{display:flex;flex-direction:column;gap:18px}
+.phase-lbl{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:7px}
+.phase-pills{display:flex;flex-wrap:wrap;gap:6px}
+.pill{background:var(--bg3);border:1px solid var(--border);border-radius:100px;padding:5px 12px;font-size:11px;font-weight:600;color:var(--text-muted);transition:all .2s;cursor:default}
+.pill:hover{border-color:var(--lime);color:var(--lime);background:rgba(212,245,60,.05)}
+.pill.hi{background:rgba(212,245,60,.08);border-color:var(--border-lime);color:var(--lime)}
+.doc-stack{position:relative;height:380px}
+.doc-card{position:absolute;background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:22px;width:280px}
+.doc-card:nth-child(1){top:0;left:0;transform:rotate(-4deg);z-index:1;opacity:.3}
+.doc-card:nth-child(2){top:26px;left:26px;transform:rotate(-1.5deg);z-index:2;opacity:.6}
+.doc-card:nth-child(3){top:52px;left:16px;z-index:3;border-color:rgba(212,245,60,.3);box-shadow:0 0 40px rgba(212,245,60,.06);animation:floatCard 4s ease-in-out infinite}
+.dc-type{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--lime);margin-bottom:10px}
+.dc-title{font-size:15px;font-weight:800;margin-bottom:12px;letter-spacing:-.5px}
+.dc-line{height:6px;background:var(--border);border-radius:100px;margin-bottom:6px}
+.dc-line:last-of-type{width:55%}.dc-line:nth-child(4){width:80%}
+.dc-foot{margin-top:18px;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.dc-amt{font-size:18px;font-weight:900;letter-spacing:-1px}
+.dc-amt span{font-size:10px;color:var(--text-muted);margin-right:2px}
+.dc-signed{display:flex;align-items:center;gap:5px;background:rgba(212,245,60,.1);border-radius:7px;padding:5px 9px;font-size:9px;font-weight:700;color:var(--lime)}
+
+/* ═══ FEATURES ═══ */
+.features{padding:120px 5%;background:var(--bg)}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;max-width:1200px;margin:0 auto;background:var(--border);border-radius:20px;overflow:hidden}
+.feat{background:var(--bg);padding:32px 28px;opacity:0;transform:translateY(18px);transition:opacity .5s,transform .5s}
+.feat.visible{opacity:1;transform:translateY(0)}
+.feat:hover{background:var(--bg2)}
+.feat-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.feat-ico.lime{background:rgba(212,245,60,.1);border:1px solid var(--border-lime)}
+.feat-ico.pur{background:rgba(139,92,246,.1);border:1px solid var(--border-purple)}
+.feat-ico.lime svg{color:var(--lime)}.feat-ico.pur svg{color:var(--purple)}
+.feat-ico svg{width:20px;height:20px}
+.feat h3{font-size:15px;font-weight:800;margin-bottom:7px;letter-spacing:-.3px}
+.feat p{font-size:13px;color:var(--text-muted);line-height:1.7;margin-bottom:14px}
+.feat-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--lime);background:rgba(212,245,60,.08);padding:3px 9px;border-radius:100px}
+.feat-tag.pt{color:var(--purple);background:rgba(139,92,246,.08)}
+.feat-ui{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+
+/* mini UIs */
+.fui-rows{display:flex;flex-direction:column;gap:5px}
+.fui-row{display:flex;align-items:center;gap:7px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 8px;font-size:9px;opacity:0;animation:slideIn .35s ease forwards}
+.fui-row:nth-child(1){animation-delay:.1s}
+.fui-row:nth-child(2){animation-delay:.3s;border-color:rgba(212,245,60,.2)}
+.fui-row:nth-child(3){animation-delay:.5s;border-color:rgba(212,245,60,.2)}
+.fui-row:nth-child(4){animation-delay:.7s;border-color:rgba(212,245,60,.2)}
+.fui-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.fui-label{flex:1;font-weight:600;color:var(--text-muted)}
+.fui-row.done .fui-label{color:var(--text)}
+.fui-status{font-size:8px;font-weight:700}
+
+.fui-wa-msg{background:var(--bg3);border-radius:9px 9px 9px 3px;padding:9px 10px;font-size:10px;color:var(--text-muted);line-height:1.5;border:1px solid var(--border);margin-bottom:7px}
+.fui-wa-msg strong{color:var(--text)}
+.fui-wa-pill{display:flex;align-items:center;gap:7px;background:rgba(212,245,60,.06);border:1px solid var(--border-lime);border-radius:8px;padding:6px 9px;font-size:9px}
+.fui-wa-pill-ico{width:20px;height:20px;background:var(--lime);border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.fui-wa-pill-ico svg{width:10px;height:10px;color:#141414}
+.fui-wa-pill-txt{font-weight:700;color:var(--lime);flex:1}
+.fui-wa-ticks{display:flex;gap:2px}
+.fui-wa-ticks svg{width:10px;height:10px;color:var(--purple)}
+
+.fui-mp-rows{display:flex;flex-direction:column;gap:5px}
+.fui-mp-row{display:flex;align-items:center;justify-content:space-between;font-size:9px;background:var(--bg3);border-radius:7px;padding:7px 9px;border:1px solid var(--border)}
+.fui-mp-row.got{border-color:rgba(0,166,81,.25)}
+.fui-mp-lbl{color:var(--text-muted);display:flex;align-items:center;gap:6px}
+.fui-mp-lbl .dot{width:5px;height:5px;border-radius:50%}
+.fui-mp-val{font-weight:800;font-size:10px}
+.fui-mp-val.green{color:#28c840}
+
+.fui-change-msg{background:rgba(139,92,246,.07);border:1px solid var(--border-purple);border-radius:8px;padding:8px 10px;font-size:10px;color:var(--text-muted);line-height:1.5;margin-bottom:7px}
+.fui-change-msg strong{color:var(--purple)}
+.fui-change-acts{display:flex;gap:6px}
+.fui-change-btn{flex:1;border-radius:7px;padding:6px;font-size:9px;font-weight:700;text-align:center}
+.fui-change-btn.ap{background:rgba(212,245,60,.1);color:var(--lime);border:1px solid var(--border-lime)}
+.fui-change-btn.dc{background:var(--bg3);color:var(--text-muted);border:1px solid var(--border)}
+
+.fui-hist{display:flex;flex-direction:column;gap:4px}
+.fui-hist-row{display:flex;align-items:center;gap:7px;font-size:9px;padding:5px 7px;border-radius:7px;background:var(--bg3);border:1px solid var(--border)}
+.fui-hist-row .lbl{flex:1;color:var(--text-muted);font-weight:600}
+.fui-hist-row .dt{color:var(--text-dim);font-size:8px}
+.fui-hist-row .bdg{font-size:8px;font-weight:700;padding:2px 6px;border-radius:100px}
+.fui-hist-row .bdg.paid{background:rgba(40,200,64,.12);color:#28c840}
+.fui-hist-row .bdg.active{background:rgba(212,245,60,.1);color:var(--lime)}
+
+/* ═══ PRICING ═══ */
+.pricing{padding:120px 5%;background:var(--bg2);position:relative;overflow:hidden}
+.pricing::after{content:'';position:absolute;bottom:-200px;left:50%;transform:translateX(-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(212,245,60,.05) 0%,transparent 70%);pointer-events:none}
+
+/* value calc strip */
+.value-strip{max-width:900px;margin:0 auto 60px;background:var(--bg3);border:1px solid var(--border-lime);border-radius:16px;padding:28px 32px}
+.vs-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--lime);margin-bottom:16px;text-align:center}
+.vs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;text-align:center}
+.vs-item{padding:12px;border-right:1px solid var(--border);position:relative}
+.vs-item:last-child{border-right:none}
+.vs-item-label{font-size:11px;color:var(--text-muted);margin-bottom:8px;font-weight:500}
+.vs-item-val{font-size:22px;font-weight:900;letter-spacing:-1px}
+.vs-item-val.bad{color:#ef4444}
+.vs-item-val.good{color:var(--lime)}
+.vs-item-val.neu{color:var(--text)}
+.vs-item-sub{font-size:10px;color:var(--text-muted);margin-top:3px}
+.vs-arrow{position:absolute;right:-13px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--text-dim);z-index:1}
+
+.pricing-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1100px;margin:0 auto}
+.p-card{background:var(--bg3);border:1px solid var(--border);border-radius:18px;padding:30px 26px;position:relative;opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s,border-color .2s}
+.p-card.visible{opacity:1;transform:translateY(0)}
+.p-card:hover{border-color:rgba(255,255,255,.13)}
+.p-card.feat{border-color:var(--lime);background:#171f06;box-shadow:0 0 60px rgba(212,245,60,.08),inset 0 1px 0 rgba(212,245,60,.18);transform:translateY(-10px)!important}
+.p-card.feat.visible{transform:translateY(-10px)!important}
+.p-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--lime);color:#141414;font-size:9px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:4px 14px;border-radius:100px;white-space:nowrap}
+.p-tier{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px}
+.p-tier.lime{color:var(--lime)}
+.p-price{font-size:40px;font-weight:900;letter-spacing:-2px;line-height:1;margin-bottom:3px}
+.p-price .cur{font-size:16px;font-weight:700;color:var(--text-muted);vertical-align:top;margin-top:8px;display:inline-block}
+.p-cadence{font-size:11px;color:var(--text-muted);margin-bottom:22px;min-height:16px}
+.p-divider{height:1px;background:var(--border);margin-bottom:18px}
+.p-feats{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:26px}
+.p-feats li{display:flex;align-items:flex-start;gap:9px;font-size:12px;color:var(--text-muted);line-height:1.4}
+.p-feats li.inc{color:var(--text)}
+.ck{width:16px;height:16px;min-width:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.ck.y{background:rgba(212,245,60,.15)}.ck.n{background:rgba(255,255,255,.05)}
+.ck.y svg{color:var(--lime)}.ck.n svg{color:var(--text-dim)}
+.ck svg{width:8px;height:8px}
+.btn-pp{display:block;text-align:center;background:var(--lime);color:#141414;padding:12px;border-radius:9px;font-size:13px;font-weight:800;text-decoration:none;transition:background .2s,transform .15s}
+.btn-pp:hover{background:#c5e832;transform:translateY(-1px)}
+.btn-ps{display:block;text-align:center;background:transparent;color:var(--text);padding:12px;border-radius:9px;font-size:13px;font-weight:700;text-decoration:none;border:1px solid var(--border);transition:all .2s}
+.btn-ps:hover{border-color:rgba(255,255,255,.18);background:var(--bg2)}
+
+/* ═══ TESTIMONIALS ═══ */
+.testimonials{padding:120px 5%;background:var(--bg)}
+.testi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;max-width:1100px;margin:0 auto}
+.testi{background:var(--bg2);border:1px solid var(--border);border-radius:15px;padding:26px;opacity:0;transform:translateY(18px);transition:opacity .5s,transform .5s}
+.testi.visible{opacity:1;transform:translateY(0)}
+.testi:hover{border-color:rgba(255,255,255,.1)}
+.testi-quote{font-size:14px;line-height:1.7;color:var(--text);margin-bottom:18px;font-style:italic}
+.testi-quote .hl{color:var(--lime);font-style:normal;font-weight:600}
+.testi-author{display:flex;align-items:center;gap:10px}
+.testi-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#141414;flex-shrink:0}
+.testi-name{font-size:13px;font-weight:700}
+.testi-role{font-size:11px;color:var(--text-muted)}
+
+/* ═══ FAQ ═══ */
+.faq{padding:120px 5%;background:var(--bg2)}
+.faq-grid{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:2px}
+.faq-item{background:var(--bg3);border-radius:0;overflow:hidden;border:1px solid var(--border);margin-bottom:2px;border-radius:12px;opacity:0;transform:translateY(12px);transition:opacity .4s,transform .4s}
+.faq-item.visible{opacity:1;transform:translateY(0)}
+.faq-q{width:100%;background:none;border:none;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:15px;font-weight:700;color:var(--text);text-align:left;transition:background .2s}
+.faq-q:hover{background:rgba(255,255,255,.03)}
+.faq-icon{width:24px;height:24px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s,transform .3s}
+.faq-icon svg{width:12px;height:12px;color:var(--text-muted);transition:transform .3s}
+.faq-item.open .faq-icon{background:rgba(212,245,60,.15)}
+.faq-item.open .faq-icon svg{color:var(--lime);transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .3s}
+.faq-item.open .faq-a{max-height:200px}
+.faq-a-inner{padding:0 24px 20px;font-size:14px;color:var(--text-muted);line-height:1.7}
+.faq-a-inner strong{color:var(--lime);font-weight:600}
+
+/* ═══ FINAL CTA ═══ */
+.final{padding:140px 5%;text-align:center;position:relative;overflow:hidden}
+.final::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(212,245,60,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(212,245,60,.025) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse 60% 60% at 50% 50%,black,transparent)}
+.final-orb{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(212,245,60,.06) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+.final-inner{position:relative;max-width:680px;margin:0 auto}
+.cta-h{font-size:clamp(36px,5.5vw,66px);font-weight:900;letter-spacing:-3px;line-height:1.05;margin-bottom:20px}
+.cta-h em{font-style:normal;color:var(--lime)}
+.cta-sub{font-size:17px;color:var(--text-muted);line-height:1.65;margin-bottom:36px}
+.cta-note{margin-top:16px;font-size:12px;color:var(--text-dim)}
+
+/* ═══ FOOTER ═══ */
+footer{padding:32px 5%;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.foot-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.foot-logo-mark{width:26px;height:26px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.foot-logo-mark svg{width:14px;height:14px}
+.foot-wordmark{font-size:15px;font-weight:800;color:var(--text)}
+.foot-wordmark span{color:var(--lime)}
+.foot-tagline{font-size:12px;color:var(--text-dim)}
+.foot-links{display:flex;gap:20px}
+.foot-links a{font-size:12px;color:var(--text-dim);text-decoration:none;transition:color .2s}
+.foot-links a:hover{color:var(--text-muted)}
+
+/* ═══ KEYFRAMES ═══ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes strikeAnim{to{transform:translateY(-50%) scaleX(1)}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes floatCard{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes floatA{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes floatB{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:translateX(0)}}
+@keyframes progFill{from{width:0}to{width:72%}}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes sendPulse{0%,100%{box-shadow:0 0 0 0 rgba(212,245,60,0)}50%{box-shadow:0 0 0 4px rgba(212,245,60,.15)}}
+@keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1050px){
+  .ui-body{grid-template-columns:1fr}
+  .dash-right{display:none}
+  .pain-grid{grid-template-columns:1fr;gap:36px}
+  .how-tab-btn .tab-label{display:none}
+  .how-panel{grid-template-columns:1fr;gap:32px}
+  .how-panel.active{display:flex;flex-direction:column}
+  .docs-grid{grid-template-columns:1fr;gap:36px}
+  .doc-stack{display:none}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .pricing-cards{grid-template-columns:1fr;max-width:400px}
+  .p-card.feat{transform:translateY(0)!important}
+  .p-card.feat.visible{transform:translateY(0)!important}
+  .stats-inner{grid-template-columns:repeat(2,1fr)}
+  .stat-item:nth-child(2){border-right:none}
+  .stat-item:nth-child(3){border-right:1px solid var(--border)}
+  .chip-signed{left:0}
+  .chip-mpesa{right:0}
+}
+@media(max-width:700px){
+  .nav-links{display:none}
+  .mob-cta{display:inline-flex}
+  .feat-grid{grid-template-columns:1fr}
+  .how-tabs-nav{flex-wrap:wrap}
+  .hero-h1{letter-spacing:-2px}
+  .section-title{letter-spacing:-1px}
+  footer{flex-direction:column;text-align:center}
+  .foot-links{flex-wrap:wrap;justify-content:center}
+  .hero-btns{flex-direction:column;align-items:center}
+  .hero-chip{display:none}
+  .stats-inner{grid-template-columns:1fr 1fr}
+  .stat-item:nth-child(3){border-right:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <span class="nav-wordmark">kazi<span>pay</span></span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#pricing" class="nav-cta">Start free →</a></li>
+  </ul>
+  <a href="#pricing" class="mob-cta">Start free →</a>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="hero-orb"></div>
+  <div class="hero-orb-pur"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge"><div class="badge-dot"></div><span>Built for Kenyan Creatives</span></div>
+    <h1 class="hero-h1">Stop working<br>for <span class="strike">free</span>.<br>Get paid <em>every time.</em></h1>
+    <p class="hero-sub">You do the work. The client ghosts you. Kazipay fixes that — <strong>professional contracts, digital signatures, M-Pesa deposits, and automatic payment reminders</strong>, built for how you actually work in Nairobi.</p>
+    <div class="hero-btns">
+      <a href="#pricing" class="btn-lime"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Start for free</a>
+      <a href="#how" class="btn-ghost">See how it works <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg></a>
+    </div>
+    <div class="hero-proof">
+      <div class="proof-faces">
+        <div class="proof-face" style="background:#D4F53C;">AM</div>
+        <div class="proof-face" style="background:#8B5CF6;color:#fff;">KJ</div>
+        <div class="proof-face" style="background:#f97316;color:#fff;">NW</div>
+        <div class="proof-face" style="background:#22d3ee;color:#141414;">BO</div>
+      </div>
+      <div class="proof-txt"><strong>500+ creatives across Kenya</strong>protecting their work &amp; getting paid</div>
+    </div>
+  </div>
+
+  <!-- Full-width dashboard UI below -->
+  <div class="hero-ui-wrap">
+    <div class="hero-chip chip-signed">
+      <div class="chip-icon pur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <div><div class="chip-title">Contract Signed</div><div class="chip-sub">Wangari M. · just now</div></div>
+    </div>
+    <div class="hero-chip chip-mpesa">
+      <div class="chip-icon lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+      <div><div class="chip-title">M-Pesa Received</div><div class="chip-sub">SafariCom deposit</div><div class="chip-amt">+ KES 42,500</div></div>
+    </div>
+
+    <div class="ui-win">
+      <div class="ui-bar">
+        <div class="ui-dots"><span class="ui-dot r"></span><span class="ui-dot y"></span><span class="ui-dot g"></span></div>
+        <div class="ui-bar-title">kazipay — dashboard</div>
+      </div>
+      <div class="ui-body">
+        <!-- Left: projects -->
+        <div>
+          <div class="dash-top">
+            <div class="dash-greet">Good morning, <span>Amara</span> 👋</div>
+            <div class="dash-new"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>New Project</div>
+          </div>
+          <div class="dash-stats">
+            <div class="ds"><div class="ds-val lime">4</div><div class="ds-label">Active</div></div>
+            <div class="ds"><div class="ds-val">KES 187k</div><div class="ds-label">This month</div></div>
+            <div class="ds"><div class="ds-val pur">2</div><div class="ds-label">Awaiting</div></div>
+          </div>
+          <div class="dash-section-label">Active Projects</div>
+          <div class="proj-row" id="pr1"><div class="pr-dot" style="background:#D4F53C;"></div><div class="pr-info"><div class="pr-name">SafariCom Brand Kit</div><div class="pr-sub">Brand Design · 3 docs signed</div></div><div class="pr-amt">KES 85k</div><div class="pr-badge act">Active</div></div>
+          <div class="proj-row" id="pr2"><div class="pr-dot" style="background:#8B5CF6;"></div><div class="pr-info"><div class="pr-name">Nairobi Fashion Week</div><div class="pr-sub">Photography · Deposit received</div></div><div class="pr-amt">KES 55k</div><div class="pr-badge pen">Pending</div></div>
+          <div class="proj-row" id="pr3"><div class="pr-dot" style="background:#444;"></div><div class="pr-info"><div class="pr-name">Equity Bank Campaign</div><div class="pr-sub">Copywriting · Proposal sent</div></div><div class="pr-amt">KES 47k</div><div class="pr-badge dft">Draft</div></div>
+        </div>
+        <!-- Right: documents + activity -->
+        <div class="dash-right">
+          <div class="dash-right-card">
+            <div class="drc-label">Recent Documents</div>
+            <div class="drc-doc-row">
+              <div class="drc-doc-icon" style="background:rgba(212,245,60,.1);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--lime);width:10px;height:10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div class="drc-doc-name">SafariCom Contract</div>
+              <div class="drc-doc-status" style="background:rgba(212,245,60,.1);color:var(--lime);">Signed</div>
+            </div>
+            <div class="drc-doc-row">
+              <div class="drc-doc-icon" style="background:rgba(139,92,246,.1);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--purple);width:10px;height:10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div class="drc-doc-name">NFW Invoice #12</div>
+              <div class="drc-doc-status" style="background:rgba(139,92,246,.1);color:var(--purple);">Sent</div>
+            </div>
+            <div class="drc-doc-row">
+              <div class="drc-doc-icon" style="background:rgba(255,255,255,.05);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--text-muted);width:10px;height:10px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div class="drc-doc-name">Equity Bank Proposal</div>
+              <div class="drc-doc-status" style="background:rgba(255,255,255,.05);color:var(--text-muted);">Draft</div>
+            </div>
+          </div>
+          <div class="dash-right-card">
+            <div class="drc-label">Recent Activity</div>
+            <div class="activity-row"><div class="act-dot" style="background:var(--lime);"></div>M-Pesa deposit received<div class="act-time">2m ago</div></div>
+            <div class="activity-row"><div class="act-dot" style="background:var(--purple);"></div>Wangari signed contract<div class="act-time">14m ago</div></div>
+            <div class="activity-row"><div class="act-dot" style="background:#555;"></div>Reminder sent to NFW<div class="act-time">1h ago</div></div>
+            <div class="activity-row"><div class="act-dot" style="background:var(--lime);"></div>Invoice #12 auto-generated<div class="act-time">3h ago</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ STATS BAR ═══ -->
+<div class="stats-bar">
+  <div class="stats-inner">
+    <div class="stat-item"><div class="stat-num lime" data-target="500">0</div><div class="stat-label">Creatives <strong>protected</strong></div></div>
+    <div class="stat-item"><div class="stat-num" data-target="12" data-prefix="KES " data-suffix="M+">KES 0</div><div class="stat-label">Secured for <strong>creatives</strong></div></div>
+    <div class="stat-item"><div class="stat-num pur" data-target="3200">0</div><div class="stat-label">Documents <strong>generated</strong></div></div>
+    <div class="stat-item"><div class="stat-num lime" data-target="94" data-suffix="%">0%</div><div class="stat-label">Payment <strong>success rate</strong></div></div>
+  </div>
+</div>
+
+<!-- ═══ PAIN ═══ -->
+<section class="pain">
+  <div class="pain-grid">
+    <div>
+      <p class="section-label">The real problem</p>
+      <h2 class="pain-h">Your talent<br>is not the<br><em>problem.</em><br>The process is.</h2>
+    </div>
+    <div class="pain-items">
+      <div class="pain-item"><div class="pain-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><h3>"Nitakupigia" never comes</h3><p>You deliver the work, the client says they'll pay "Friday" — and then vanishes. No contract. No receipt. No leverage.</p></div></div>
+      <div class="pain-item"><div class="pain-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div><div><h3>Scope creep with a smile</h3><p>"Just add this small thing" turns your KES 30,000 job into KES 60,000 of work — with no signed scope to point to.</p></div></div>
+      <div class="pain-item"><div class="pain-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div><h3>Chasing payment is exhausting</h3><p>You spend more energy following up on invoices than doing creative work. It's demoralising — and not what you signed up for.</p></div></div>
+      <div class="pain-item"><div class="pain-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><h3>No paper trail when it goes wrong</h3><p>When a client disputes the work, you have nothing — no signed agreement, no change orders, no delivery receipt. You lose every time.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW IT WORKS — TABS ═══ -->
+<section class="how" id="how">
+  <div class="section-header">
+    <p class="section-label" style="text-align:center;">How it works</p>
+    <h2 class="section-title">From "are you interested?"<br>to <em>paid</em> — one flow.</h2>
+    <p class="section-desc">Describe the project. AI writes the docs. Client signs on WhatsApp. Deposit arrives. You deliver. You get paid.</p>
+  </div>
+
+  <div class="how-tabs-nav">
+    <button class="how-tab-btn active" data-tab="0" onclick="switchTab(0)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      <span class="tab-label">01 &nbsp;AI generates docs</span>
+      <span class="tab-label-short" style="display:none;">01 AI</span>
+    </button>
+    <button class="how-tab-btn" data-tab="1" onclick="switchTab(1)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.68 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      <span class="tab-label">02 &nbsp;Client signs</span>
+    </button>
+    <button class="how-tab-btn" data-tab="2" onclick="switchTab(2)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      <span class="tab-label">03 &nbsp;Deposit via M-Pesa</span>
+    </button>
+    <button class="how-tab-btn" data-tab="3" onclick="switchTab(3)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="tab-label">04 &nbsp;Invoice &amp; paid</span>
+    </button>
+  </div>
+
+  <div class="how-panels">
+    <!-- Panel 0: AI -->
+    <div class="how-panel active" data-panel="0">
+      <div class="how-panel-text">
+        <div class="how-panel-step">Step 01</div>
+        <h3 class="how-panel-title">Describe your project — AI does the rest</h3>
+        <p class="how-panel-desc">Tell kazipay what you're working on in plain English or Swahili. The AI reads your brief and <strong>generates your proposal, scope, contract, and quotation instantly</strong> — written professionally, tailored to your project type. No templates. No copy-paste.</p>
+      </div>
+      <div class="how-panel-ui">
+        <div class="step-win">
+          <div class="step-bar"><div class="step-dots"><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span></div><div class="step-bar-title">AI Document Generator</div></div>
+          <div class="step-body">
+            <div class="ai-header"><div class="ai-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div><div><div class="ai-ttl">Generating your documents</div><div class="ai-sub">Brand identity project · KES 85,000</div></div></div>
+            <div class="ai-prompt"><span>"Logo, brand guidelines and stationery for a Nairobi-based fintech startup. 3 revision rounds. Delivery in 3 weeks."</span></div>
+            <div class="ai-rows">
+              <div class="ai-row done"><div class="ai-chk done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ai-row-label">Proposal</div><div class="ai-row-status" style="color:var(--lime);">Done</div></div>
+              <div class="ai-row done"><div class="ai-chk done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ai-row-label">Quotation</div><div class="ai-row-status" style="color:var(--lime);">Done</div></div>
+              <div class="ai-row active"><div class="ai-chk spin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg></div><div class="ai-row-label">Contract</div><div class="ai-row-status" style="color:var(--text-muted);">Writing…</div></div>
+              <div class="ai-row" style="opacity:.4;"><div class="ai-chk q"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/></svg></div><div class="ai-row-label" style="color:var(--text-dim);">Scope of Work</div><div class="ai-row-status" style="color:var(--text-dim);">Queued</div></div>
+            </div>
+            <div class="ai-prog-wrap"><div class="ai-prog-bg"><div class="ai-prog-fill"></div></div><div class="ai-prog-labels"><span>Generating…</span><span style="color:var(--lime);">72%</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 1: WhatsApp -->
+    <div class="how-panel" data-panel="1">
+      <div class="how-panel-text">
+        <div class="how-panel-step">Step 02</div>
+        <h3 class="how-panel-title">Client signs via WhatsApp — zero friction</h3>
+        <p class="how-panel-desc">Send one link via <strong>WhatsApp or email</strong>. Your client opens it on their phone, reads every document, and signs digitally. No app download. No account. No printer. Just a link and a finger. It works with every Kenyan client.</p>
+      </div>
+      <div class="how-panel-ui">
+        <div class="step-win">
+          <div class="step-bar"><div class="step-dots"><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span></div><div class="step-bar-title">Send to Client</div></div>
+          <div class="step-body">
+            <div class="wa-to">
+              <div class="wa-av" style="background:#D4F53C;">WM</div>
+              <div><div class="wa-nm">Wangari Muthoni</div><div class="wa-ph">+254 712 ••• •••</div></div>
+              <svg style="margin-left:auto;color:#25D366;width:18px;height:18px;" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+            </div>
+            <div class="wa-bubble"><strong>Hi Wangari,</strong><br>Please review and sign the documents for your brand identity project. Once signed, we lock in your start date. 🤝</div>
+            <div class="wa-link-card">
+              <div class="wa-link-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+              <div><div class="wa-link-label">View &amp; Sign Documents →</div><div class="wa-link-sub">Proposal · Contract · Scope of Work</div></div>
+            </div>
+            <div class="wa-ts">Delivered · 10:42 AM ✓✓</div>
+            <div class="wa-send-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Send via WhatsApp</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 2: M-Pesa -->
+    <div class="how-panel" data-panel="2">
+      <div class="how-panel-text">
+        <div class="how-panel-step">Step 03</div>
+        <h3 class="how-panel-title">Deposit before you lift a finger</h3>
+        <p class="how-panel-desc">Request your retainer upfront via <strong>M-Pesa</strong>. The payment is tracked, the receipt generated automatically, and the project unlocks only when the deposit lands. You don't start until you're paid to start. Simple.</p>
+      </div>
+      <div class="how-panel-ui" style="position:relative;">
+        <div class="step-win">
+          <div class="step-bar"><div class="step-dots"><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span></div><div class="step-bar-title">Deposit Request · M-Pesa</div></div>
+          <div class="step-body">
+            <div class="mp-header"><div class="mp-logo">M</div><div><div class="mp-title">M-Pesa Deposit Request</div><div class="mp-sub">SafariCom Brand Kit · Wangari M.</div></div></div>
+            <div class="mp-amt-block"><div class="mp-amt-lbl">Deposit Due (50%)</div><div class="mp-amt"><span>KES</span>42,500</div><div class="mp-pct">of KES 85,000 total</div></div>
+            <div class="mp-breakdown">
+              <div class="mp-row"><span class="l">Total project value</span><span class="v">KES 85,000</span></div>
+              <div class="mp-row"><span class="l">Deposit (50%)</span><span class="v lime">KES 42,500</span></div>
+              <div class="mp-row"><span class="l">Balance on delivery</span><span class="v">KES 42,500</span></div>
+            </div>
+            <div class="mp-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Send M-Pesa Request</div>
+          </div>
+        </div>
+        <div class="mp-receipt-chip"><div class="mp-r-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div><div><div class="mp-r-title">Receipt Generated</div><div class="mp-r-sub">KES 42,500 · Auto-saved</div></div></div>
+      </div>
+    </div>
+
+    <!-- Panel 3: Invoice -->
+    <div class="how-panel" data-panel="3">
+      <div class="how-panel-text">
+        <div class="how-panel-step">Step 04</div>
+        <h3 class="how-panel-title">Deliver. Invoice auto-sends. You get paid.</h3>
+        <p class="how-panel-desc">Track deliverables as you complete them. When you're done, the final invoice is <strong>auto-generated and sent</strong>. Kazipay sends timed, professional payment reminders automatically — so you never have to awkwardly ask "sasa, ile pesa?" again.</p>
+      </div>
+      <div class="how-panel-ui">
+        <div class="step-win">
+          <div class="step-bar"><div class="step-dots"><span class="step-dot"></span><span class="step-dot"></span><span class="step-dot"></span></div><div class="step-bar-title">Invoice &amp; Payment Tracking</div></div>
+          <div class="step-body">
+            <div class="inv-top"><div><div class="inv-brand">kazi<span>pay</span></div><div style="font-size:9px;color:var(--text-muted);margin-top:2px;">Invoice #KP-0047</div></div><div class="inv-badge">Balance Due</div></div>
+            <div class="inv-meta">
+              <div><div class="inv-lbl">Billed to</div><div class="inv-val">SafariCom Ltd.</div></div>
+              <div style="text-align:right;"><div class="inv-lbl">Amount Due</div><div class="inv-big">KES 42,500</div></div>
+            </div>
+            <div class="inv-lines">
+              <div class="inv-line"><span class="l">Logo Design (Final)</span><span>KES 35,000</span></div>
+              <div class="inv-line"><span class="l">Brand Guidelines PDF</span><span>KES 30,000</span></div>
+              <div class="inv-line"><span class="l">Stationery Suite</span><span>KES 20,000</span></div>
+              <div class="inv-line"><span class="l">Deposit Paid</span><span style="color:#28c840;">− KES 42,500</span></div>
+              <div class="inv-line"><span class="l">Balance</span><span style="color:var(--lime);">KES 42,500</span></div>
+            </div>
+            <div class="rem-log">
+              <div class="rem-lbl">Auto-reminders sent</div>
+              <div class="rem-item"><div class="rem-dot" style="background:#555;"></div>Invoice sent to Wangari M.<div class="t">Day 0</div></div>
+              <div class="rem-item"><div class="rem-dot" style="background:#8B5CF6;"></div>Follow-up: "Invoice overdue"<div class="t">Day 3</div></div>
+              <div class="rem-item" style="color:var(--lime);"><div class="rem-dot" style="background:var(--lime);"></div>🎉 Payment received!<div class="t" style="color:var(--lime);">Day 5</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTEXT STRIP ═══ -->
+<div class="ctx-strip">
+  <div class="ctx-ticker">
+    <div class="ctx-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg><span>M-Pesa</span> payment tracking</div>
+    <div class="ctx-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.68 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>WhatsApp</span> client sign-off</div>
+    <div class="ctx-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>12 <span>professional</span> document types</div>
+    <div class="ctx-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Auto <span>reminders</span> — no more chasing</div>
+    <div class="ctx-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>AI-generated <span>contracts</span> &amp; proposals</div>
+    <div class="ctx-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg><span>M-Pesa</span> payment tracking</div>
+    <div class="ctx-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.68 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>WhatsApp</span> client sign-off</div>
+    <div class="ctx-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>12 <span>professional</span> document types</div>
+    <div class="ctx-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Auto <span>reminders</span> — no more chasing</div>
+    <div class="ctx-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>AI-generated <span>contracts</span> &amp; proposals</div>
+  </div>
+</div>
+
+<!-- ═══ DOCS ═══ -->
+<section class="docs">
+  <div class="docs-grid">
+    <div class="docs-text">
+      <p class="section-label">Document library</p>
+      <h2 class="docs-section-title">Every document you'll ever need. <em>Already written.</em></h2>
+      <p class="docs-desc">Stop Googling "freelance contract Kenya template". Kazipay has 12 professional documents built for every stage — AI-generated, tailored to your brief.</p>
+      <div class="doc-phases">
+        <div><div class="phase-lbl">Before work begins</div><div class="phase-pills"><span class="pill hi">Proposal</span><span class="pill hi">Quotation</span><span class="pill">Scope of Work</span><span class="pill hi">Contract</span><span class="pill">NDA</span><span class="pill">Letter of Engagement</span><span class="pill">Creative Brief</span></div></div>
+        <div><div class="phase-lbl">During the project</div><div class="phase-pills"><span class="pill">Change Order</span><span class="pill hi">Deposit Receipt</span></div></div>
+        <div><div class="phase-lbl">At completion</div><div class="phase-pills"><span class="pill hi">Invoice</span><span class="pill">Final Delivery Note</span><span class="pill">Project Completion Certificate</span></div></div>
+      </div>
+    </div>
+    <div class="doc-stack">
+      <div class="doc-card"><div class="dc-type">Quotation</div><div class="dc-title">Brand Identity Package</div><div class="dc-line"></div><div class="dc-line"></div></div>
+      <div class="doc-card"><div class="dc-type">Contract</div><div class="dc-title">Social Media Campaign</div><div class="dc-line"></div><div class="dc-line"></div></div>
+      <div class="doc-card"><div class="dc-type">Invoice</div><div class="dc-title">Website Redesign</div><div class="dc-line"></div><div class="dc-line"></div><div class="dc-foot"><div class="dc-amt"><span>KES</span>85,000</div><div class="dc-signed"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>Signed</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FEATURES ═══ -->
+<section class="features" id="features">
+  <div class="section-header">
+    <p class="section-label" style="text-align:center;">Everything included</p>
+    <h2 class="section-title">Built for how you<br>actually <em>work</em></h2>
+  </div>
+  <div class="feat-grid">
+    <div class="feat">
+      <div class="feat-ico lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg></div>
+      <h3>AI document generation</h3>
+      <p>Describe your project in plain English or Swahili. Kazipay writes your proposal, contract, and invoice — professionally, in seconds.</p>
+      <span class="feat-tag">Powered by AI</span>
+      <div class="feat-ui"><div class="fui-rows">
+        <div class="fui-row"><div class="fui-dot" style="background:var(--text-dim);"></div><div class="fui-label">Waiting…</div><div class="fui-status" style="color:var(--text-dim);">Queue</div></div>
+        <div class="fui-row done"><div class="fui-dot" style="background:var(--lime);"></div><div class="fui-label">Proposal</div><div class="fui-status" style="color:var(--lime);">✓</div></div>
+        <div class="fui-row done"><div class="fui-dot" style="background:var(--lime);"></div><div class="fui-label">Contract</div><div class="fui-status" style="color:var(--lime);">✓</div></div>
+        <div class="fui-row done"><div class="fui-dot" style="background:var(--lime);"></div><div class="fui-label">Invoice</div><div class="fui-status" style="color:var(--lime);">✓</div></div>
+      </div></div>
+    </div>
+    <div class="feat">
+      <div class="feat-ico lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.68 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
+      <h3>WhatsApp client portal</h3>
+      <p>One link. Your client reads and signs everything on their phone. No app. No account. Works with every Kenyan client on WhatsApp.</p>
+      <span class="feat-tag">No friction</span>
+      <div class="feat-ui">
+        <div class="fui-wa-msg"><strong>Amara sent you documents to sign</strong><br>Tap to review your Brand Identity contract.</div>
+        <div class="fui-wa-pill"><div class="fui-wa-pill-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div class="fui-wa-pill-txt">View &amp; Sign →</div><div class="fui-wa-ticks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div></div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-ico pur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+      <h3>M-Pesa deposit requests</h3>
+      <p>Request a retainer before work begins. Track the payment, generate a receipt automatically. M-Pesa is built in, not bolted on.</p>
+      <span class="feat-tag pt">Kenyan-first</span>
+      <div class="feat-ui"><div class="fui-mp-rows">
+        <div class="fui-mp-row"><div class="fui-mp-lbl"><div class="dot" style="background:#555;"></div>Deposit requested</div><div class="fui-mp-val">KES 25,000</div></div>
+        <div class="fui-mp-row"><div class="fui-mp-lbl"><div class="dot" style="background:#febc2e;"></div>STK push sent</div><div class="fui-mp-val">Pending</div></div>
+        <div class="fui-mp-row got"><div class="fui-mp-lbl"><div class="dot" style="background:#28c840;"></div>Payment received</div><div class="fui-mp-val green">✓ Paid</div></div>
+      </div></div>
+    </div>
+    <div class="feat">
+      <div class="feat-ico pur"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+      <h3>Automatic payment reminders</h3>
+      <p>Kazipay sends timed, professional reminders to your client — so you never have to awkwardly ask "sasa, ile pesa?" again.</p>
+      <span class="feat-tag pt">Set &amp; forget</span>
+      <div class="feat-ui"><div class="fui-rows">
+        <div class="fui-row"><div class="fui-dot" style="background:#555;"></div><div class="fui-label">Invoice sent</div><div class="fui-status" style="color:var(--text-muted);">Day 0</div></div>
+        <div class="fui-row"><div class="fui-dot" style="background:var(--purple);"></div><div class="fui-label">Auto follow-up</div><div class="fui-status" style="color:var(--purple);">Day 3</div></div>
+        <div class="fui-row done"><div class="fui-dot" style="background:var(--lime);"></div><div class="fui-label">🎉 Paid!</div><div class="fui-status" style="color:var(--lime);">Day 5</div></div>
+      </div></div>
+    </div>
+    <div class="feat">
+      <div class="feat-ico lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <h3>Change order protection</h3>
+      <p>Every new request gets a change order. Scope creep stops the moment the client asks for "just one more small thing".</p>
+      <span class="feat-tag">Boundaries built in</span>
+      <div class="feat-ui">
+        <div class="fui-change-msg"><strong>Client:</strong> "Can you also add Instagram templates? Shouldn't take long 😊"</div>
+        <div class="fui-change-acts"><div class="fui-change-btn ap">+ KES 8,000 Change Order</div><div class="fui-change-btn dc">Decline</div></div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-ico lime"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+      <h3>Full project history</h3>
+      <p>Every project, document, and payment — saved, searchable, organised. From that logo in 2024 to your latest campaign.</p>
+      <span class="feat-tag">Forever records</span>
+      <div class="feat-ui"><div class="fui-hist">
+        <div class="fui-hist-row"><div style="width:6px;height:6px;border-radius:50%;background:#28c840;flex-shrink:0;"></div><div class="lbl">SafariCom Brand Kit</div><div class="dt">Mar '25</div><div class="bdg paid">Paid</div></div>
+        <div class="fui-hist-row"><div style="width:6px;height:6px;border-radius:50%;background:var(--lime);flex-shrink:0;"></div><div class="lbl">NFW Photography</div><div class="dt">Apr '25</div><div class="bdg active">Active</div></div>
+        <div class="fui-hist-row"><div style="width:6px;height:6px;border-radius:50%;background:#28c840;flex-shrink:0;"></div><div class="lbl">Equity Bank Copy</div><div class="dt">May '25</div><div class="bdg paid">Paid</div></div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ PRICING ═══ -->
+<section class="pricing" id="pricing">
+  <div class="section-header">
+    <p class="section-label" style="text-align:center;">Pricing</p>
+    <h2 class="section-title">Start free.<br>Grow when <em>you're ready.</em></h2>
+    <p class="section-desc">No credit card needed. No tricks. Cancel anytime. Kazipay pays for itself the moment it saves you one unpaid invoice.</p>
+  </div>
+
+  <div class="pricing-cards">
+    <div class="p-card">
+      <p class="p-tier">Free</p>
+      <div class="p-price">KES 0</div>
+      <p class="p-cadence">Forever free</p>
+      <div class="p-divider"></div>
+      <ul class="p-feats">
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>1 active project</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>3 document types</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Digital client sign-off</li>
+        <li><span class="ck n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>KaziPay branding on docs</li>
+        <li><span class="ck n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Your logo &amp; branding</li>
+        <li><span class="ck n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>AI reminders</li>
+      </ul>
+      <a href="#" class="btn-ps">Start free</a>
+    </div>
+    <div class="p-card feat">
+      <div class="p-badge">Most popular</div>
+      <p class="p-tier lime">Pro</p>
+      <div class="p-price"><span class="cur">KES</span>299</div>
+      <p class="p-cadence">per month · cancel anytime</p>
+      <div class="p-divider"></div>
+      <ul class="p-feats">
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Unlimited active projects</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>All 12 document types</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Your logo, branding &amp; signature</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>AI reminders &amp; auto follow-ups</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Full project &amp; payment history</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Priority support</li>
+      </ul>
+      <a href="#" class="btn-pp">Start free trial →</a>
+    </div>
+    <div class="p-card">
+      <p class="p-tier">Single Project</p>
+      <div class="p-price"><span class="cur">KES</span>499</div>
+      <p class="p-cadence">One-time · yours forever</p>
+      <div class="p-divider"></div>
+      <ul class="p-feats">
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>1 project, all 12 documents</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Your logo &amp; branding</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>M-Pesa deposit tracking</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>Permanent project record</li>
+        <li class="inc"><span class="ck y"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>AI payment reminders</li>
+        <li><span class="ck n"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></span>Unlimited projects</li>
+      </ul>
+      <a href="#" class="btn-ps">Pay once, own it</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TESTIMONIALS ═══ -->
+<section class="testimonials">
+  <div class="section-header">
+    <p class="section-label" style="text-align:center;">Real talk</p>
+    <h2 class="section-title">From creatives<br>who got <em>tired</em></h2>
+  </div>
+  <div class="testi-grid">
+    <div class="testi"><p class="testi-quote">"I did a full brand identity for a client in Westlands. Delivered everything, client went silent. Three months later I saw my work on their billboard. <span class="hl">Never again.</span> Kazipay would have meant a signed contract and 50% upfront."</p><div class="testi-author"><div class="testi-av" style="background:#D4F53C;">AM</div><div><div class="testi-name">Amara M.</div><div class="testi-role">Brand Designer, Nairobi</div></div></div></div>
+    <div class="testi"><p class="testi-quote">"Wedding photography client said 'the photos aren't what we agreed'. We had agreed on WhatsApp texts. No brief, no scope, no contract. I refunded half my fee just to end it. <span class="hl">KES 45,000 gone.</span>"</p><div class="testi-author"><div class="testi-av" style="background:#8B5CF6;color:#fff;">KJ</div><div><div class="testi-name">Kevin J.</div><div class="testi-role">Wedding Photographer, Karen</div></div></div></div>
+    <div class="testi"><p class="testi-quote">"The hardest part isn't the work — it's the money conversations. Kazipay makes me look <span class="hl">so professional</span> that clients stop negotiating like I'm doing them a favour. I'm running a business now."</p><div class="testi-author"><div class="testi-av" style="background:#f97316;color:#fff;">NW</div><div><div class="testi-name">Nyambura W.</div><div class="testi-role">Copywriter &amp; Content Strategist</div></div></div></div>
+  </div>
+</section>
+
+<!-- ═══ FAQ ═══ -->
+<section class="faq" id="faq">
+  <div class="section-header">
+    <p class="section-label" style="text-align:center;">FAQ</p>
+    <h2 class="section-title">Your questions,<br><em>answered.</em></h2>
+  </div>
+  <div class="faq-grid">
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Does my client need to download anything to sign?<span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button>
+      <div class="faq-a"><div class="faq-a-inner">No. Your client gets a link — via WhatsApp or email — and opens it in their browser. <strong>Zero downloads, zero accounts</strong>. They read the documents, scroll through, and sign with their finger or mouse. It works on any phone or laptop.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Are the contracts legally valid in Kenya?<span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button>
+      <div class="faq-a"><div class="faq-a-inner">Yes. Digital signatures are legally recognised under the Kenya Information and Communications Act. Kazipay documents record the signer's IP address, timestamp, and device — creating a <strong>verifiable audit trail</strong> you can use if a dispute ever goes to court.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">What happens to my documents if I cancel my subscription?<span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button>
+      <div class="faq-a"><div class="faq-a-inner">Your documents are yours. If you cancel, you can <strong>download all your project files and signed documents</strong> as PDFs before your account closes. We don't hold your work hostage.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">My client doesn't use email. Can it still work?<span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button>
+      <div class="faq-a"><div class="faq-a-inner">Absolutely. Kazipay is built for Kenya — <strong>WhatsApp is the primary delivery channel</strong>. You send the link directly from your phone. If the client has WhatsApp, it works. You can also share the link however you like: SMS, DM, or even copy-paste in a chat.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">Does kazipay actually send money, or just track it?<span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button>
+      <div class="faq-a"><div class="faq-a-inner">Kazipay sends your client an M-Pesa payment request (STK push) — they approve it on their phone and the money goes directly to your M-Pesa. <strong>We don't hold your money</strong> — it lands straight with you. We just handle the request, tracking, and receipt.</div></div>
+    </div>
+    <div class="faq-item">
+      <button class="faq-q" onclick="toggleFaq(this)">I'm just starting out — is this for me?<span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span></button>
+      <div class="faq-a"><div class="faq-a-inner"><strong>Especially for you.</strong> Starting with proper contracts and deposits builds your reputation from day one. Clients take you more seriously, and you avoid the painful lessons that cost experienced creatives thousands. The free plan is a great place to start — no risk, no card required.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINAL CTA ═══ -->
+<section class="final">
+  <div class="final-orb"></div>
+  <div class="final-inner">
+    <p class="section-label" style="text-align:center;margin-bottom:22px;">You've got the talent</p>
+    <h2 class="cta-h">Now get the<br><em>tools to match it.</em></h2>
+    <p class="cta-sub">Every creative in Nairobi deserves to be taken seriously — and paid properly. Kazipay gives you the professional infrastructure that protects your work and your money.</p>
+    <a href="#pricing" class="btn-lime" style="font-size:17px;padding:17px 36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>Start for free — no card needed</a>
+    <p class="cta-note">Free plan available. Upgrade when you're ready. 2 minutes to your first project.</p>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <a href="#" class="foot-logo"><div class="foot-logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#141414" stroke-width="2.5" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div><span class="foot-wordmark">kazi<span>pay</span></span></a>
+  <p class="foot-tagline">Built for Kenyan creatives. Made in Nairobi.</p>
+  <div class="foot-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div>
+</footer>
+
+<script>
+// ── Tab switcher ──
+function switchTab(idx) {
+  document.querySelectorAll('.how-tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+  document.querySelectorAll('.how-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+}
+
+// ── FAQ accordion ──
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+
+// ── Scroll observer ──
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const delay = parseInt(el.dataset.delay || 0);
+      setTimeout(() => el.classList.add('visible'), delay);
+      io.unobserve(el);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.pain-item').forEach((el,i) => { el.dataset.delay = i*80; io.observe(el); });
+document.querySelectorAll('.feat').forEach((el,i) => { el.dataset.delay = i*65; io.observe(el); });
+document.querySelectorAll('.p-card').forEach((el,i) => { el.dataset.delay = i*100; io.observe(el); });
+document.querySelectorAll('.testi').forEach((el,i) => { el.dataset.delay = i*100; io.observe(el); });
+document.querySelectorAll('.faq-item').forEach((el,i) => { el.dataset.delay = i*60; io.observe(el); });
+
+// ── Stats counter animation ──
+const statsObs = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      const numEl = entry.target.querySelector('[data-target]');
+      if (numEl) animateCount(numEl);
+      statsObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.stat-item').forEach((el,i) => {
+  el.dataset.delay = i * 100;
+  statsObs.observe(el);
+});
+
+function animateCount(el) {
+  const target = parseInt(el.dataset.target);
+  const prefix = el.dataset.prefix || '';
+  const suffix = el.dataset.suffix || '';
+  const duration = 1600;
+  const start = performance.now();
+  function update(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - t, 3);
+    const val = Math.round(eased * target);
+    el.textContent = prefix + val.toLocaleString() + suffix;
+    if (t < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+// ── Hero project rows animate in ──
+[['pr1',800],['pr2',1000],['pr3',1200]].forEach(([id,delay]) => {
+  setTimeout(() => { const el = document.getElementById(id); if(el) el.classList.add('in'); }, delay);
+});
+
+// ── Nav bg ──
+window.addEventListener('scroll', () => {
+  document.querySelector('nav').style.background =
+    window.scrollY > 40 ? 'rgba(20,20,20,0.97)' : 'rgba(20,20,20,0.88)';
+});
+
+// ── Smooth scroll ──
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({ behavior:'smooth', block:'start' }); }
+  });
+});
+</script>
+</body>
+</html>
