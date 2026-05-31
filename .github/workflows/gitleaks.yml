@@ -35,7 +35,7 @@ jobs:
           # Full history so it can scan every commit added by this PR,
           # not just the merge result.
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # GITLEAKS_LICENSE only required for org-owned private repos.
