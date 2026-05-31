@@ -1,0 +1,9 @@
+node_modules
+dist
+build
+.vite
+coverage
+pnpm-lock.yaml
+kazipay_landing.html
+kazipay_prototype.html
+kazipay_client.html

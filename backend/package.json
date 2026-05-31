@@ -1,0 +1,14 @@
+{
+  "name": "@kazipay/backend",
+  "private": true,
+  "version": "0.0.0",
+  "description": "KaziPay backend — placeholder. Implemented in Phase 1 backend milestones (see docs/milestones/phase-1-foundation.md §§ 1.1–1.6).",
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'backend not yet implemented (Phase 1.1–1.6)' && exit 0",
+    "build": "echo 'backend not yet implemented' && exit 0",
+    "lint": "echo 'backend not yet implemented' && exit 0",
+    "typecheck": "echo 'backend not yet implemented' && exit 0",
+    "test": "echo 'backend not yet implemented' && exit 0"
+  }
+}

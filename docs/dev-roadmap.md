@@ -37,7 +37,7 @@ Per the **Documentation Rules** in `AGENTS.md`, the PR that lands code also upda
 
 | Phase | Name | Status | Target | Coded | Verified |
 |-------|------|--------|--------|-------|----------|
-| 1 | Foundation & Auth | 🟡 In Progress | Q3 2026 | 0% | 0% |
+| 1 | Foundation & Auth | 🟡 In Progress | Q3 2026 | ~20% (1.1 + 1.7) | 0% |
 | 2 | Projects, Documents & Signing | ⬜ Pending | Q4 2026 | 0% | 0% |
 | 3 | Payments, WhatsApp & Pro Tier | ⬜ Pending | Q1 2027 | 0% | 0% |
 | 4 | eTIMS, Polish & Launch | ⬜ Pending | Q2 2027 | 0% | 0% |
@@ -53,13 +53,13 @@ Per the **Documentation Rules** in `AGENTS.md`, the PR that lands code also upda
 **Non-deliverables:** no project creation, no documents, no AI, no M-Pesa, no WhatsApp. ([full list in milestone doc](./milestones/phase-1-foundation.md#non-deliverables-explicit-non-goals))
 
 ### Milestones (status updated as code lands)
-- ⬜ 1.1 Monorepo setup
+- 🟡 1.1 Monorepo setup _(workspace + tooling done; backend package is placeholder until 1.6)_
 - ⬜ 1.2 Docker environment
 - ⬜ 1.3 Database schema v1 (users, sessions, brand_settings, subscriptions)
 - ⬜ 1.4 Authentication system
 - ⬜ 1.5 Subscription state model (no payments yet — admin override only)
 - ⬜ 1.6 Backend foundations (error handling, logging, validation, file uploads)
-- ⬜ 1.7 Frontend scaffold (Vite + Tailwind + dark theme tokens + Manrope)
+- 🟡 1.7 Frontend scaffold _(Vite + Tailwind + tokens + Manrope + routes + UI primitives + MSW shipped — see milestone doc for notes; awaits first `pnpm install` + dev-server smoke test)_
 - ⬜ 1.8 Auth UI
 - ⬜ 1.9 Dashboard zero-state + Brand Settings page
 - ⬜ 1.10 CI pipeline
