@@ -1,11 +1,15 @@
-/* Self-hosted Manrope via @fontsource — no Google Fonts CDN at runtime. */
+/*
+ * Self-hosted Manrope via @fontsource — no Google Fonts CDN at runtime.
+ * Manrope ships weights 200–800; there is no 900 weight in the typeface,
+ * so we stop at 800. `font-black` (Tailwind class for weight 900) will
+ * render as faux-bold 800 in the browser — avoid using it.
+ */
 @import '@fontsource/manrope/300.css';
 @import '@fontsource/manrope/400.css';
 @import '@fontsource/manrope/500.css';
 @import '@fontsource/manrope/600.css';
 @import '@fontsource/manrope/700.css';
 @import '@fontsource/manrope/800.css';
-@import '@fontsource/manrope/900.css';
 
 @import 'tailwindcss';
 
@@ -18,7 +22,7 @@
  *   - kazipay_landing.html    (marketing dark theme)
  *   - CLAUDE.md               (product-level constraints)
  *
- * Naming convention (each `--color-*` becomes bg-*/text-*/border-* utilities):
+ * Naming convention (each `--color-X` becomes `bg-X`, `text-X`, `border-X` utilities):
  *   --color-dark-surface           → bg-dark-surface, text-dark-surface, ...
  *   --color-lime, --color-lime-hover, --color-lime-bg → bg-lime, bg-lime-hover, bg-lime-bg
  *   --color-light-surface          → bg-light-surface, ...
