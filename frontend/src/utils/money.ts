@@ -25,10 +25,18 @@ const KES_FORMATTER = new Intl.NumberFormat('en-KE', {
  * and the number with a regular space. Both characters render identically
  * but break strict equality checks (tests, snapshot diffs, clipboard text).
  *
- * - U+00A0: NO-BREAK SPACE (older ICU versions)
- * - U+202F: NARROW NO-BREAK SPACE (newer ICU versions, used in some locales)
+ * - 0x00A0 NO-BREAK SPACE (older ICU versions)
+ * - 0x202F NARROW NO-BREAK SPACE (newer ICU versions, used in some locales)
+ *
+ * The regex is built from numeric code points so the source file contains
+ * no literal irregular-whitespace characters (which ESLint's
+ * `no-irregular-whitespace` rule correctly forbids — they're invisible
+ * and fragile to editor normalization).
  */
-const SPACE_NORMALIZE_RE = /[  ]/g;
+const SPACE_NORMALIZE_RE = new RegExp(
+  '[' + String.fromCharCode(0x00a0) + String.fromCharCode(0x202f) + ']',
+  'g',
+);
 
 /** Convert integer cents to a display string. e.g. 1_250_000 → "KES 12,500". */
 export function formatKesCents(cents: number): string {
