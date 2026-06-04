@@ -151,7 +151,7 @@ export const authHandlers = [
   // to the console so testers can use it.
   http.post('/api/v1/auth/forgot-password', async ({ request }) => {
     const body = (await request.json()) as ForgotBody;
-    // eslint-disable-next-line no-console
+    // console.warn is permitted by our ESLint config — it's dev-only signal.
     console.warn(
       `[MSW] Reset-link email simulated for ${body.email}. Use token "mock-reset-token" at /reset-password.`,
     );

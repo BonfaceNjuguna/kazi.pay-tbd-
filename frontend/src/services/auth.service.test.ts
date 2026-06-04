@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { setupServer } from 'msw/node';
+import { http, HttpResponse } from 'msw';
 import { isAxiosError } from 'axios';
 
 import { authHandlers, __TEST__ } from '@/mocks/handlers/auth.handlers';
@@ -138,6 +139,18 @@ describe('auth.service', () => {
       // Make sure the store is clean.
       const { useAuthStore } = await import('@/store/auth.store');
       useAuthStore.getState().logout();
+
+      // The default MSW refresh handler always returns success, so the
+      // Axios interceptor's silent-refresh would mask the 401. Override
+      // it just for this test to simulate "no valid session anywhere".
+      server.use(
+        http.post('/api/v1/auth/refresh', () =>
+          HttpResponse.json(
+            { status: 'error', message: 'Refresh failed', code: 'UNAUTHENTICATED' },
+            { status: 401 },
+          ),
+        ),
+      );
 
       await expect(authService.getCurrentUser()).rejects.toSatisfy((err: unknown) => {
         return (
