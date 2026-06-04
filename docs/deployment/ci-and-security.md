@@ -135,6 +135,54 @@ Findings appear under **Security → Code scanning** in the GitHub UI. Triage we
 
 **Don't sit on Dependabot PRs.** A stale Dependabot PR is a Dependabot PR that's about to conflict with the next one.
 
+### Recovering an out-of-sync Dependabot PR (lockfile drift)
+
+The most common Dependabot failure mode in this repo: a PR was opened **before `pnpm-lock.yaml` existed on main**, so Dependabot bumped `package.json` without producing matching lockfile changes. After the lockfile lands on main, CI's `pnpm install --frozen-lockfile` correctly fails with `ERR_PNPM_OUTDATED_LOCKFILE` (the bumped manifest doesn't match the lockfile from main).
+
+Three ways to fix it, in increasing order of effort:
+
+**1. `@dependabot recreate`** — comment this on the PR. Dependabot closes and reopens it against the current main, scanning the new state. Works for most cases. Wait ~1 minute for Dependabot to action it.
+
+**2. `@dependabot rebase`** — lighter touch; Dependabot rebases onto main but may not regenerate the lockfile cleanly for pnpm workspaces. Try `recreate` if rebase doesn't fix CI.
+
+**3. Manual fix locally** — when bot commands aren't enough (pnpm edge cases, weird conflicts, or you need it fixed in the next minute):
+
+```bash
+# Sync your local main first.
+git checkout main
+git pull --ff-only origin main
+
+# Pull the Dependabot branch into a temp local branch.
+git fetch origin
+git checkout -b temp-fix-dependabot origin/dependabot/<full-path>
+
+# Rebase onto current main — brings the lockfile into scope.
+git rebase origin/main
+
+# Regenerate the lockfile against the bumped package.json.
+pnpm install
+
+# Verify the CI install command now works.
+pnpm install --frozen-lockfile
+
+# Commit + force-push back to the Dependabot branch.
+git add pnpm-lock.yaml
+git commit -m "chore(deps): regenerate pnpm-lock.yaml to match bumped package.json"
+git push --force-with-lease origin "temp-fix-dependabot:dependabot/<full-path>"
+
+# Cleanup.
+git checkout main
+git branch -D temp-fix-dependabot
+```
+
+After the push, GitHub re-runs CI on the PR. When green, merge as normal. Dependabot may comment that the branch is no longer "purely" its own — ignore that comment; the bump intent is preserved, and the PR is now mergeable.
+
+**Closing duplicate stale PRs.** Sometimes Dependabot opens two PRs for the same logical bumps at different ecosystem scopes (e.g. one at root, one at a workspace). When one is fixed/mergeable, close the other with a comment like:
+
+```
+Superseded by #<other-PR> — same bumps, lockfile resolved there.
+```
+
 ---
 
 ## What the PR template enforces
