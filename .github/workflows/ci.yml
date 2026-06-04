@@ -3,28 +3,16 @@ name: CI
 # Standard checks for KaziPay. See docs/deployment/ci-and-security.md for what
 # each job does and how to read failures.
 #
-# Paths-filtered so docs-only and .github-only changes don't trigger CI —
-# docs are reviewed visually, not by these checks.
+# Runs on EVERY PR to main. No paths filter — branch protection marks these
+# jobs as required, and a required check that's path-filtered out deadlocks
+# the PR ("Expected — Waiting for status to be reported"). The ~2-3 min CI
+# cost on docs-only PRs is much smaller than the cost of un-mergeable PRs.
 
 on:
   pull_request:
     branches: [main]
-    paths:
-      - 'frontend/**'
-      - 'backend/**'
-      - 'package.json'
-      - 'pnpm-workspace.yaml'
-      - 'pnpm-lock.yaml'
-      - 'tsconfig.base.json'
   push:
     branches: [main]
-    paths:
-      - 'frontend/**'
-      - 'backend/**'
-      - 'package.json'
-      - 'pnpm-workspace.yaml'
-      - 'pnpm-lock.yaml'
-      - 'tsconfig.base.json'
 
 # Cancel in-progress runs when a new commit lands on the same branch.
 # Saves CI minutes when developers push iteratively.
@@ -38,7 +26,6 @@ permissions:
   contents: read
 
 env:
-  PNPM_VERSION: 9
   NODE_VERSION: 20
 
 jobs:
@@ -48,9 +35,10 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
+      # pnpm version is read from the `packageManager` field in package.json
+      # (single source of truth). Don't pass `version:` here — pnpm/action-setup
+      # rejects the conflict.
       - uses: pnpm/action-setup@v6
-        with:
-          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -66,9 +54,10 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v6
+      # pnpm version is read from the `packageManager` field in package.json
+      # (single source of truth). Don't pass `version:` here — pnpm/action-setup
+      # rejects the conflict.
       - uses: pnpm/action-setup@v6
-        with:
-          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -84,9 +73,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
+      # pnpm version is read from the `packageManager` field in package.json
+      # (single source of truth). Don't pass `version:` here — pnpm/action-setup
+      # rejects the conflict.
       - uses: pnpm/action-setup@v6
-        with:
-          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -102,9 +92,10 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
+      # pnpm version is read from the `packageManager` field in package.json
+      # (single source of truth). Don't pass `version:` here — pnpm/action-setup
+      # rejects the conflict.
       - uses: pnpm/action-setup@v6
-        with:
-          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
