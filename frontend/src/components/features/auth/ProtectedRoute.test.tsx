@@ -15,6 +15,7 @@ const FAKE_USER: AuthUser = {
   country: 'Kenya',
   currency: 'KES',
   plan: 'FREE',
+  onboardingComplete: true,
 };
 
 afterEach(() => {

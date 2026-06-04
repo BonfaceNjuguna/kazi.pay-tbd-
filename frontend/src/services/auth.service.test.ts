@@ -53,17 +53,19 @@ describe('auth.service', () => {
   });
 
   describe('register', () => {
-    it('creates a new account and returns a session', async () => {
+    it('creates a new account and returns a session with onboardingComplete=false', async () => {
       const result = await authService.register({
         email: 'new@example.com',
         password: 'Test1234!',
         fullName: 'New User',
-        profession: 'Photographer',
-        city: 'Mombasa',
       });
 
       expect(result.user.email).toBe('new@example.com');
-      expect(result.user.profession).toBe('Photographer');
+      // Profession + city are NOT captured at registration — they come
+      // from the onboarding step.
+      expect(result.user.profession).toBe('');
+      expect(result.user.city).toBe('');
+      expect(result.user.onboardingComplete).toBe(false);
       expect(result.user.country).toBe('Kenya');
       expect(result.user.currency).toBe('KES');
       expect(result.user.plan).toBe('FREE');
@@ -76,8 +78,6 @@ describe('auth.service', () => {
           email: __TEST__.DEMO_USER.email,
           password: 'Test1234!',
           fullName: 'Imposter',
-          profession: 'Graphic Designer',
-          city: 'Nairobi',
         }),
       ).rejects.toSatisfy((err: unknown) => {
         return (

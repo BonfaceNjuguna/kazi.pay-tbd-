@@ -2,31 +2,22 @@ import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 
-import { Button, Input, Select, type SelectOption } from '@/components/ui';
+import { Button, Input } from '@/components/ui';
 import { useRegister } from '@/hooks/useAuth';
 import type { ApiError } from '@/lib/api';
 
 /**
  * Register form.
  *
- * Collects the minimum needed for a creative to start using KaziPay (per
- * the §1.8 milestone DoD): name, email, password, profession, city. Country
- * is hardcoded to Kenya at v1; currency follows from country.
+ * Captures only the minimum needed to create an account: full name, email,
+ * password. Profession + city are deliberately deferred to the `/onboarding`
+ * step that fires immediately after first sign-in — registration shouldn't
+ * be a survey, and asking who-you-are-as-a-creative belongs to onboarding,
+ * not authentication.
  *
- * Profession dropdown values per CLAUDE.md target users — graphic designers,
- * photographers, videographers, illustrators, copywriters — plus an "Other"
- * escape hatch so we don't bounce edge cases.
+ * Country (Kenya) and currency (KES) are hardcoded at v1 — multi-country
+ * is a future-features.md item, not Phase 1–4 scope.
  */
-
-const PROFESSIONS: ReadonlyArray<SelectOption> = [
-  { value: 'Graphic Designer', label: 'Graphic Designer' },
-  { value: 'Photographer', label: 'Photographer' },
-  { value: 'Videographer', label: 'Videographer' },
-  { value: 'Illustrator', label: 'Illustrator' },
-  { value: 'Copywriter', label: 'Copywriter' },
-  { value: 'Other', label: 'Other' },
-];
-
 export function RegisterForm() {
   const register = useRegister();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -41,8 +32,6 @@ export function RegisterForm() {
         fullName: String(form.get('fullName') ?? '').trim(),
         email: String(form.get('email') ?? '').trim(),
         password: String(form.get('password') ?? ''),
-        profession: String(form.get('profession') ?? ''),
-        city: String(form.get('city') ?? '').trim(),
       },
       {
         onError: (err) => {
@@ -95,25 +84,6 @@ export function RegisterForm() {
         minLength={8}
         placeholder="At least 8 characters"
         hint="8+ characters. Use a phrase you'll actually remember."
-      />
-
-      <Select
-        label="What you do"
-        name="profession"
-        required
-        placeholder="Pick one"
-        options={PROFESSIONS}
-        defaultValue=""
-      />
-
-      <Input
-        label="City"
-        type="text"
-        name="city"
-        autoComplete="address-level2"
-        required
-        minLength={2}
-        placeholder="Nairobi"
       />
 
       <Button type="submit" fullWidth loading={register.isPending}>

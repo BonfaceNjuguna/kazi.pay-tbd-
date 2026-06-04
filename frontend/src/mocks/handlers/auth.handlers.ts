@@ -26,10 +26,20 @@ const DEMO_USER: AuthUser = {
   country: 'Kenya',
   currency: 'KES',
   plan: 'FREE',
+  // Demo user is already onboarded — signing in takes them straight to
+  // /dashboard. Newly-registered users get `false` and bounce to /onboarding.
+  onboardingComplete: true,
 };
 
 const DEMO_PASSWORD = 'Demo1234!';
 const MOCK_ACCESS_TOKEN = 'mock-access-token-rowlex';
+
+/**
+ * In-memory registry of users created via /auth/register during this MSW
+ * session. The /users/me/onboarding handler reads from here to flip a
+ * user's onboardingComplete flag. Resets on page reload — fine for dev.
+ */
+const REGISTERED_USERS = new Map<string, AuthUser>();
 
 interface LoginBody {
   email: string;
@@ -40,6 +50,9 @@ interface RegisterBody {
   email: string;
   password: string;
   fullName: string;
+}
+
+interface OnboardingBody {
   profession: string;
   city: string;
 }
@@ -92,16 +105,23 @@ export const authHandlers = [
       );
     }
 
+    // Registration captures the minimum to create an account — name, email,
+    // password. Profession and city are collected later at /onboarding.
+    // `onboardingComplete: false` triggers the redirect to /onboarding on
+    // first sign-in (see OnboardingGate).
     const user: AuthUser = {
       id: crypto.randomUUID(),
       email: body.email,
       fullName: body.fullName,
-      profession: body.profession,
-      city: body.city,
+      profession: '',
+      city: '',
       country: 'Kenya',
       currency: 'KES',
       plan: 'FREE',
+      onboardingComplete: false,
     };
+
+    REGISTERED_USERS.set(user.id, user);
 
     return HttpResponse.json(
       {
@@ -110,6 +130,42 @@ export const authHandlers = [
       },
       { status: 201 },
     );
+  }),
+
+  // ── POST /users/me/onboarding ──────────────────────────────────────
+  // Completes the onboarding step: captures profession + city, flips
+  // `onboardingComplete` to true, returns the updated user.
+  http.post('/api/v1/users/me/onboarding', async ({ request }) => {
+    const auth = request.headers.get('authorization');
+    if (!auth?.startsWith('Bearer mock-access-token')) {
+      return HttpResponse.json(
+        {
+          status: 'error',
+          message: 'Authentication required.',
+          code: 'UNAUTHENTICATED',
+        },
+        { status: 401 },
+      );
+    }
+
+    const body = (await request.json()) as OnboardingBody;
+
+    // For the demo user, just return an updated copy. For users registered
+    // this session, mutate the in-memory record so subsequent /auth/me
+    // calls (e.g. after refresh) return the onboarded user.
+    const tokenId = auth.replace('Bearer mock-access-token-', '');
+    const existing = REGISTERED_USERS.get(tokenId) ?? DEMO_USER;
+    const updated: AuthUser = {
+      ...existing,
+      profession: body.profession,
+      city: body.city,
+      onboardingComplete: true,
+    };
+    if (REGISTERED_USERS.has(tokenId)) {
+      REGISTERED_USERS.set(tokenId, updated);
+    }
+
+    return HttpResponse.json({ status: 'success', data: updated });
   }),
 
   // ── POST /auth/logout ──────────────────────────────────────────────

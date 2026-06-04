@@ -6,16 +6,26 @@ import { useAuthStore } from '@/store/auth.store';
  * Axios instance shared by all `services/`.
  *
  * Conventions (per ADR-004 — REST API design):
- *  - Base URL from VITE_API_URL, version-prefixed (/api/v1)
+ *  - Base URL is same-origin by default — requests go to `/api/v1/*` on
+ *    whatever host the page is served from. Override with `VITE_API_URL`
+ *    only when the backend is on a different host (rare).
  *  - Access token injected from the auth store (Zustand, in-memory)
  *  - 401 triggers a silent refresh; refresh failure logs the user out
  *  - All responses follow { status, data } | { status, message, code } envelope
  *
- * The refresh logic itself is stubbed until the backend lands in Phase 1.4.
- * MSW handlers can simulate 401 + refresh for tests once the screens exist.
+ * Why same-origin by default:
+ *  - MSW (service worker) can only intercept requests on its own origin.
+ *    A different host or port bypasses the SW entirely and hits the real
+ *    network — which fails in dev because the backend doesn't exist yet
+ *    (Phase 1.4+). Same-origin keeps MSW in the loop during dev.
+ *  - In production, NGINX reverse-proxies `/api/*` to the backend, so the
+ *    frontend never needs to know the backend's real host. Same-origin.
+ *  - When you DO need a different host (e.g. running real backend on a
+ *    different port without a proxy), set `VITE_API_URL` in your local
+ *    .env to override. See `frontend/.env.example`.
  */
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL ?? '';
 
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
