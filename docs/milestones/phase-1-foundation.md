@@ -158,12 +158,29 @@ These are tempting to scope-creep into Phase 1 but must wait:
 
 ### 1.8 — Auth UI
 
-- [ ] Login page (`/login`)
-- [ ] Register page (`/register`) — collects name, email, password, profession (dropdown: graphic designer, photographer, videographer, illustrator, copywriter, other), city
-- [ ] Password reset flow (`/forgot-password`, `/reset-password`)
-- [ ] Protected route wrapper (redirect to `/login` if unauthenticated)
-- [ ] Post-login redirect to dashboard
-- [ ] Copy uses the KaziPay tone (direct, warm, Nairobi-first; "Karibu" greeting on register success is welcome)
+**Status:** 🟡 In progress (full flow + tests landed on `feature/phase-1.8-auth-ui`; awaits prerequisite PRs landing for CI to be green)
+
+- [x] Login page (`/login`) — `src/pages/auth/LoginPage.tsx`, `src/components/features/auth/LoginForm.tsx`
+- [x] Register page (`/register`) — `src/pages/auth/RegisterPage.tsx`, `src/components/features/auth/RegisterForm.tsx`. Collects full name, email, password, profession (6-option dropdown: Graphic Designer, Photographer, Videographer, Illustrator, Copywriter, Other), city. Country auto-set to Kenya, currency to KES.
+- [x] Password reset flow — `src/pages/auth/{ForgotPasswordPage,ResetPasswordPage}.tsx`, paired forms. Forgot-password returns generic success regardless of email validity (per ADR-002 — no enumeration). Reset reads `?token=` from URL.
+- [x] Protected route wrapper — `src/components/features/auth/ProtectedRoute.tsx`. Uses react-router-v6 `<Outlet />` pattern; wraps the creative subtree in `routes.tsx`. Preserves intended destination on `location.state.from` for post-login redirect.
+- [x] Post-login redirect to dashboard — implemented in `useLogin` / `useRegister` hooks via `navigate('/dashboard', { replace: true })`.
+- [x] Copy uses the KaziPay tone — "Karibu — sign in", "Create your account · Free to start", "Choose a new password · Pro tip: a short phrase beats a random string of symbols every time", etc.
+- [x] Sign-out affordance — added to `CreativeLayout` top nav so the auth gate is testable end-to-end without DevTools.
+- [x] `Select` UI primitive added — `src/components/ui/Select.tsx`, native `<select>` styled to match `Input`. Chosen over a custom dropdown for accessibility + mobile system-picker UX (per CLAUDE.md mobile-first rule).
+- [x] Axios silent-refresh wired — `lib/api.ts` now calls `/auth/refresh` on 401 with an `x-skip-refresh` header to prevent the refresh call itself from looping.
+- [x] MSW handlers for `/auth/*` — `src/mocks/handlers/auth.handlers.ts` covers login, register, logout, refresh, me, forgot-password, reset-password. Demo creative is Rowlex Karimi per CLAUDE.md (`rowlex@demo.kazi.pay` / `Demo1234!`).
+- [x] Tests — `auth.service.test.ts` (8 cases against MSW: login success/failure/unknown-email, register success/duplicate, forgot-password no-enumeration, reset-password valid/invalid token, me with/without token), `ProtectedRoute.test.tsx` (redirect-when-unauth + renders-when-auth), `LoginForm.test.tsx` (full flow via `@testing-library/user-event`).
+
+**Implementation notes:**
+
+- **Forms use uncontrolled inputs + native HTML5 validation** (`required`, `type="email"`, `minLength={8}`). No new dep (react-hook-form, zod, etc.) added. If forms get materially more complex in Phase 2, switch to react-hook-form + zod via an ADR.
+- **Sign-out lives in CreativeLayout, not on a dedicated route.** Calling `useLogout()` clears the auth store, clears the React Query cache, and navigates to `/login`. The cache clear matters — stale per-user data must not be visible to the next signed-in user.
+- **No-enumeration on forgot-password** is enforced both ways: the MSW handler always returns success, and the form shows the same "if an account exists" message even on transport failure. Per ADR-002.
+- **MSW handlers split by domain.** `src/mocks/handlers/` is the new home; `src/mocks/handlers.ts` is the composition root. Adding new domains (projects, payments) means adding a file under `handlers/` and importing it into the root array.
+- **`useCurrentUser` is implemented but not yet wired into `<App>` boot.** When wired (small Phase 1.8 follow-up or part of 1.9), it restores the session on page refresh: calls `/auth/me`, lets the Axios interceptor's silent-refresh attempt run if the access token is missing, and either authenticates or stays logged-out cleanly.
+- **CI dependency:** this PR is based on `main` per the workflow rule, so CI will be red until `fix/ci-workflow-errors` merges AND `pnpm-lock.yaml` is committed. The Phase 1.8 code itself doesn't depend on those — it just can't be verified green in CI until they land.
+- **Out of scope for 1.8:** brand settings UI (1.9), dashboard data (1.9 + Phase 2), real `/auth/me` bootstrap call on app mount (small follow-up).
 
 ---
 

@@ -35,12 +35,26 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 });
 
 // ── Response interceptor: silent refresh on 401 ──
+//
+// Single in-flight refresh — concurrent 401s share one /auth/refresh call.
+// On success: store the new token, retry the original request.
+// On failure: clear the session and let the auth UI redirect to /login.
 let refreshPromise: Promise<string | null> | null = null;
 
 async function attemptRefresh(): Promise<string | null> {
-  // Placeholder. Real implementation in Phase 1.4 once /auth/refresh exists.
-  // For now, return null → caller treats as unauthenticated.
-  return null;
+  try {
+    const { data } = await api.post<ApiSuccess<{ accessToken: string }>>(
+      '/auth/refresh',
+      // Empty body — refresh token rides on the httpOnly cookie (ADR-002).
+      undefined,
+      // Skip the response interceptor for this call to avoid an infinite
+      // refresh loop if /auth/refresh itself returns 401.
+      { headers: { 'x-skip-refresh': 'true' } },
+    );
+    return data.data.accessToken;
+  } catch {
+    return null;
+  }
 }
 
 api.interceptors.response.use(
@@ -48,7 +62,10 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    if (error.response?.status === 401 && !original._retry) {
+    // Don't try to refresh if this IS the refresh call (would loop forever).
+    const isRefreshCall = original?.headers?.['x-skip-refresh'] === 'true';
+
+    if (error.response?.status === 401 && !original._retry && !isRefreshCall) {
       original._retry = true;
 
       refreshPromise ??= attemptRefresh().finally(() => {
@@ -62,7 +79,9 @@ api.interceptors.response.use(
         return api(original);
       }
 
-      // Refresh failed — log out.
+      // Refresh failed — clear local session. Any ProtectedRoute will then
+      // redirect to /login. We deliberately don't navigate from here —
+      // axios shouldn't be coupled to react-router.
       useAuthStore.getState().logout();
     }
 
