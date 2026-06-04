@@ -35,14 +35,44 @@ export interface RegisterInput {
 }
 
 /**
- * Sent to `POST /api/v1/users/me/onboarding` after the user fills out the
- * `/onboarding` form. Splitting it from RegisterInput keeps registration to
- * the bare minimum a user needs to provide upfront (name, email, password)
- * and defers identity-of-the-creative to its own dedicated step.
+ * Sent to `POST /api/v1/users/me/onboarding` when the user clicks
+ * "Finish" on the last step of the wizard. Splits into the 4 wizard
+ * steps so the wizard component can track partial state cleanly.
+ *
+ * Splitting it from RegisterInput keeps registration to the bare
+ * minimum a user needs to provide upfront (name, email, password)
+ * and defers identity, brand, and plan choice to dedicated steps.
  */
-export interface OnboardingInput {
+
+import type { SubscriptionPlan } from '@/store/auth.store';
+
+export interface ProfileStepData {
   profession: string;
   city: string;
+}
+
+export interface BusinessStepData {
+  businessName: string;
+}
+
+export interface BrandStepData {
+  /** Optional — KRA PIN drives eTIMS compliance (Phase 4); not required at v1. */
+  kraPin?: string;
+  /** Optional — appears on documents when set. */
+  businessAddress?: string;
+}
+
+export interface PlanStepData {
+  plan: SubscriptionPlan;
+}
+
+export type OnboardingInput = ProfileStepData &
+  BusinessStepData &
+  BrandStepData &
+  PlanStepData;
+
+export interface VerifyEmailInput {
+  token: string;
 }
 
 export interface AuthSession {
@@ -66,8 +96,20 @@ export async function login(input: LoginInput): Promise<AuthSession> {
   return data.data;
 }
 
-export async function register(input: RegisterInput): Promise<AuthSession> {
-  const { data } = await api.post<ApiSuccess<AuthSession>>('/auth/register', input);
+/**
+ * Result of a successful POST /auth/register. NO session is issued —
+ * the account is created with `emailVerified: false` and the user must
+ * click the link in the verification email before they can log in.
+ * The frontend redirects to `/verify-email` after register, passing
+ * `email` so the page can render "we sent a link to <email>".
+ */
+export interface RegisterResponse {
+  email: string;
+  message: string;
+}
+
+export async function register(input: RegisterInput): Promise<RegisterResponse> {
+  const { data } = await api.post<ApiSuccess<RegisterResponse>>('/auth/register', input);
   return data.data;
 }
 
@@ -94,4 +136,24 @@ export async function forgotPassword(input: ForgotPasswordInput): Promise<void> 
 
 export async function resetPassword(input: ResetPasswordInput): Promise<void> {
   await api.post('/auth/reset-password', input);
+}
+
+// ── Email verification ────────────────────────────────────────────────
+
+/**
+ * Verifies the user's email address. Token comes from the link in the
+ * verification email (`/verify-email?token=...`). On success the user's
+ * `emailVerified` flag flips to true and they can log in.
+ */
+export async function verifyEmail(input: VerifyEmailInput): Promise<void> {
+  await api.post('/auth/verify-email', input);
+}
+
+/**
+ * Sends a fresh verification email to the address. Same anti-enumeration
+ * stance as forgotPassword — succeeds regardless of whether the email is
+ * registered or already verified.
+ */
+export async function resendVerification(email: string): Promise<void> {
+  await api.post('/auth/resend-verification', { email });
 }

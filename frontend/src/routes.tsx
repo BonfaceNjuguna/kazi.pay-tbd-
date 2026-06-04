@@ -5,11 +5,13 @@ import { OnboardingGate } from '@/components/features/onboarding';
 import { AuthLayout } from '@/layouts/AuthLayout';
 import { ClientLayout } from '@/layouts/ClientLayout';
 import { CreativeLayout } from '@/layouts/CreativeLayout';
+import { OnboardingLayout } from '@/layouts/OnboardingLayout';
 
 import { ForgotPasswordPage } from '@/pages/auth/ForgotPasswordPage';
 import { LoginPage } from '@/pages/auth/LoginPage';
 import { RegisterPage } from '@/pages/auth/RegisterPage';
 import { ResetPasswordPage } from '@/pages/auth/ResetPasswordPage';
+import { VerifyEmailPage } from '@/pages/auth/VerifyEmailPage';
 import { SharePlaceholder } from '@/pages/client/SharePlaceholder';
 import { DashboardPlaceholder } from '@/pages/creative/DashboardPlaceholder';
 import { ProjectsPlaceholder } from '@/pages/creative/ProjectsPlaceholder';
@@ -20,50 +22,53 @@ import { NotFound } from '@/pages/NotFound';
 /**
  * Route tree.
  *
- * Three top-level surfaces (see ADR-002 and architecture/system-overview.md):
+ * Four top-level surfaces:
  *
- *   /login, /register, /forgot-password, /reset-password  →  AuthLayout (dark)
- *   /onboarding                                           →  AuthLayout (dark)
- *                                                            — gated by auth only;
- *                                                            shown to new accounts
- *                                                            before /dashboard.
+ *   /login, /register, /forgot-password,                  →  AuthLayout
+ *   /reset-password, /verify-email                          (dark, centered card)
+ *
+ *   /onboarding                                           →  OnboardingLayout
+ *                                                            (dark, full page,
+ *                                                            multi-step wizard;
+ *                                                            gated by auth only)
+ *
  *   /dashboard, /projects, /settings                      →  CreativeLayout
  *                                                            (dark, top nav,
  *                                                            gated by auth +
  *                                                            onboarding complete)
- *   /s/:token                                             →  ClientLayout (light, public)
  *
- * The creative tree is wrapped in <ProtectedRoute> + <OnboardingGate>.
- * /onboarding itself is inside ProtectedRoute but ABOVE OnboardingGate
- * — otherwise a user with `onboardingComplete: false` who navigates to
- * /onboarding would infinite-redirect.
+ *   /s/:token                                             →  ClientLayout
+ *                                                            (light, public)
  *
- * useLogin / useRegister redirect to /onboarding or /dashboard based on
- * `user.onboardingComplete` — the route-level gate is the safety net for
- * URL-bar access.
+ * /verify-email is PUBLIC because the user clicks a link in their email
+ * BEFORE they can log in — they have no session at that point.
  *
- * Note: these are UX gates only. Backend enforces auth + onboarding-state
- * on every endpoint regardless of what the frontend allows — see
- * Cross-Surface Rules in AGENTS.md.
+ * /onboarding sits inside ProtectedRoute but ABOVE OnboardingGate so a
+ * user with `onboardingComplete: false` can actually reach it without
+ * infinite-redirecting.
+ *
+ * Note: route-level gates are UX safety nets. Backend (Phase 1.4+)
+ * independently enforces every check — never trust the frontend for
+ * data security. See Cross-Surface Rules in AGENTS.md.
  */
 export function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-      {/* ── Auth surface ── */}
+      {/* ── Auth surface (public) ── */}
       <Route element={<AuthLayout />}>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
       </Route>
 
       {/* ── Protected surface (signed in required) ── */}
       <Route element={<ProtectedRoute />}>
-        {/* Onboarding lives here directly — accessible whether or not
-            onboarding is complete (otherwise we'd loop). */}
-        <Route element={<AuthLayout />}>
+        {/* Onboarding wizard — full-page layout, only requires auth. */}
+        <Route element={<OnboardingLayout />}>
           <Route path="/onboarding" element={<OnboardingPage />} />
         </Route>
 

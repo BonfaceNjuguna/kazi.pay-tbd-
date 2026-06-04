@@ -55,18 +55,30 @@ export function useLogin() {
 // ── Register ───────────────────────────────────────────────────────────
 
 export function useRegister() {
-  const setSession = useAuthStore((s) => s.setSession);
   const navigate = useNavigate();
-  const qc = useQueryClient();
 
   return useMutation({
     mutationFn: authService.register,
-    onSuccess: ({ user, accessToken }) => {
-      setSession({ user, accessToken });
-      qc.setQueryData(ME_QUERY_KEY, user);
-      // Newly-registered users always have onboardingComplete: false → /onboarding
-      navigate(postAuthDestination(user), { replace: true });
+    onSuccess: ({ email }) => {
+      // Register does NOT issue a session — the user must verify their
+      // email first. Bounce to /verify-email with the email in state so
+      // that page can show "we sent a link to <email>" + resend button.
+      navigate('/verify-email', { replace: true, state: { email } });
     },
+  });
+}
+
+// ── Email verification ────────────────────────────────────────────────
+
+export function useVerifyEmail() {
+  return useMutation({
+    mutationFn: authService.verifyEmail,
+  });
+}
+
+export function useResendVerification() {
+  return useMutation({
+    mutationFn: authService.resendVerification,
   });
 }
 

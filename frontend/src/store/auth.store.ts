@@ -22,21 +22,40 @@ export interface AuthUser {
   email: string;
   fullName: string;
   /**
-   * Set during onboarding (`/onboarding`), not during registration. May be
-   * empty string for a freshly-registered user who hasn't completed
-   * onboarding yet — combined with `onboardingComplete: false` below.
+   * `false` immediately after registration. Flipped to `true` when the user
+   * follows the verification link from `/verify-email?token=...`. The login
+   * handler refuses to issue a session for an unverified email; UI redirects
+   * those users to `/verify-email` with a "resend" affordance.
+   */
+  emailVerified: boolean;
+  /**
+   * Set during onboarding step 1, not registration. May be empty string
+   * for users who haven't completed the wizard yet — combined with
+   * `onboardingComplete: false` below.
    */
   profession: string;
-  /** Same: set during onboarding, not registration. */
+  /** Set during onboarding step 1. */
   city: string;
+  /** Set during onboarding step 2. Defaults to fullName at wizard start. */
+  businessName: string;
+  /** Optional, captured during onboarding step 3 (Brand). */
+  kraPin?: string;
+  /** Optional, captured during onboarding step 3 (Brand). */
+  businessAddress?: string;
   country: string;
   currency: string;
+  /**
+   * Set during onboarding step 4 (Plan). All three plans are user-selectable
+   * during onboarding; payment for paid plans is requested at upgrade time
+   * (Phase 3). For Phase 1.8 the backend accepts the selection and sets the
+   * tier without payment; feature-gates respect the tier from this moment on.
+   */
   plan: SubscriptionPlan;
   /**
    * `false` immediately after registration; flipped to `true` when the user
-   * completes the `/onboarding` flow (profession + city captured).
-   * The `OnboardingGate` component reads this to decide whether to redirect
-   * to `/onboarding` instead of letting `/dashboard` render.
+   * completes the `/onboarding` wizard's final step. The `OnboardingGate`
+   * component reads this to decide whether to redirect to `/onboarding`
+   * instead of letting `/dashboard` render.
    */
   onboardingComplete: boolean;
 }

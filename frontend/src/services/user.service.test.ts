@@ -18,18 +18,41 @@ afterAll(() => server.close());
 
 describe('user.service', () => {
   describe('completeOnboarding', () => {
-    it('returns the user with onboardingComplete=true + captured profession/city', async () => {
+    it('returns the user with onboardingComplete=true + captured wizard data', async () => {
       // Need a token for the request to be accepted by the handler.
       useAuthStore.getState().setAccessToken(__TEST__.MOCK_ACCESS_TOKEN);
 
       const result = await userService.completeOnboarding({
         profession: 'Photographer',
         city: 'Mombasa',
+        businessName: 'Mombasa Pixels',
+        kraPin: 'A123456789B',
+        businessAddress: 'PO Box 99, Mombasa',
+        plan: 'PRO',
       });
 
       expect(result.profession).toBe('Photographer');
       expect(result.city).toBe('Mombasa');
+      expect(result.businessName).toBe('Mombasa Pixels');
+      expect(result.kraPin).toBe('A123456789B');
+      expect(result.businessAddress).toBe('PO Box 99, Mombasa');
+      expect(result.plan).toBe('PRO');
       expect(result.onboardingComplete).toBe(true);
+    });
+
+    it('accepts onboarding without optional brand fields', async () => {
+      useAuthStore.getState().setAccessToken(__TEST__.MOCK_ACCESS_TOKEN);
+
+      const result = await userService.completeOnboarding({
+        profession: 'Illustrator',
+        city: 'Kisumu',
+        businessName: 'Kisumu Lines',
+        plan: 'FREE',
+      });
+
+      expect(result.kraPin).toBeUndefined();
+      expect(result.businessAddress).toBeUndefined();
+      expect(result.plan).toBe('FREE');
     });
 
     it('rejects when called without a valid token', async () => {
@@ -52,6 +75,8 @@ describe('user.service', () => {
         userService.completeOnboarding({
           profession: 'Illustrator',
           city: 'Kisumu',
+          businessName: 'Kisumu Lines',
+          plan: 'FREE',
         }),
       ).rejects.toSatisfy((err: unknown) => {
         return (

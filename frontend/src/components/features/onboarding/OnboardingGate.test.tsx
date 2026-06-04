@@ -10,8 +10,10 @@ const ONBOARDED_USER: AuthUser = {
   id: 'onboarded',
   email: 'rowlex@demo.kazi.pay',
   fullName: 'Rowlex Karimi',
+  emailVerified: true,
   profession: 'Graphic Designer',
   city: 'Nairobi',
+  businessName: 'Rowlex Karimi',
   country: 'Kenya',
   currency: 'KES',
   plan: 'FREE',
@@ -23,6 +25,7 @@ const FRESH_USER: AuthUser = {
   id: 'fresh',
   profession: '',
   city: '',
+  businessName: '',
   onboardingComplete: false,
 };
 
