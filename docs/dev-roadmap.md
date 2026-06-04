@@ -37,7 +37,7 @@ Per the **Documentation Rules** in `AGENTS.md`, the PR that lands code also upda
 
 | Phase | Name | Status | Target | Coded | Verified |
 |-------|------|--------|--------|-------|----------|
-| 1 | Foundation & Auth | 🟡 In Progress | Q3 2026 | ~30% (1.1 + 1.7 + 1.10) | 0% |
+| 1 | Foundation & Auth | 🟡 In Progress | Q3 2026 | ~40% (1.1 + 1.7 + 1.8 + 1.10) | 0% |
 | 2 | Projects, Documents & Signing | ⬜ Pending | Q4 2026 | 0% | 0% |
 | 3 | Payments, WhatsApp & Pro Tier | ⬜ Pending | Q1 2027 | 0% | 0% |
 | 4 | eTIMS, Polish & Launch | ⬜ Pending | Q2 2027 | 0% | 0% |
@@ -60,7 +60,7 @@ Per the **Documentation Rules** in `AGENTS.md`, the PR that lands code also upda
 - ⬜ 1.5 Subscription state model (no payments yet — admin override only)
 - ⬜ 1.6 Backend foundations (error handling, logging, validation, file uploads)
 - 🟡 1.7 Frontend scaffold _(Vite + Tailwind + tokens + Manrope + routes + UI primitives + MSW shipped — see milestone doc for notes; awaits first `pnpm install` + dev-server smoke test)_
-- ⬜ 1.8 Auth UI
+- 🟡 1.8 Auth UI _(login, register, forgot/reset, ProtectedRoute, sign-out, axios refresh wiring, MSW handlers, 16 tests — landed on `feature/phase-1.8-auth-ui`; CI green pending the lockfile + fix/ci-workflow-errors prerequisites)_
 - ⬜ 1.9 Dashboard zero-state + Brand Settings page
 - 🟡 1.10 CI pipeline & security _(CI + Docker + CodeQL + Gitleaks + Dependabot + PR template + CODEOWNERS placeholder + branch-protection guide all landed; required-status-checks must be set in GitHub UI per `docs/deployment/main-branch-protection.md`)_
 

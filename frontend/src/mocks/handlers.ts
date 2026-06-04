@@ -1,36 +1,30 @@
 import { http, HttpResponse } from 'msw';
 
+import { authHandlers } from './handlers/auth.handlers';
+
 /**
- * MSW request handlers.
+ * MSW request handlers — composition root.
  *
- * Phase 1.7 (this scaffold): empty handler array — no mocked endpoints yet.
- * Real handlers land alongside the screens they back:
- *   - Phase 1.8 → auth handlers (login, register, refresh, me, logout)
- *   - Phase 1.9 → brand-settings handlers
- *   - Phase 2.x → projects, documents, signing handlers
+ * Handlers are split by domain under `src/mocks/handlers/*.ts` so each domain
+ * file matches the structure of the real backend (auth, projects, documents,
+ * payments, etc.). Add new domains by importing their handlers array here.
  *
- * Pattern for new handlers:
- *
- *   http.post('/api/v1/auth/login', async ({ request }) => {
- *     const body = await request.json();
- *     return HttpResponse.json({
- *       status: 'success',
- *       data: { accessToken: 'mock-token', user: { ... } },
- *     });
- *   })
- *
- * Always return the standard envelope from ADR-004:
+ * Pattern for new handlers: always return the standard envelope from ADR-004:
  *   { status: 'success', data: ... }   |   { status: 'error', message, code }
+ *
+ * Phase status:
+ *   - Phase 1.8 → auth handlers ✓ (this file)
+ *   - Phase 1.9 → brand-settings handlers (TBD)
+ *   - Phase 2.x → projects, documents, signing handlers (TBD)
  */
 export const handlers = [
   // Health check — useful for verifying MSW is intercepting at all.
-  http.get('/api/v1/health', () => {
-    return HttpResponse.json({
+  http.get('/api/v1/health', () =>
+    HttpResponse.json({
       status: 'success',
       data: { ok: true, mocked: true, timestamp: new Date().toISOString() },
-    });
-  }),
-];
+    }),
+  ),
 
-// Force HttpResponse to be referenced so future imports stay tree-shake-safe.
-void HttpResponse;
+  ...authHandlers,
+];
