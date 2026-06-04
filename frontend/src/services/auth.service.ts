@@ -32,6 +32,15 @@ export interface RegisterInput {
   email: string;
   password: string;
   fullName: string;
+}
+
+/**
+ * Sent to `POST /api/v1/users/me/onboarding` after the user fills out the
+ * `/onboarding` form. Splitting it from RegisterInput keeps registration to
+ * the bare minimum a user needs to provide upfront (name, email, password)
+ * and defers identity-of-the-creative to its own dedicated step.
+ */
+export interface OnboardingInput {
   profession: string;
   city: string;
 }

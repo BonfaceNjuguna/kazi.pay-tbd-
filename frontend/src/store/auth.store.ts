@@ -21,11 +21,24 @@ export interface AuthUser {
   id: string;
   email: string;
   fullName: string;
+  /**
+   * Set during onboarding (`/onboarding`), not during registration. May be
+   * empty string for a freshly-registered user who hasn't completed
+   * onboarding yet — combined with `onboardingComplete: false` below.
+   */
   profession: string;
+  /** Same: set during onboarding, not registration. */
   city: string;
   country: string;
   currency: string;
   plan: SubscriptionPlan;
+  /**
+   * `false` immediately after registration; flipped to `true` when the user
+   * completes the `/onboarding` flow (profession + city captured).
+   * The `OnboardingGate` component reads this to decide whether to redirect
+   * to `/onboarding` instead of letting `/dashboard` render.
+   */
+  onboardingComplete: boolean;
 }
 
 interface AuthState {

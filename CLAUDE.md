@@ -14,6 +14,13 @@ KaziPay is a business management platform built specifically for Kenyan creative
 
 ## How It Works (User Flow)
 
+**Account setup (one-time, takes under a minute):**
+
+- **Sign up** with just name, email, password — registration is *not* a survey
+- **Onboarding** (separate step right after first sign-in): pick your profession and city. Two questions, then straight to the dashboard. Anything more involved (logo, signature, business details) lives in Settings, not in the entry funnel.
+
+**The project-to-payment loop (what the product actually does):**
+
 1. Creative describes their project → KaziPay AI generates all professional documents instantly
 2. Creative selects which documents to generate (not everything auto-generated)
 3. Client receives a WhatsApp or email link → reviews documents → signs digitally (type-to-sign)

@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 
 import * as authService from '@/services/auth.service';
-import { useAuthStore } from '@/store/auth.store';
+import * as userService from '@/services/user.service';
+import { useAuthStore, type AuthUser } from '@/store/auth.store';
 
 /**
  * Auth hooks. Compose the auth service with the Zustand session store and
@@ -23,6 +24,16 @@ interface LocationState {
   from?: { pathname?: string };
 }
 
+/**
+ * Where to send a freshly-authenticated user. New accounts (and any
+ * pre-existing account that hasn't finished onboarding) land on
+ * `/onboarding`; everyone else goes to `/dashboard`. Kept as a helper so
+ * useLogin + useRegister stay in sync.
+ */
+function postAuthDestination(user: AuthUser): string {
+  return user.onboardingComplete ? '/dashboard' : '/onboarding';
+}
+
 // ── Login ──────────────────────────────────────────────────────────────
 
 export function useLogin() {
@@ -36,7 +47,7 @@ export function useLogin() {
       setSession({ user, accessToken });
       // Seed the /me query so ProtectedRoute doesn't refetch immediately.
       qc.setQueryData(ME_QUERY_KEY, user);
-      navigate('/dashboard', { replace: true });
+      navigate(postAuthDestination(user), { replace: true });
     },
   });
 }
@@ -52,6 +63,30 @@ export function useRegister() {
     mutationFn: authService.register,
     onSuccess: ({ user, accessToken }) => {
       setSession({ user, accessToken });
+      qc.setQueryData(ME_QUERY_KEY, user);
+      // Newly-registered users always have onboardingComplete: false → /onboarding
+      navigate(postAuthDestination(user), { replace: true });
+    },
+  });
+}
+
+// ── Complete onboarding ────────────────────────────────────────────────
+
+export function useCompleteOnboarding() {
+  const setSession = useAuthStore((s) => s.setSession);
+  const accessToken = useAuthStore((s) => s.accessToken);
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: userService.completeOnboarding,
+    onSuccess: (user) => {
+      // Replace the stored user with the post-onboarding version (so
+      // onboardingComplete flips to true) while preserving the same
+      // access token — onboarding doesn't change the session.
+      if (accessToken) {
+        setSession({ user, accessToken });
+      }
       qc.setQueryData(ME_QUERY_KEY, user);
       navigate('/dashboard', { replace: true });
     },
