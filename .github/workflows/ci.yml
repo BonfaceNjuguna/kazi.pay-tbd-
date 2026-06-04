@@ -39,7 +39,7 @@ jobs:
       # (single source of truth). Don't pass `version:` here — pnpm/action-setup
       # rejects the conflict.
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -58,7 +58,7 @@ jobs:
       # (single source of truth). Don't pass `version:` here — pnpm/action-setup
       # rejects the conflict.
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -77,7 +77,7 @@ jobs:
       # (single source of truth). Don't pass `version:` here — pnpm/action-setup
       # rejects the conflict.
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
@@ -96,7 +96,7 @@ jobs:
       # (single source of truth). Don't pass `version:` here — pnpm/action-setup
       # rejects the conflict.
       - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
