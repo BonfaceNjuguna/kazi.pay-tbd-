@@ -1,9 +1,10 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
+    // `paths` resolved relative to this tsconfig.json (TS 5+) — `baseUrl`
+    // is deprecated in TS 6 and removed in TS 7, so we omit it.
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
     "types": ["vite/client", "vitest/globals", "@testing-library/jest-dom"]
   },
