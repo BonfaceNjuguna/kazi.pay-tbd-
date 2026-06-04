@@ -14,10 +14,16 @@ KaziPay is a business management platform built specifically for Kenyan creative
 
 ## How It Works (User Flow)
 
-**Account setup (one-time, takes under a minute):**
+**Account setup (one-time, takes about a minute):**
 
 - **Sign up** with just name, email, password — registration is *not* a survey
-- **Onboarding** (separate step right after first sign-in): pick your profession and city. Two questions, then straight to the dashboard. Anything more involved (logo, signature, business details) lives in Settings, not in the entry funnel.
+- **Verify email** — required before sign-in works. Click the link in the email; we land you on the sign-in page once verified.
+- **Onboarding wizard** (4 steps right after first sign-in):
+  1. **Profile** — profession + city
+  2. **Business** — business name (prefilled from full name, since most are sole proprietors)
+  3. **Brand** — optional KRA PIN + business address (skippable)
+  4. **Plan** — pick Free, Single Project (KES 499 one-time), or Pro (KES 299/month). Paid plans set your tier but don't bill until M-Pesa lands in Phase 3.
+- Logo + signature live in Settings (not onboarding) so the entry funnel stays fast.
 
 **The project-to-payment loop (what the product actually does):**
 

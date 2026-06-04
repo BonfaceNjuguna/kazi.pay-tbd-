@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { isAxiosError } from 'axios';
 
 import { Button, Input } from '@/components/ui';
@@ -19,6 +19,7 @@ import type { ApiError } from '@/lib/api';
  */
 export function LoginForm() {
   const login = useLogin();
+  const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
 
   function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -32,11 +33,18 @@ export function LoginForm() {
       { email, password },
       {
         onError: (err) => {
-          if (isAxiosError<ApiError>(err) && err.response?.data?.message) {
+          if (isAxiosError<ApiError>(err) && err.response?.data) {
+            // EMAIL_NOT_VERIFIED is a soft failure — bounce them to
+            // /verify-email with the email in state so they can re-send
+            // and complete the loop. No "wrong credentials" framing.
+            if (err.response.data.code === 'EMAIL_NOT_VERIFIED') {
+              navigate('/verify-email', { state: { email } });
+              return;
+            }
             setServerError(err.response.data.message);
-          } else {
-            setServerError('Something went wrong. Please try again.');
+            return;
           }
+          setServerError('Something went wrong. Please try again.');
         },
       },
     );
