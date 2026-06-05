@@ -1,0 +1,43 @@
+# KaziPay — Docker services for local dev.
+#
+# What's here today (Phase 1.2 baseline):
+#   - `db`: PostgreSQL 16 for the backend (Prisma talks to it)
+#
+# What will be added in later phases:
+#   - `backend`  (Phase 1.6+) — multi-stage Dockerfile for the Express API
+#   - `frontend` (Phase 4)    — NGINX serving the React build for prod
+#   - `nginx`    (Phase 4)    — reverse proxy in front of both
+#   - `redis`    (Phase 4)    — BullMQ job queue
+#
+# Local-dev usage: most of the time you only need the DB. Run with:
+#   docker compose up -d db
+# Then `pnpm dev` (frontend) and `pnpm --filter @kazipay/backend dev` outside.
+# See docs/deployment/local-setup.md.
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: kazipay-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-kazipay}
+      POSTGRES_USER: ${DB_USER:-kazi}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme_local}
+    ports:
+      # Host port 5433 (not 5432) to dodge conflicts with locally-installed
+      # PostgreSQL services that many dev machines already have on 5432.
+      # Container still listens on 5432 internally. Backend connects via
+      # localhost:5433 (see backend/.env). Production deployments do NOT
+      # expose the DB port.
+      - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-kazi} -d ${DB_NAME:-kazipay}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres_data:
+    name: kazipay_postgres_data

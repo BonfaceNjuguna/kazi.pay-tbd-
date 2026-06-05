@@ -1,0 +1,20 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "types": ["node", "vitest/globals"],
+    "allowImportingTsExtensions": false,
+    "esModuleInterop": true,
+    "jsx": "preserve"
+  },
+  "include": ["src", "prisma", "vitest.config.ts"],
+  "exclude": ["node_modules", "dist"]
+}
