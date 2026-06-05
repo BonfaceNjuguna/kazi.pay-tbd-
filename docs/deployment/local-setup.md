@@ -1,185 +1,177 @@
 # Local Development Setup
 
-**Prerequisites:** Docker Desktop, Node.js 20+, pnpm 9+
+**Prerequisites:** Docker Desktop · Node.js 20+ · pnpm 9 (installable via `corepack`)
+
+This guide reflects the current state of the repo (Phase 1.4 complete). It will grow as Phases 1.5+ ship.
 
 ---
 
 ## 1. Clone and install
 
 ```bash
-git clone https://github.com/your-org/kazi-pay.git
-cd kazi-pay
+git clone https://github.com/BonfaceNjuguna/kazi.pay-tbd-.git "kazi.pay"
+cd "kazi.pay"
 pnpm install
 ```
 
 ---
 
-## 2. Environment variables
+## 2. Environment files
+
+Two `.env` files, neither committed:
 
 ```bash
+# Root — used by docker-compose for Postgres credentials.
 cp .env.example .env
+
+# Backend — DATABASE_URL, JWT settings, CORS, rate limits.
+cp backend/.env.example backend/.env
+
+# Frontend — optional, only needed if you want to override defaults
+# (e.g. point at a different backend, or toggle MSW on).
+cp frontend/.env.example frontend/.env
 ```
 
-Open `.env` and fill in the required values. See `docs/deployment/environment-variables.md` for descriptions. The defaults in `.env.example` work for local Docker without changes except for secret keys.
-
-`AI_PROVIDER=stub` is the default — you do **not** need real AI provider API keys to run the dev stack. The stub returns deterministic fixture content for all 12 document types. The same is true for M-Pesa and WhatsApp once those phases ship; their stubs work end-to-end against the dev DB.
+Defaults work out of the box for local dev. Don't change `DB_PASSWORD` here unless you change it in `backend/.env` too — the two must match.
 
 ---
 
-## 3. Start the full stack
+## 3. Start Postgres
 
 ```bash
-# Start all services (DB, backend, frontend, NGINX) with hot reload
-docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+docker compose up -d db
 ```
 
-This starts:
-
-| Service | URL |
-|---------|-----|
-| Frontend (React, creative side) | http://localhost:5173 |
-| Frontend (client share view) | http://localhost:5173/s/{token} |
-| Backend API | http://localhost:3000 |
-| Via NGINX (unified) | http://localhost:80 |
-| PostgreSQL | localhost:5432 (exposed for DB tools) |
-
----
-
-## 4. Run database migrations and seed
-
-In a new terminal (while Docker is running):
-
+Verify it's healthy:
 ```bash
-# Run migrations
-docker compose exec backend npx prisma migrate dev
-
-# Seed test data (demo creative + example project)
-docker compose exec backend npx prisma db seed
+docker compose ps
+# Should show kazipay-db with status "healthy"
 ```
 
-Default seed credentials (demo profile):
-- **Email:** `rowlex@demo.kazi.pay`
-- **Password:** `Demo1234!`
-- **Profile:** Rowlex Karimi, graphic designer, Nairobi, Kenya (currency KES)
+The container exposes Postgres on **`localhost:5433`** (not 5432 — dodges conflicts with locally-installed Postgres services that many dev machines already have). Connect with TablePlus / DBeaver / `psql`:
+- Host: `localhost`
+- Port: `5433`
+- DB: `kazipay`
+- User: `kazi`
+- Password: `changeme_local`
 
 ---
 
-## 5. Verify setup
+## 4. Initialise the database
+
+First time only (and any time `prisma/schema.prisma` changes):
 
 ```bash
-# API health check
-curl http://localhost:3000/api/health
-# Expected: { "status": "ok", "timestamp": "..." }
+# Apply migrations
+pnpm --filter @kazipay/backend prisma:migrate
+
+# Seed the two demo users
+pnpm --filter @kazipay/backend prisma:seed
 ```
 
-Then open http://localhost:5173 and log in with the seed credentials. You should land on a dashboard with one example project on the demo profile.
+Demo credentials (also documented in `backend/README.md`):
+
+| Email | Password | State | Use for |
+|-------|----------|-------|---------|
+| `rowlex@demo.kazi.pay` | `Demo1234!` | verified + onboarded | dashboard testing |
+| `test@demo.kazi.pay` | `Test1234!` | verified, NOT onboarded | wizard testing without re-registering |
 
 ---
 
-## 6. Test the client-facing share flow
+## 5. Run the dev servers
 
-To exercise the client-side surface locally:
+Two terminals — backend in one, frontend in the other.
 
-1. Log in as the demo creative.
-2. Open the example project, generate documents, and click "Send to client".
-3. Copy the generated share URL.
-4. Paste it into an incognito window (so you're not logged in as the creative).
-5. Read all documents and type-to-sign.
-6. Switch back to the creative tab and refresh — the project phase should have advanced.
-
----
-
-## 7. M-Pesa local testing (Phase 3+)
-
-M-Pesa Daraja callbacks need to reach your backend over the public internet. Set up a tunnel:
-
+### Backend (Terminal A)
 ```bash
-# Cloudflare Tunnel example
-cloudflared tunnel --url http://localhost:3000
-# Or ngrok
-ngrok http 3000
+pnpm --filter @kazipay/backend dev
 ```
+Listens on `http://localhost:3000`. Health check:
+```bash
+curl http://localhost:3000/api/v1/health
+```
+On first boot the backend auto-generates a JWT RS256 keypair into `backend/.keys/` (gitignored). Re-uses it on subsequent boots so sessions survive a restart.
 
-Set `MPESA_CALLBACK_URL` in `.env` to `https://<your-tunnel-url>/api/v1/mpesa/callback` and register that URL in the Daraja sandbox app. Until you do, set `MPESA_ENV=sandbox` and rely on the M-Pesa stub for development.
+### Frontend (Terminal B)
+```bash
+pnpm --filter @kazipay/frontend dev
+# or just: pnpm dev (from the repo root)
+```
+Vite serves at `http://localhost:5173`. Its dev proxy tunnels `/api/*` to the backend on port 3000 — no CORS / env setup needed for the happy path.
 
 ---
 
-## Running Tests
+## 6. Test the auth + onboarding flow
+
+Open `http://localhost:5173` in a browser:
+
+1. **Existing onboarded user** — sign in as `rowlex@demo.kazi.pay` / `Demo1234!` → straight to `/dashboard`
+2. **Onboarding wizard** — sign in as `test@demo.kazi.pay` / `Test1234!` → bounces to `/onboarding` (4-step wizard)
+3. **Fresh register + email verify** — `/register` with any new email → bounces to `/verify-email`. The backend logs the verification link to its terminal output:
+   ```
+   [EmailService:stub] Verification email for X@Y. Visit: http://localhost:5173/verify-email?token=...
+   ```
+   Copy that URL, paste in the browser → email verified → sign in.
+4. **Forgot password** — same pattern; backend logs the reset link to its terminal.
+
+---
+
+## Useful commands
 
 ```bash
-# All tests
+# Open Prisma Studio (DB browser) at http://localhost:5555
+pnpm --filter @kazipay/backend prisma:studio
+
+# Run all tests
 pnpm test
 
-# Backend only
-cd backend && pnpm test
+# Type-check + lint (matches CI)
+pnpm typecheck
+pnpm lint
 
-# Frontend only
-cd frontend && pnpm test
-
-# Watch mode
-pnpm test --watch
-```
-
-External integrations (M-Pesa, WhatsApp, AI) are stubbed in tests via their interfaces — no live API calls from CI.
-
----
-
-## Common Commands
-
-```bash
-# Stop all services
+# Stop the DB container (data persists in the named volume)
 docker compose down
 
-# Stop and remove volumes (wipes DB — clean slate)
+# Nuke the DB (DESTRUCTIVE — wipes all data)
 docker compose down -v
-
-# View backend logs
-docker compose logs -f backend
-
-# Open Prisma Studio (DB browser)
-docker compose exec backend npx prisma studio
-# Opens at http://localhost:5555
-
-# Generate Prisma client after schema changes
-docker compose exec backend npx prisma generate
-
-# Create a new migration
-docker compose exec backend npx prisma migrate dev --name your-migration-name
-
-# Rebuild images after dependency changes
-docker compose build --no-cache backend
 ```
 
 ---
 
-## Working with the standalone HTML prototypes
+## Frontend MSW mode (no backend needed)
 
-The three `kazipay_*.html` files at the project root are reference prototypes. Open them directly in a browser:
+For frontend-only iteration, you can run the React app against the MSW mock backend:
 
+```bash
+echo "VITE_USE_MSW=true" >> frontend/.env
+pnpm --filter @kazipay/frontend dev
 ```
-file:///D:/kazi.pay(tbd)/kazipay_landing.html
-```
 
-They're standalone (all CSS/JS inline, no build step) and the React app should match them in design and flow. They are not wired into the real backend.
+MSW intercepts every `/api/*` call. Behaviour matches the real backend's contract. Useful when:
+- The real backend is wedged or you don't want to start Postgres
+- You're testing a UI tweak that doesn't need real persistence
+- You're on a flight without Docker
+
+Set it back to `VITE_USE_MSW=` (empty) or delete the line to return to real-backend mode.
 
 ---
 
 ## Troubleshooting
 
-**Port already in use**
-Change the host port in `docker-compose.dev.yml` (e.g., `"3001:3000"`).
+**`pnpm install` fails with `EBADENGINE`**
+You're on Node < 20. Upgrade or use `nvm use 20`.
 
-**Prisma client out of date**
-Run `docker compose exec backend npx prisma generate` after any `schema.prisma` change.
+**Backend boot fails with `Can't reach database server at localhost:5433`**
+The DB container isn't running. `docker compose up -d db`, wait for healthy, retry.
 
-**DB connection refused**
-The backend depends on the DB healthcheck. Wait a few seconds after `docker compose up` before running migrations — or check `docker compose ps` to confirm `db` is healthy.
+**Prisma errors about missing client**
+Run `pnpm --filter @kazipay/backend prisma:generate`.
 
-**`pnpm install` failing in Docker**
-Ensure `pnpm-lock.yaml` is committed. The Docker build uses `--frozen-lockfile` and will fail if the lockfile is missing or out of sync.
+**Frontend gets `BACKEND_DOWN` 502 on every API call**
+Backend isn't running. Start it (Terminal A above) or flip `VITE_USE_MSW=true` to use the mock.
 
-**M-Pesa callback never arrives in dev**
-Check the tunnel is running and `MPESA_CALLBACK_URL` matches the live tunnel URL. Safaricom requires HTTPS — `http://` callbacks are rejected silently.
+**"Lockfile out of sync" in CI**
+You added a dep without committing the new `pnpm-lock.yaml`. Run `pnpm install` locally and commit the lockfile.
 
-**AI document generation returns the same content repeatedly**
-You're on the stub (`AI_PROVIDER=stub`). That's intentional in dev — set a real provider in `.env` to get live generation.
+**JWT signature errors after restarting backend**
+Backend's `.keys/` directory was deleted/regenerated. Sign out + sign back in to mint a fresh session against the new keys.

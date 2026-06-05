@@ -56,72 +56,110 @@ These are tempting to scope-creep into Phase 1 but must wait:
 
 ### 1.2 — Docker Environment
 
-- [ ] `Dockerfile` for backend (multi-stage: builder + runner)
-- [ ] `Dockerfile` for frontend (multi-stage: builder + NGINX serve)
-- [ ] `docker-compose.yml` with services:
-  - `db` — PostgreSQL 15
-  - `backend` — Express API
-  - `frontend` — NGINX serving built React app
-  - `nginx` — Reverse proxy routing `/api` → backend, `/` → frontend
-- [ ] `.env.example` with all required variables documented
-- [ ] `docker-compose.dev.yml` override for hot-reload dev mode
-- [ ] Database volume persistence
+**Status:** 🟡 In progress (baseline `db` service shipped; backend/frontend/nginx Dockerfiles deferred)
 
-**Acceptance:** `docker compose up` starts all services; `GET /api/health` returns `200`.
+- [ ] `Dockerfile` for backend (multi-stage: builder + runner) — _deferred; backend runs locally via `pnpm dev` for Phase 1, containerised in Phase 4 prep_
+- [ ] `Dockerfile` for frontend (multi-stage: builder + NGINX serve) — _deferred to Phase 4_
+- [x] `docker-compose.yml` with `db` (PostgreSQL 16) service · `localhost:5432` exposed for dev tools · healthcheck · named volume for persistence (`kazipay_postgres_data`)
+- [x] Root `.env.example` documenting `DB_NAME`/`DB_USER`/`DB_PASSWORD` (consumed by compose)
+- [ ] `docker-compose.dev.yml` override — not needed yet; backend runs outside Docker in Phase 1
+- [x] Database volume persistence — named volume survives `docker compose down`; only `down -v` wipes data
+
+**Implementation notes:**
+- Phase 1 use case is "dev-time Postgres without installing it on your laptop". A full containerised stack (backend + frontend + NGINX) is overkill while everything's still iterating — pushed to Phase 4 prep per ADR-005.
+- `docker compose up -d db` starts just Postgres; backend + frontend run locally via `pnpm dev` for hot reload.
+
+**Acceptance:** `docker compose up -d db` starts the DB; `pg_isready` healthcheck flips to healthy within ~5s.
 
 ---
 
 ### 1.3 — Database Schema v1
 
-- [ ] Prisma ORM configured with PostgreSQL provider
-- [ ] Initial schema:
-  - `users` — creative account holders (email, password_hash, full_name, profession, city, country, currency, created_at)
-  - `user_sessions` — refresh token storage
-  - `brand_settings` — one-to-one with users (logo_url, signature_image_url, signature_typed_name, business_name, business_address, kra_pin_optional)
-  - `subscriptions` — plan state per user (`FREE` | `SINGLE_PROJECT` | `PRO`), `current_period_end`, `single_project_id?` (FK applied in Phase 2)
-- [ ] Migration generated and committed
-- [ ] Prisma seed script with demo profile (Rowlex Karimi, graphic designer, Nairobi)
+**Status:** 🟡 In progress (schema + seed shipped; initial migration generated on first `prisma:migrate` run)
 
-**Acceptance:** `prisma migrate deploy` runs clean; seed populates the demo creative.
+- [x] Prisma ORM configured with PostgreSQL provider — `backend/prisma/schema.prisma`
+- [x] Initial schema (consolidated since the original list — brand and subscription fields collapsed onto `users` for simplicity, no separate tables yet):
+  - `users` — email, password_hash, full_name, **email_verified**, profession, city, **business_name, kra_pin?, business_address?**, country, currency, **plan (enum)**, **onboarding_complete**, timestamps
+  - `user_sessions` — opaque refresh-token hash, expires_at, revoked_at, ip_address?, user_agent?, last_used_at (per ADR-002)
+  - `email_verification_tokens` — one-time tokens for the verify-email flow
+  - `password_reset_tokens` — one-time tokens for the forgot-password flow
+- [x] Prisma seed script — `backend/prisma/seed.ts` seeds Rowlex Karimi (verified + onboarded) and Amina Otieno (`test@demo.kazi.pay`, verified + NOT onboarded). Idempotent (`upsert`).
+
+**Implementation notes:**
+- **Brand + subscription fields live on `users`, not separate tables.** The original milestone proposed `brand_settings` and `subscriptions` tables. Collapsed into the users table for Phase 1 simplicity — there's a 1:1 relationship and no lifecycle of their own yet. If subscription history (billing periods, plan changes over time) ever becomes a concern, that's a clean migration in Phase 3 alongside payment integration.
+- **Tokens are stored hashed, never plaintext.** Same sha256 pattern as `user_sessions`. The raw token rides on email or cookies; lookups hash the incoming value.
+- **Migration files are committed.** Created on first `pnpm --filter @kazipay/backend prisma:migrate` run; tracked under `backend/prisma/migrations/`.
+
+**Acceptance:** `pnpm --filter @kazipay/backend prisma:migrate` applies cleanly; `pnpm prisma:seed` populates the two demo users without duplicates on re-run.
 
 ---
 
 ### 1.4 — Authentication System
 
-- [ ] `POST /api/v1/auth/register` — create user + default `FREE` subscription
-- [ ] `POST /api/v1/auth/login` — returns access token + sets refresh cookie
-- [ ] `POST /api/v1/auth/refresh` — rotates access token via httpOnly cookie
-- [ ] `POST /api/v1/auth/logout` — invalidates session
-- [ ] `GET /api/v1/auth/me` — returns current user profile + subscription tier
-- [ ] Passwords hashed with `bcrypt` (cost factor 12)
-- [ ] Access token TTL: 15 minutes; Refresh token TTL: 7 days
-- [ ] Auth middleware for protected routes
+**Status:** 🟡 In progress (full auth stack landed; awaits manual end-to-end smoke test post-merge)
 
-**Acceptance:** Full auth flow works end-to-end; expired tokens are rejected.
+- [x] `POST /api/v1/auth/register` — creates user with `emailVerified: false`, `onboardingComplete: false`, plan `FREE`; emits verification token via `EmailService` (logs link to console in dev). Returns 202 with email + ack message (no session until verified).
+- [x] `POST /api/v1/auth/verify-email` — consumes the token, flips `emailVerified` to true. 400 `INVALID_VERIFY_TOKEN` on bad/expired tokens.
+- [x] `POST /api/v1/auth/resend-verification` — no-enumeration (always 200); re-issues a fresh token + sends email if the address is registered + unverified.
+- [x] `POST /api/v1/auth/login` — verifies password (bcrypt), refuses unverified accounts with 403 `EMAIL_NOT_VERIFIED`. Returns user + access token in body; sets refresh-token httpOnly cookie.
+- [x] `POST /api/v1/auth/refresh` — reads refresh-token cookie, rotates (revoke old → mint new), returns new access token. Detects stolen tokens: reuse of a revoked refresh token revokes **every** active session for that user.
+- [x] `POST /api/v1/auth/logout` — revokes the current refresh session, clears the cookie.
+- [x] `GET /api/v1/auth/me` — returns the current user from `/auth/me` (calls Prisma; doesn't trust the JWT alone — reflects latest DB state).
+- [x] `POST /api/v1/auth/forgot-password` / `/reset-password` — same one-time-token pattern as email verification. Reset revokes all active sessions (forces re-login on all devices).
+- [x] Passwords hashed with `bcrypt` (cost factor 12) — `backend/src/lib/passwords.ts`
+- [x] Access token: RS256 JWT, default 15-min TTL (env-tunable). Refresh token: opaque 32-byte random, default 7-day TTL.
+- [x] Auth middleware `requireUser` — `backend/src/middleware/require-user.ts` — verifies JWT and attaches `req.user`.
+- [x] Rate limiting (`express-rate-limit`) on login/register/forgot/reset/resend — env-tunable window + max.
+
+**Implementation notes:**
+- **JWT keys auto-generate in dev.** On first boot, if no `JWT_PRIVATE_KEY` / `JWT_PUBLIC_KEY` env vars are set and no keys exist in `backend/.keys/`, the backend generates an RS256 keypair and writes it to disk (mode 0o600, gitignored). Keys persist across restarts so sessions don't break on every `tsx watch` reload. Production injects keys via secrets manager.
+- **Refresh-token cookie path is scoped to `/api/v1/auth`.** The browser only sends the cookie on auth endpoints, not on every request. Reduces leak surface.
+- **Stolen-token detection wired up.** If a refresh token is presented but has already been revoked (rotation logs ✓ → reuse implies the old token leaked somewhere), the service revokes every active session for that user. Their access tokens still work until they expire (≤15 min) but they can't refresh — force a re-login.
+- **No-enumeration enforced server-side** on `forgot-password` and `resend-verification`: always 200 regardless of whether the email exists. Logs reveal which were real, response doesn't.
+
+**Acceptance:** End-to-end flow against the real backend: register → backend logs verification link → click link → land on /verify-email → click sign-in → land on /onboarding → finish wizard → land on /dashboard. All seeded users (Rowlex + Amina) work as documented.
 
 ---
 
 ### 1.5 — Subscription State Model
 
-- [ ] Roles defined: `USER` (creative), `SUPER_ADMIN` (KaziPay staff)
-- [ ] Subscription tier exposed to frontend via `/auth/me`
-- [ ] Feature-gate helper (`requireFeature('payment_reminders')`) reads subscription tier and throws `FEATURE_GATED` for Free
-- [ ] No payment integration yet — tier can be promoted manually by SUPER_ADMIN for testing
-- [ ] Frontend `useFeature(feature)` hook reads tier and toggles UI affordances
+**Status:** 🟡 In progress (plan field + selection in wizard shipped; feature-gate plumbing still ahead of features that need gating)
 
-**Acceptance:** Switching a user's tier via admin API immediately changes which features they can call.
+- [x] `plan` column on `users` table — `SubscriptionPlan` enum (`FREE` | `SINGLE_PROJECT` | `PRO`)
+- [x] Plan selectable during onboarding wizard (Phase 1.8 step 4). All three options offered; backend sets the tier without taking payment.
+- [x] Plan exposed via `/auth/me` (returned with the full user object); included as a claim in the JWT (`plan`) so feature gates can read it without a DB round-trip.
+- [x] No payment yet — paid plans set the tier but real M-Pesa charge happens in Phase 3.
+- [ ] SUPER_ADMIN role + admin endpoint to flip tier manually — deferred to Phase 4 admin dashboard. For now, plan is set during onboarding and via `db:reset && prisma:seed` cycles.
+- [ ] Server-side `requireFeature('payment_reminders')` helper — deferred until there are actual feature gates (Phase 3 reminders, Phase 2 doc limits).
+- [ ] Frontend `useFeature(feature)` hook — same deferral. Today the only enforcement point is what the user sees on the dashboard; that's all driven by the wizard's free-tier copy.
+
+**Implementation notes:**
+- **Phase 1 records the choice; later phases enforce it.** The plumbing — column, claim, exposure — is in place. Actual feature gates land alongside the features that need gating (Free-tier project cap is a Phase 2 deliverable; AI reminders are Phase 3).
+- **No SUPER_ADMIN today.** Hardcoded into Phase 4's admin dashboard milestone instead — we don't have an admin UI to consume the role yet.
+
+**Acceptance:** A user signing up and picking "Pro" in the wizard has `plan: PRO` in `/auth/me` afterward; the same value appears in the JWT.
 
 ---
 
 ### 1.6 — Backend Foundations
 
-- [ ] Centralized error handler middleware
-- [ ] Request logging (Pino) with PII redaction
-- [ ] Zod request validation middleware
-- [ ] Health check endpoint `GET /api/health`
-- [ ] Environment config validation on startup (zod)
-- [ ] Graceful shutdown handling
-- [ ] File upload handling (logo + signature image), stored to local volume in dev, S3-compatible in production
+**Status:** 🟡 In progress (full scaffold + middleware landed; file upload deferred to Phase 1.9 alongside the Settings UI that uses it)
+
+- [x] Centralized error handler middleware — `backend/src/middleware/error-handler.ts` (AppError → status+envelope; ZodError → 400 VALIDATION_ERROR; everything else → 500 with stack redacted in prod)
+- [x] Logger (Pino) with PII redaction — `backend/src/lib/logger.ts` (redacts password, token, kraPin, msisdn, etc.). Pretty-printed in dev via pino-pretty, JSON in prod.
+- [x] Zod request validation middleware — `backend/src/middleware/validate.ts` (parses + replaces `req.body`; errors fall through to the central error handler as VALIDATION_ERROR with field-level details)
+- [x] Health check endpoint — `GET /api/v1/health`
+- [x] Environment config validation on startup — `backend/src/config/env.ts` (zod schema; fails fast with field-level errors if anything required is missing)
+- [x] Graceful shutdown handling — `backend/src/index.ts` handles SIGINT/SIGTERM, closes HTTP server, disconnects Prisma, hard-kills after 10s
+- [x] Layered architecture per AGENTS.md — `routes → controllers → services → repositories → Prisma`. Dependency rule respected; controllers stay thin.
+- [x] Vitest as the backend test runner (not Jest as originally planned). One test runner across the monorepo means one mental model. Updated this file accordingly.
+- [ ] File upload handling — deferred to Phase 1.9 (logo upload is the first consumer; no other endpoint needs file uploads in Phase 1.4 auth scope)
+
+**Implementation notes:**
+- **CORS configured** for the Vite dev origin (`http://localhost:5173`) plus comma-separated `CORS_ORIGINS` env var for LAN/staging hosts. `credentials: true` so the httpOnly refresh cookie flows.
+- **`trust proxy: 1`** so `req.ip` works correctly behind the Vite dev proxy (and the future NGINX in prod).
+- **Rate limiting** with `express-rate-limit` applied to the abuse-prone `/auth/*` endpoints. Env-tunable (`RATE_LIMIT_WINDOW_MS`, `AUTH_RATE_LIMIT_MAX`).
+- **Smoke tests only.** Vitest covers `lib/passwords` (hash + verify roundtrip, salt randomness) and `lib/jwt` (sign + verify roundtrip, tampering rejection, refresh-token shape). Integration tests against a test DB are a follow-up.
 
 ---
 

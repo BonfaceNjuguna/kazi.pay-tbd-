@@ -1,0 +1,14 @@
+node_modules
+dist
+*.local
+*.tsbuildinfo
+
+# Generated JWT keypair (regenerated on first boot if missing — never commit)
+.keys/
+
+# Local env
+.env
+.env.local
+
+# Coverage
+coverage

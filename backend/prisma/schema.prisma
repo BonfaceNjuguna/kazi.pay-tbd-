@@ -1,0 +1,137 @@
+// Prisma schema for KaziPay backend.
+//
+// Per ADR-003:
+//   - UUID primary keys (gen_random_uuid)
+//   - snake_case DB columns; camelCase TypeScript via @map
+//   - created_at + updated_at on every table
+//   - Sessions hashed, not stored as plaintext (hash is the lookup key)
+//
+// Phase 1 entities only. Projects/documents/payments come in Phase 2-3.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ────────────────────────────────────────────────────────────────────
+// Enums
+// ────────────────────────────────────────────────────────────────────
+
+enum SubscriptionPlan {
+  FREE
+  SINGLE_PROJECT
+  PRO
+
+  @@map("subscription_plan")
+}
+
+// ────────────────────────────────────────────────────────────────────
+// User — a creative (account holder)
+// ────────────────────────────────────────────────────────────────────
+
+model User {
+  id           String @id @default(uuid()) @db.Uuid
+  email        String @unique @db.VarChar(255)
+  passwordHash String @map("password_hash")
+  fullName     String @map("full_name") @db.VarChar(255)
+
+  // Set by /auth/verify-email when the user follows the link in their email.
+  emailVerified Boolean @default(false) @map("email_verified")
+
+  // Set during the /onboarding wizard (steps 1–4). Empty strings + plan FREE
+  // + onboardingComplete=false for freshly-registered users.
+  profession      String  @default("") @db.VarChar(100)
+  city            String  @default("") @db.VarChar(100)
+  businessName    String  @default("") @map("business_name") @db.VarChar(255)
+  kraPin          String? @map("kra_pin") @db.VarChar(20)
+  businessAddress String? @map("business_address") @db.VarChar(500)
+
+  country  String           @default("Kenya") @db.VarChar(100)
+  currency String           @default("KES") @db.VarChar(3)
+  plan     SubscriptionPlan @default(FREE)
+
+  onboardingComplete Boolean @default(false) @map("onboarding_complete")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  sessions                UserSession[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+
+  @@map("users")
+}
+
+// ────────────────────────────────────────────────────────────────────
+// UserSession — one row per refresh token
+// ────────────────────────────────────────────────────────────────────
+//
+// Refresh tokens are opaque random strings (NOT JWTs). The raw token
+// rides on an httpOnly Secure SameSite=Strict cookie; we store only the
+// sha256 of it. On /auth/refresh we hash the incoming cookie value and
+// look it up here. Rotation: each use issues a fresh token and revokes
+// the old session row (revokedAt). Reuse of a revoked token nukes all
+// of that user's sessions (stolen-token detection).
+
+model UserSession {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  tokenHash String   @unique @map("token_hash") @db.VarChar(64)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz
+
+  // Audit trail — useful for "see your active sessions" UI later.
+  ipAddress String? @map("ip_address") @db.VarChar(64)
+  userAgent String? @map("user_agent") @db.VarChar(500)
+
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz
+  lastUsedAt DateTime @default(now()) @map("last_used_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("user_sessions")
+}
+
+// ────────────────────────────────────────────────────────────────────
+// EmailVerificationToken — one-time token sent on register
+// ────────────────────────────────────────────────────────────────────
+
+model EmailVerificationToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  tokenHash String   @unique @map("token_hash") @db.VarChar(64)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+  usedAt    DateTime? @map("used_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+// ────────────────────────────────────────────────────────────────────
+// PasswordResetToken — one-time token sent from /forgot-password
+// ────────────────────────────────────────────────────────────────────
+
+model PasswordResetToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  tokenHash String   @unique @map("token_hash") @db.VarChar(64)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+  usedAt    DateTime? @map("used_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
