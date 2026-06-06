@@ -23,5 +23,24 @@ RewriteCond %{HTTP:Authorization} ^(.+)$
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
 
 # Deny everything inside the vendored PHPMailer folder via path match.
+# Comes BEFORE the .php hiding rules so a request for /api/phpmailer/foo
+# always gets 403 and never tries to rewrite into a .php lookup.
 RewriteRule ^phpmailer/ - [F,L]
 RewriteRule ^rate_limit/ - [F,L]
+
+# ─── Hide .php extension ──────────────────────────────────────────
+# Canonicalise: any direct hit on /api/foo.php gets 301'd to /api/foo
+# so the visible URL stays clean and search-engines never index the
+# .php variant. THE_REQUEST holds the original request line, so this
+# only matches browser requests — not the silent internal rewrite
+# below (which uses REQUEST_FILENAME).
+RewriteCond %{THE_REQUEST} \s/+(.+?)\.php[\s?] [NC]
+RewriteRule ^ /%1 [R=301,L]
+
+# Internal: /api/foo serves /api/foo.php when that file exists. Skipped
+# for real files and directories so /api/ index listing, static assets,
+# and the .htaccess itself are untouched.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+)$ $1.php [L]
