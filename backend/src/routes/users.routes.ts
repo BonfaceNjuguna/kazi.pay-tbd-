@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 
+import { env } from '@/config/env.js';
 import * as users from '@/controllers/users.controller.js';
 import { requireUser } from '@/middleware/require-user.js';
 import { validateBody } from '@/middleware/validate.js';
@@ -13,14 +14,21 @@ import { OnboardingSchema } from '@/schemas/users.schema.js';
 
 export const usersRouter: Router = Router();
 
-const onboardingRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // limit each user/IP to 20 onboarding attempts per window
+const onboardingLimiter = rateLimit({
+  windowMs: env.RATE_LIMIT_WINDOW_MS,
+  limit: env.AUTH_RATE_LIMIT_MAX,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    status: 'error',
+    message: 'Too many attempts — please wait a few minutes.',
+    code: 'RATE_LIMITED',
+  },
 });
 
 usersRouter.post(
   '/onboarding',
-  onboardingRateLimiter,
+  onboardingLimiter,
   requireUser,
   validateBody(OnboardingSchema),
   users.completeOnboarding,
