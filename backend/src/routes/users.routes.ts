@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 
 import * as users from '@/controllers/users.controller.js';
 import { requireUser } from '@/middleware/require-user.js';
@@ -12,8 +13,14 @@ import { OnboardingSchema } from '@/schemas/users.schema.js';
 
 export const usersRouter: Router = Router();
 
+const onboardingRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // limit each user/IP to 20 onboarding attempts per window
+});
+
 usersRouter.post(
   '/onboarding',
+  onboardingRateLimiter,
   requireUser,
   validateBody(OnboardingSchema),
   users.completeOnboarding,
