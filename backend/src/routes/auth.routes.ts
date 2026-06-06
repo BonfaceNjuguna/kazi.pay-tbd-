@@ -72,4 +72,4 @@ authRouter.post(
   auth.resetPassword,
 );
 
-authRouter.get('/me', requireUser, auth.me);
+authRouter.get('/me', authLimiter, requireUser, auth.me);
