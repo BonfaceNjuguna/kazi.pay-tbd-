@@ -10,7 +10,7 @@ Kenyan creatives — graphic designers, photographers, videographers, illustrato
 
 The current workflow is a mess: proposals in Google Docs, "ok cool let's do it" on WhatsApp, manual eTIMS invoices typed up after the fact, M-Pesa payments that arrive whenever the client feels like it, and a polite follow-up message every few days hoping not to seem desperate. Clients don't feel financially or legally committed. Scope expands without anyone explicitly agreeing extra work costs extra. Final payment drags on for weeks.
 
-There is **no creative-built tool** for this in Kenya. International freelance platforms don't speak the local context — they don't integrate with M-Pesa, don't understand WhatsApp as the primary client channel, don't know that "kazi" is the word a Kenyan creative actually uses for their work.
+There is **no creative-built tool** for this in Kenya. International freelance platforms don't speak the local context — they don't integrate with M-Pesa, don't understand WhatsApp as the primary client channel, and don't speak the language a Nairobi creative actually uses with clients.
 
 ---
 
