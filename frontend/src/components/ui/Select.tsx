@@ -13,7 +13,7 @@ import { IconChevronDown } from './icons';
  *
  * Native <select> chosen over a custom dropdown for: accessibility (free
  * keyboard nav + screen-reader support), mobile UX (system-native picker
- * on phones, which matches the KaziPay mobile-first rule in CLAUDE.md),
+ * on phones, which matches the Perxli mobile-first rule in CLAUDE.md),
  * and zero JS dependencies.
  *
  * Pass `options` as a typed array; the component renders them. For
@@ -85,7 +85,15 @@ function SelectInner<T extends string = string>(
           className={cn(
             'h-10 w-full appearance-none bg-transparent text-base text-dark-t1 ' +
               'outline-none ' +
-              '[[data-theme=light]_&]:text-light-t1',
+              '[[data-theme=light]_&]:text-light-t1 ' +
+              // <option>s render in the browser's native dropdown panel and
+              // do NOT inherit the parent <select>'s text/bg colors. Without
+              // this, Chromium/Firefox paint a white panel while our text
+              // stays white → invisible white-on-white. Targeting children
+              // via arbitrary variants keeps the theme tokens working in
+              // both dark (creative) and light (client) screens.
+              '[&>option]:bg-dark-surface-input [&>option]:text-dark-t1 ' +
+              '[[data-theme=light]_&>option]:bg-light-surface-input [[data-theme=light]_&>option]:text-light-t1',
             className,
           )}
           {...rest}
