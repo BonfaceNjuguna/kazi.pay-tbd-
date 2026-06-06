@@ -1,7 +1,7 @@
 name: CodeQL
 
 # Static analysis for JavaScript/TypeScript using GitHub's CodeQL.
-# Critical for KaziPay because:
+# Critical for Perxli because:
 #   - We render AI-generated HTML on the public client share page (XSS surface)
 #   - We handle M-Pesa callbacks (input-validation + injection surface)
 #   - Hardcoded secrets in source would be catastrophic

@@ -3,7 +3,7 @@ import { IconCheck } from '@/components/ui';
 import type { SubscriptionPlan } from '@/store/auth.store';
 
 /**
- * Selectable plan card — renders one of the three KaziPay tiers.
+ * Selectable plan card — renders one of the three Perxli tiers.
  *
  * Visual states:
  *  - default     dark surface, dark border

@@ -105,7 +105,7 @@ export function OnboardingPage() {
           Karibu, {user?.fullName?.split(' ')[0] ?? 'there'} 👋
         </h1>
         <p className="mt-1 text-base text-dark-t2">
-          Let's set up your account so KaziPay can do its thing. Should
+          Let's set up your account so Perxli can do its thing. Should
           take about a minute.
         </p>
       </header>

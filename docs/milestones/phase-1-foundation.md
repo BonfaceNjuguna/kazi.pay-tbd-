@@ -9,7 +9,7 @@
 
 ## Objective
 
-Establish a production-grade project scaffold and the creative-side empty shell. By end of Phase 1, a creative can clone the repo, run `docker compose up`, register an account, upload a logo, capture a type-to-sign signature, and land on a dark-mode dashboard that matches `kazipay_prototype.html` in its zero-project state.
+Establish a production-grade project scaffold and the creative-side empty shell. By end of Phase 1, a creative can clone the repo, run `docker compose up`, register an account, upload a logo, capture a type-to-sign signature, and land on a dark-mode dashboard that matches `perxli_prototype.html` in its zero-project state.
 
 No projects, no documents, no payments yet — those come in Phase 2 and 3.
 
@@ -60,7 +60,7 @@ These are tempting to scope-creep into Phase 1 but must wait:
 
 - [ ] `Dockerfile` for backend (multi-stage: builder + runner) — _deferred; backend runs locally via `pnpm dev` for Phase 1, containerised in Phase 4 prep_
 - [ ] `Dockerfile` for frontend (multi-stage: builder + NGINX serve) — _deferred to Phase 4_
-- [x] `docker-compose.yml` with `db` (PostgreSQL 16) service · `localhost:5432` exposed for dev tools · healthcheck · named volume for persistence (`kazipay_postgres_data`)
+- [x] `docker-compose.yml` with `db` (PostgreSQL 16) service · `localhost:5432` exposed for dev tools · healthcheck · named volume for persistence (`perxli_postgres_data`)
 - [x] Root `.env.example` documenting `DB_NAME`/`DB_USER`/`DB_PASSWORD` (consumed by compose)
 - [ ] `docker-compose.dev.yml` override — not needed yet; backend runs outside Docker in Phase 1
 - [x] Database volume persistence — named volume survives `docker compose down`; only `down -v` wipes data
@@ -83,14 +83,14 @@ These are tempting to scope-creep into Phase 1 but must wait:
   - `user_sessions` — opaque refresh-token hash, expires_at, revoked_at, ip_address?, user_agent?, last_used_at (per ADR-002)
   - `email_verification_tokens` — one-time tokens for the verify-email flow
   - `password_reset_tokens` — one-time tokens for the forgot-password flow
-- [x] Prisma seed script — `backend/prisma/seed.ts` seeds Rowlex Karimi (verified + onboarded) and Amina Otieno (`test@demo.kazi.pay`, verified + NOT onboarded). Idempotent (`upsert`).
+- [x] Prisma seed script — `backend/prisma/seed.ts` seeds Rowlex Karimi (verified + onboarded) and Amina Otieno (`test@demo.perxli.com`, verified + NOT onboarded). Idempotent (`upsert`).
 
 **Implementation notes:**
 - **Brand + subscription fields live on `users`, not separate tables.** The original milestone proposed `brand_settings` and `subscriptions` tables. Collapsed into the users table for Phase 1 simplicity — there's a 1:1 relationship and no lifecycle of their own yet. If subscription history (billing periods, plan changes over time) ever becomes a concern, that's a clean migration in Phase 3 alongside payment integration.
 - **Tokens are stored hashed, never plaintext.** Same sha256 pattern as `user_sessions`. The raw token rides on email or cookies; lookups hash the incoming value.
-- **Migration files are committed.** Created on first `pnpm --filter @kazipay/backend prisma:migrate` run; tracked under `backend/prisma/migrations/`.
+- **Migration files are committed.** Created on first `pnpm --filter @perxli/backend prisma:migrate` run; tracked under `backend/prisma/migrations/`.
 
-**Acceptance:** `pnpm --filter @kazipay/backend prisma:migrate` applies cleanly; `pnpm prisma:seed` populates the two demo users without duplicates on re-run.
+**Acceptance:** `pnpm --filter @perxli/backend prisma:migrate` applies cleanly; `pnpm prisma:seed` populates the two demo users without duplicates on re-run.
 
 ---
 
@@ -172,7 +172,7 @@ These are tempting to scope-creep into Phase 1 but must wait:
 - [x] Tailwind theme tokens — `frontend/src/index.css` `@theme` block (extracted from all three prototypes; see file header comment for source mapping). Both dark and light theme tokens included.
 - [x] Dark-mode creative theme + light-mode client tokens — both shipped together since the light tokens are tiny additions and avoid a follow-up rebuild when Phase 2.7 lands.
 - [x] React Router v6 with route definitions — `src/routes.tsx` (placeholder pages per surface)
-- [x] `@tanstack/react-query` configured — `src/lib/query-client.ts` with KaziPay-specific defaults (30s stale, no focus refetch on client surface, no mutation retries)
+- [x] `@tanstack/react-query` configured — `src/lib/query-client.ts` with Perxli-specific defaults (30s stale, no focus refetch on client surface, no mutation retries)
 - [x] Zustand auth store — `src/store/auth.store.ts` (skeleton; populated in Phase 1.8)
 - [x] Axios instance with auth header injection + refresh interceptor — `src/lib/api.ts` (refresh stubbed until backend /auth/refresh lands in Phase 1.4)
 - [x] Base UI components — `src/components/ui/{Button,Input,Card,Badge,Checkbox,Modal,Spinner}.tsx`
@@ -183,8 +183,8 @@ These are tempting to scope-creep into Phase 1 but must wait:
 **Implementation notes (kept for future agents):**
 
 - Monorepo confirmed as the layout. Root: `pnpm-workspace.yaml`, `package.json`, `tsconfig.base.json`, `.editorconfig`, `.gitignore`, `.nvmrc`, `.prettierrc`. Backend folder is a placeholder (`backend/package.json` with no-op scripts) — implemented in §§ 1.1–1.6.
-- **Sidebar conflict resolved in favour of CLAUDE.md.** `kazipay_prototype.html` renders a 220px sidebar; CLAUDE.md says "no sidebar — top nav only". The React `CreativeLayout` uses a top nav. The prototype is reference for visuals only — that decision is documented inline in `src/layouts/CreativeLayout.tsx`.
-- **CDN conflict resolved in favour of CLAUDE.md.** Prototypes pull Manrope from Google Fonts and `kazipay_prototype.html` pulls Tabler icons. Both replaced — Manrope is self-hosted via `@fontsource/manrope`; icons are inline SVG in `src/components/ui/icons.tsx`.
+- **Sidebar conflict resolved in favour of CLAUDE.md.** `perxli_prototype.html` renders a 220px sidebar; CLAUDE.md says "no sidebar — top nav only". The React `CreativeLayout` uses a top nav. The prototype is reference for visuals only — that decision is documented inline in `src/layouts/CreativeLayout.tsx`.
+- **CDN conflict resolved in favour of CLAUDE.md.** Prototypes pull Manrope from Google Fonts and `perxli_prototype.html` pulls Tabler icons. Both replaced — Manrope is self-hosted via `@fontsource/manrope`; icons are inline SVG in `src/components/ui/icons.tsx`.
 - **Two-theme strategy.** Tailwind 4 `@theme` block in `src/index.css` holds both dark (`--color-dark-*`) and light (`--color-light-*`) token namespaces. Theme is set per-route by the layout via `document.documentElement.dataset.theme`. The `:focus-visible` ring uses lime since it has acceptable contrast on both `#141414` and `#F6F6F4`.
 - **Type strictness above the AGENTS.md baseline.** `tsconfig.base.json` enables `noUncheckedIndexedAccess`, `noImplicitOverride`, and `noFallthroughCasesInSwitch`. These caught no issues in scaffold code; if they slow down feature work the team can revisit.
 - **MSW pattern.** Worker lazy-imported in `lib/msw.ts` so production bundle doesn't carry it. `msw init public/` must be run once after `pnpm install` to generate `public/mockServiceWorker.js` (gitignored — runtime artifact, not source). README documents this.
@@ -202,21 +202,21 @@ These are tempting to scope-creep into Phase 1 but must wait:
 - [x] Register page (`/register`) — `src/pages/auth/RegisterPage.tsx`, `src/components/features/auth/RegisterForm.tsx`. Collects only the **minimum**: full name, email, password. Country auto-set to Kenya, currency to KES. Profession + city are deferred to the dedicated onboarding step.
 - [x] **Email verification flow** — `/verify-email` page + `VerifyEmailFlow` component handling three arrival states: (a) just-registered with email in router state → "check your inbox" + resend; (b) link from email with `?token=` → auto-verify on mount with success/error UI; (c) bare URL bar → generic prompt with resend. MSW logs verification tokens to the console in dev so testers can grab them. Login is blocked for unverified accounts (returns `EMAIL_NOT_VERIFIED`); LoginForm bounces those to `/verify-email`.
 - [x] **Onboarding wizard (`/onboarding`)** — `src/pages/onboarding/OnboardingPage.tsx` is the state machine; renders a 4-step wizard with progress indicator and per-step components under `src/components/features/onboarding/`. Steps: **Profile** (profession + city) → **Business** (business name, prefilled from full name) → **Brand** (KRA PIN + business address, both optional with a Skip button) → **Plan** (Free / Single Project / Pro selection via `PlanCard` components). Final submit hits `POST /api/v1/users/me/onboarding` via `user.service.ts`. Flips `user.onboardingComplete` to true and redirects to `/dashboard`.
-- [x] **OnboardingLayout** — `src/layouts/OnboardingLayout.tsx`. Full-page dark layout with a sticky top bar (KaziPay wordmark + "Finish later" sign-out button) and a centered max-w-3xl content area. Distinct from `AuthLayout`'s centered card so onboarding feels like a richer welcome experience.
+- [x] **OnboardingLayout** — `src/layouts/OnboardingLayout.tsx`. Full-page dark layout with a sticky top bar (Perxli wordmark + "Finish later" sign-out button) and a centered max-w-3xl content area. Distinct from `AuthLayout`'s centered card so onboarding feels like a richer welcome experience.
 - [x] **OnboardingProgress** — `src/components/features/onboarding/OnboardingProgress.tsx`. Horizontal 4-pill indicator with done/current/upcoming states; check icon fills the dot for completed steps; lime fill for current; muted for upcoming. Step labels show on md+ screens.
 - [x] **PlanCard** — `src/components/features/onboarding/PlanCard.tsx`. Selectable card with name, price, period, feature checklist (lime check icons), and optional "Recommended" / "Selected" pill in the corner. Paid plans render a note about deferred payment (Phase 3 M-Pesa).
 - [x] **OnboardingGate** — `src/components/features/onboarding/OnboardingGate.tsx`. Outlet wrapper that nests inside `<ProtectedRoute>` and redirects to `/onboarding` when `user.onboardingComplete !== true`. Wraps the creative subtree (dashboard/projects/settings). `/onboarding` itself sits ABOVE the gate so users can actually reach it without infinite-redirecting.
-- [x] **Second seeded user** — `TEST_USER` in MSW (`test@demo.kazi.pay` / `Test1234!`, "Amina Otieno"). Pre-verified but NOT onboarded. Lets testers exercise the full onboarding wizard end-to-end without re-registering and re-going-through verify-email each session. Original `DEMO_USER` (Rowlex) stays as the verified+onboarded user for dashboard testing.
+- [x] **Second seeded user** — `TEST_USER` in MSW (`test@demo.perxli.com` / `Test1234!`, "Amina Otieno"). Pre-verified but NOT onboarded. Lets testers exercise the full onboarding wizard end-to-end without re-registering and re-going-through verify-email each session. Original `DEMO_USER` (Rowlex) stays as the verified+onboarded user for dashboard testing.
 - [x] Password reset flow — `src/pages/auth/{ForgotPasswordPage,ResetPasswordPage}.tsx`, paired forms. Forgot-password returns generic success regardless of email validity (per ADR-002 — no enumeration). Reset reads `?token=` from URL.
 - [x] Protected route wrapper — `src/components/features/auth/ProtectedRoute.tsx`. Uses react-router-v6 `<Outlet />` pattern; wraps the creative subtree in `routes.tsx`. Preserves intended destination on `location.state.from` for post-login redirect.
 - [x] Post-register redirect — `useRegister` no longer creates a session; navigates to `/verify-email` with the email in router state so the user sees a personalised "check your inbox" screen.
 - [x] Post-login redirect — `useLogin` honours `user.onboardingComplete` (→ `/dashboard` if true, `/onboarding` if false) via the shared `postAuthDestination(user)` helper. `EMAIL_NOT_VERIFIED` responses redirect to `/verify-email` instead of showing a generic "wrong credentials" error.
 - [x] `useCompleteOnboarding` navigates to `/dashboard` on success (final submit of the wizard).
-- [x] Copy uses the KaziPay tone — "Karibu — sign in", "Create your account · Free to start", "Karibu, [name] 👋 · Let's set up your account so KaziPay can do its thing. Should take about a minute." (wizard header), "Free is enough to take your first project all the way to paid" (plan step), "Choose a new password · Pro tip: a short phrase beats a random string of symbols every time", etc.
+- [x] Copy uses the Perxli tone — "Karibu — sign in", "Create your account · Free to start", "Karibu, [name] 👋 · Let's set up your account so Perxli can do its thing. Should take about a minute." (wizard header), "Free is enough to take your first project all the way to paid" (plan step), "Choose a new password · Pro tip: a short phrase beats a random string of symbols every time", etc.
 - [x] Sign-out affordance — added to `CreativeLayout` top nav so the auth gate is testable end-to-end without DevTools.
 - [x] `Select` UI primitive added — `src/components/ui/Select.tsx`, native `<select>` styled to match `Input`. Chosen over a custom dropdown for accessibility + mobile system-picker UX (per CLAUDE.md mobile-first rule). Used by the onboarding form's profession picker.
 - [x] Axios silent-refresh wired — `lib/api.ts` now calls `/auth/refresh` on 401 with an `x-skip-refresh` header to prevent the refresh call itself from looping. Same-origin baseURL (`/api/v1`) so MSW (a service worker) can intercept.
-- [x] MSW handlers — `src/mocks/handlers/auth.handlers.ts` covers login, register, **verify-email**, **resend-verification**, logout, refresh, me, forgot-password, reset-password, and `POST /users/me/onboarding` (accepts the full wizard payload: profile + business + brand + plan). Two seeded users: DEMO_USER (`rowlex@demo.kazi.pay` / `Demo1234!`, verified + onboarded → dashboard) and TEST_USER (`test@demo.kazi.pay` / `Test1234!`, verified + NOT onboarded → wizard).
+- [x] MSW handlers — `src/mocks/handlers/auth.handlers.ts` covers login, register, **verify-email**, **resend-verification**, logout, refresh, me, forgot-password, reset-password, and `POST /users/me/onboarding` (accepts the full wizard payload: profile + business + brand + plan). Two seeded users: DEMO_USER (`rowlex@demo.perxli.com` / `Demo1234!`, verified + onboarded → dashboard) and TEST_USER (`test@demo.perxli.com` / `Test1234!`, verified + NOT onboarded → wizard).
 - [x] Tests (26 total across 6 files) — `auth.service.test.ts` (login/register/verifyEmail/forgot/reset/me/resendVerification), `user.service.test.ts` (completeOnboarding with full payload + with optional fields skipped + 401-without-token), `ProtectedRoute.test.tsx`, `OnboardingGate.test.tsx` (redirects when incomplete, renders when complete, no-op when not signed in), `LoginForm.test.tsx`, `money.test.ts`.
 
 **Implementation notes:**

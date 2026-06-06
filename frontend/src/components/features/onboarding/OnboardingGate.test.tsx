@@ -8,7 +8,7 @@ import { OnboardingGate } from './OnboardingGate';
 
 const ONBOARDED_USER: AuthUser = {
   id: 'onboarded',
-  email: 'rowlex@demo.kazi.pay',
+  email: 'rowlex@demo.perxli.com',
   fullName: 'Rowlex Karimi',
   emailVerified: true,
   profession: 'Graphic Designer',

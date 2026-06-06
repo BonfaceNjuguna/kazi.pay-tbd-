@@ -1,4 +1,4 @@
-# Product Vision — KaziPay
+# Product Vision — Perxli
 
 **Last Updated:** 2026-05-30
 
@@ -16,7 +16,7 @@ There is **no creative-built tool** for this in Kenya. International freelance p
 
 ## The Vision
 
-**KaziPay is the business management platform built for the Kenyan creative.**
+**Perxli is the business management platform built for the Kenyan creative.**
 
 A graphic designer in Nairobi, a photographer in Kisumu, a videographer in Mombasa should be able to:
 
@@ -24,7 +24,7 @@ A graphic designer in Nairobi, a photographer in Kisumu, a videographer in Momba
 2. Send a single WhatsApp link to the client → client reads, signs, pays a deposit — all without creating an account.
 3. Track deliverables, auto-generate invoices on completion, and have payments reconciled through M-Pesa.
 4. Walk away from every project with **proof of everything** — signed documents, audit trails, receipts.
-5. Stop chasing payments. KaziPay's AI follows up so the creative doesn't have to.
+5. Stop chasing payments. Perxli's AI follows up so the creative doesn't have to.
 
 **Core promise:** "Get the project formalised, get paid, and have proof of everything."
 
@@ -36,7 +36,7 @@ A graphic designer in Nairobi, a photographer in Kisumu, a videographer in Momba
 
 **Profile:** Talented at their craft but has no formal business structure. Has been burned by clients who ghost, delay payment, or expand scope without paying more.
 
-**The client on the other side:** SMEs, corporate / brand clients, individuals (weddings, personal projects), NGOs. They need to be able to use KaziPay without friction — no signup, no app install, just open a WhatsApp link and sign.
+**The client on the other side:** SMEs, corporate / brand clients, individuals (weddings, personal projects), NGOs. They need to be able to use Perxli without friction — no signup, no app install, just open a WhatsApp link and sign.
 
 ---
 
@@ -44,7 +44,7 @@ A graphic designer in Nairobi, a photographer in Kisumu, a videographer in Momba
 
 **1. Kenyan-first, not Western-reskinned.** M-Pesa is the payment rail, not an integration. WhatsApp is the comms channel, not an afterthought. KES is the currency. Swahili belongs naturally in the copy.
 
-**2. The creative never starts from a blank page.** Every document is generated from a project description. The creative selects which of the 12 documents to generate — KaziPay generates them.
+**2. The creative never starts from a blank page.** Every document is generated from a project description. The creative selects which of the 12 documents to generate — Perxli generates them.
 
 **3. The client surface is frictionless.** No signup, no login, no app. A link in WhatsApp, click, read, sign, pay. Anything more is a leak in the funnel.
 
@@ -64,12 +64,12 @@ Secondary metrics: time-to-first-document-sent (onboarding velocity), deposit-pa
 
 ---
 
-## What KaziPay Is Not (Today)
+## What Perxli Is Not (Today)
 
 - Not a general document generator. Only transaction documents between a creative and their client.
 - Not a marketing or brand-strategy template library.
 - Not an HR or payroll product.
 - Not an accounting system (no general ledger; eTIMS is the only compliance hook).
-- Not a freelancer marketplace. KaziPay does not match creatives to clients — the creative already has the client.
+- Not a freelancer marketplace. Perxli does not match creatives to clients — the creative already has the client.
 
 These may be explored in future phases but will not distract from nailing the project-to-payment loop first.

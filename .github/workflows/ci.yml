@@ -1,6 +1,6 @@
 name: CI
 
-# Standard checks for KaziPay. See docs/deployment/ci-and-security.md for what
+# Standard checks for Perxli. See docs/deployment/ci-and-security.md for what
 # each job does and how to read failures.
 #
 # Runs on EVERY PR to main. No paths filter — branch protection marks these

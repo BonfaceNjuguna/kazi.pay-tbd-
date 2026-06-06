@@ -10,7 +10,7 @@ import { useAuthStore } from '@/store/auth.store';
  * Layout for the creative-facing surface (dark theme, top nav, no sidebar).
  *
  * Per CLAUDE.md: "No sidebar — top nav only". The standalone HTML prototype
- * (kazipay_prototype.html) renders a sidebar — that prototype predates the
+ * (perxli_prototype.html) renders a sidebar — that prototype predates the
  * top-nav-only decision. This React layout is the source of truth.
  */
 export function CreativeLayout() {
@@ -75,10 +75,10 @@ function Brand() {
   return (
     <div className="flex items-center gap-2">
       <div className="flex h-8 w-8 items-center justify-center rounded-md bg-lime">
-        <span className="text-base font-extrabold text-dark-surface">k</span>
+        <span className="text-base font-extrabold text-dark-surface">P</span>
       </div>
       <span className="text-lg font-extrabold tracking-tighter">
-        kazi<span className="text-lime">pay</span>
+        Perx<span className="text-lime">li</span>
       </span>
     </div>
   );

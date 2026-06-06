@@ -10,7 +10,7 @@ import { useAuthStore } from '@/store/auth.store';
  *
  * Distinct from AuthLayout's centered card: onboarding is a richer,
  * multi-step experience where the page itself is the canvas. Top bar
- * carries only the KaziPay wordmark and a sign-out affordance (in case
+ * carries only the Perxli wordmark and a sign-out affordance (in case
  * the user wants to bail and finish later). The page itself owns the
  * progress indicator + step content.
  *
@@ -44,7 +44,7 @@ function TopBar() {
           to="/onboarding"
           className="flex items-center gap-2 text-lg font-extrabold tracking-tighter"
         >
-          kazi<span className="text-lime">pay</span>
+          Perx<span className="text-lime">li</span>
         </Link>
 
         {user && (

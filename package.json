@@ -1,8 +1,8 @@
 {
-  "name": "kazipay",
+  "name": "perxli",
   "private": true,
   "version": "0.0.0",
-  "description": "KaziPay — get the project formalised, get paid, and have proof of everything.",
+  "description": "Perxli — get the project formalised, get paid, and have proof of everything.",
   "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=20"

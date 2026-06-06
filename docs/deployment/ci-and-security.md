@@ -2,7 +2,7 @@
 
 > What runs automatically, when, why, and how to read failures.
 
-KaziPay uses GitHub Actions for CI and security scanning. Everything is configured in `.github/workflows/` and `.github/dependabot.yml`. This page documents what's there and how to act on it.
+Perxli uses GitHub Actions for CI and security scanning. Everything is configured in `.github/workflows/` and `.github/dependabot.yml`. This page documents what's there and how to act on it.
 
 For the branch-protection rules that **enforce** these checks against the trunk, see [`main-branch-protection.md`](./main-branch-protection.md).
 
@@ -67,7 +67,7 @@ For the branch-protection rules that **enforce** these checks against the trunk,
 
 **Triggers:** every PR to `main`, every push to `main`, plus a weekly cron (Mon 06:00 UTC = 09:00 EAT).
 
-**Why this matters specifically for KaziPay:**
+**Why this matters specifically for Perxli:**
 - **AI-generated HTML rendered on the client share page** is the highest-priority XSS surface. CodeQL catches sanitization gaps.
 - **M-Pesa callback handling** must validate every field. CodeQL flags missing checks on parsed callback payloads.
 - **Signing audit-hash code** must use a known-safe hash construction (no string concatenation of untrusted input into HMAC input). CodeQL catches the common mis-patterns.

@@ -68,14 +68,14 @@ export function signAccessToken(payload: AccessTokenPayload): string {
   return jwt.sign(payload, privateKey, {
     algorithm: 'RS256',
     expiresIn: `${env.ACCESS_TOKEN_TTL_MIN}m`,
-    issuer: 'kazipay-backend',
+    issuer: 'perxli-backend',
   });
 }
 
 export function verifyAccessToken(token: string): AccessTokenPayload {
   const decoded = jwt.verify(token, publicKey, {
     algorithms: ['RS256'],
-    issuer: 'kazipay-backend',
+    issuer: 'perxli-backend',
   });
   if (typeof decoded === 'string') {
     throw new Error('Unexpected JWT payload (string)');

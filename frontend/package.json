@@ -1,9 +1,9 @@
 {
-  "name": "@kazipay/frontend",
+  "name": "@perxli/frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "KaziPay frontend — React 19 + TypeScript + Vite 8 + Tailwind 4. Creative dashboard + client share view.",
+  "description": "Perxli frontend — React 19 + TypeScript + Vite 8 + Tailwind 4. Creative dashboard + client share view.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

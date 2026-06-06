@@ -14,7 +14,7 @@ See [`../AGENTS.md`](../AGENTS.md) for coding rules and [`../docs/`](../docs/) f
 pnpm install
 
 # Generate the MSW service worker file (first-time setup, gitignored)
-pnpm --filter @kazipay/frontend exec msw init public/ --save
+pnpm --filter @perxli/frontend exec msw init public/ --save
 
 # Copy env defaults
 cp frontend/.env.example frontend/.env
@@ -62,6 +62,6 @@ src/
 
 Source of truth is the `@theme` block in `src/index.css` (Tailwind 4's
 CSS-based config replaced the old `tailwind.config.ts`). Tokens were extracted
-from the three prototype HTML files at the repo root (`kazipay_landing.html`,
-`kazipay_prototype.html`, `kazipay_client.html`). See the file's header
+from the three prototype HTML files at the repo root (`perxli_landing.html`,
+`perxli_prototype.html`, `perxli_client.html`). See the file's header
 comment for the mapping.

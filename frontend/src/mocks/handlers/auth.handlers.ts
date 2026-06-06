@@ -23,7 +23,7 @@ import type { AuthUser, SubscriptionPlan } from '@/store/auth.store';
 
 const DEMO_USER: AuthUser = {
   id: '11111111-1111-4111-8111-111111111111',
-  email: 'rowlex@demo.kazi.pay',
+  email: 'rowlex@demo.perxli.com',
   fullName: 'Rowlex Karimi',
   emailVerified: true,
   profession: 'Graphic Designer',
@@ -41,7 +41,7 @@ const DEMO_USER: AuthUser = {
 
 const TEST_USER: AuthUser = {
   id: '22222222-2222-4222-8222-222222222222',
-  email: 'test@demo.kazi.pay',
+  email: 'test@demo.perxli.com',
   fullName: 'Amina Otieno',
   emailVerified: true,
   // Empty onboarding fields + onboardingComplete=false so signing in

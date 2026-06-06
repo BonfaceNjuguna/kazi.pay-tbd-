@@ -6,7 +6,7 @@ import type { ProfileStepData } from '@/services/auth.service';
 /**
  * Step 1 — Profile. Captures what the user does and where they work from.
  * Drives smart document-template suggestions later and surfaces on every
- * document KaziPay generates.
+ * document Perxli generates.
  *
  * Profession dropdown values per CLAUDE.md target users — graphic
  * designers, photographers, videographers, illustrators, copywriters —

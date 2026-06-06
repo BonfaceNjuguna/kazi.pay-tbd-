@@ -22,7 +22,7 @@ export function ClientLayout() {
       <header className="sticky top-0 z-10 border-b border-light-border bg-light-surface-raised shadow-soft">
         <div className="mx-auto flex max-w-xl items-center justify-between px-4 py-3">
           <span className="text-xl font-extrabold tracking-tight">
-            kazi<span className="text-lime-hover">pay</span>
+            Perx<span className="text-lime-hover">li</span>
           </span>
           <span className="text-xs font-semibold text-light-t2">Secure · Encrypted</span>
         </div>

@@ -283,7 +283,7 @@ export function extractRequestMeta(req: {
 }
 
 /** Helper for setting/clearing the refresh-token cookie consistently. */
-export const REFRESH_COOKIE_NAME = 'kazipay_rt';
+export const REFRESH_COOKIE_NAME = 'perxli_rt';
 
 export function refreshCookieOptions(expiresAt?: Date) {
   return {

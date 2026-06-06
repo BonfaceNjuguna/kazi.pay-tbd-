@@ -23,7 +23,7 @@ export function DashboardPlaceholder() {
       <div className="mt-10 rounded-lg border border-dashed border-dark-border bg-dark-surface-raised p-10 text-center">
         <p className="text-lg font-bold">No projects yet</p>
         <p className="mt-1 text-base text-dark-t2">
-          Start your first project. kazipay generates the documents for you.
+          Start your first project. perxli generates the documents for you.
         </p>
         <button
           type="button"

@@ -8,7 +8,7 @@
 
 ## Context
 
-KaziPay needs a full-stack web application capable of handling AI document generation, type-to-sign signature flows, public client-facing pages without auth, M-Pesa STK Push payment integration, and WhatsApp/email delivery. The product must run well on Kenyan mobile networks. We are a small team and need a stack that is productive, well-supported, and hirable in Nairobi.
+Perxli needs a full-stack web application capable of handling AI document generation, type-to-sign signature flows, public client-facing pages without auth, M-Pesa STK Push payment integration, and WhatsApp/email delivery. The product must run well on Kenyan mobile networks. We are a small team and need a stack that is productive, well-supported, and hirable in Nairobi.
 
 ---
 

@@ -9,7 +9,7 @@
 
 Backend support for eTIMS is built from day one (every invoice produces an eTIMS-ready payload — see Phase 4). The public-facing product launch hides this entirely.
 
-Later, eTIMS submission gets surfaced as a flagship Pro feature: **"KaziPay handles your KRA compliance for you."** One toggle in settings, every invoice from then on is auto-submitted to eTIMS, and the creative gets a clean monthly compliance report.
+Later, eTIMS submission gets surfaced as a flagship Pro feature: **"Perxli handles your KRA compliance for you."** One toggle in settings, every invoice from then on is auto-submitted to eTIMS, and the creative gets a clean monthly compliance report.
 
 **Why this matters:** eTIMS is a real source of anxiety for Kenyan creatives — it's confusing, the official portals are clunky, and most creatives just don't do it. Removing it as a worry is a serious upsell.
 
@@ -17,7 +17,7 @@ Later, eTIMS submission gets surfaced as a flagship Pro feature: **"KaziPay hand
 
 ## Group Project Mode (Studios & Collectives)
 
-Many creatives work in small collectives — three friends running a photo studio, a duo doing brand identity work. KaziPay v1 is single-user. Future: allow a creative to invite collaborators to a project, each with their own scope of work and their own payout split via M-Pesa.
+Many creatives work in small collectives — three friends running a photo studio, a duo doing brand identity work. Perxli v1 is single-user. Future: allow a creative to invite collaborators to a project, each with their own scope of work and their own payout split via M-Pesa.
 
 ---
 
@@ -35,7 +35,7 @@ Phase 2 ships 12 generic document templates. Future: per-discipline variants tun
 
 ## WhatsApp-First Inbound
 
-Today the creative starts in the dashboard and the client receives a WhatsApp link. Future: allow the creative to start a project directly from WhatsApp by messaging a KaziPay bot — "new project, Madison Inv, branding, KES 80,000, 50% deposit" — and KaziPay generates the documents and sends them back as a link.
+Today the creative starts in the dashboard and the client receives a WhatsApp link. Future: allow the creative to start a project directly from WhatsApp by messaging a Perxli bot — "new project, Madison Inv, branding, KES 80,000, 50% deposit" — and Perxli generates the documents and sends them back as a link.
 
 ---
 
@@ -61,7 +61,7 @@ Phase 3 ships AI payment reminders. Future: AI-drafted responses to common clien
 
 ## Creative Discovery / Marketplace (Cautious)
 
-A directory of KaziPay creatives surfaced to potential clients could be a strong distribution play — but it changes the product from a tool into a marketplace, and marketplaces have very different dynamics. This is explicitly **not** a near-term direction; flagged here only as a long-range option.
+A directory of Perxli creatives surfaced to potential clients could be a strong distribution play — but it changes the product from a tool into a marketplace, and marketplaces have very different dynamics. This is explicitly **not** a near-term direction; flagged here only as a long-range option.
 
 ---
 
@@ -73,4 +73,4 @@ Once a deposit is paid and a contract is signed, the rest of the project value i
 
 ## White-Label / API-Only Mode
 
-Allow other regional fintechs, freelance platforms, or co-working spaces to embed KaziPay's project-to-payment engine via API. They own the UX; KaziPay provides the document generation, signing, M-Pesa rail, and compliance as a service. Long-range B2B2B motion.
+Allow other regional fintechs, freelance platforms, or co-working spaces to embed Perxli's project-to-payment engine via API. They own the UX; Perxli provides the document generation, signing, M-Pesa rail, and compliance as a service. Long-range B2B2B motion.

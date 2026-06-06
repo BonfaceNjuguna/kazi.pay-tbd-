@@ -8,7 +8,7 @@
 
 ## Context
 
-KaziPay's backend exposes a REST API consumed by the React frontend (creative side), the public client-facing share page (no auth), and eventually third-party integrations. Consistent conventions reduce friction for both AI agents and human developers adding new endpoints.
+Perxli's backend exposes a REST API consumed by the React frontend (creative side), the public client-facing share page (no auth), and eventually third-party integrations. Consistent conventions reduce friction for both AI agents and human developers adding new endpoints.
 
 ---
 

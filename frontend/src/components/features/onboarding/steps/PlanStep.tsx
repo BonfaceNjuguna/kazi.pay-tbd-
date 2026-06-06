@@ -53,7 +53,7 @@ export function PlanStep({ initial, onBack, onSubmit, submitting }: PlanStepProp
           features={[
             '1 active project at a time',
             'Quotation, Scope of Work, Contract',
-            'KaziPay watermark on documents',
+            'Perxli watermark on documents',
             '30-day project history',
           ]}
           selected={selected === 'FREE'}

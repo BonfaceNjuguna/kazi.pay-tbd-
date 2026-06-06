@@ -1,4 +1,4 @@
-# AGENTS.md — KaziPay Developer & AI Agent Guide
+# AGENTS.md — Perxli Developer & AI Agent Guide
 
 > This file is the **primary reference** for all AI agents (Copilot, Claude, Cursor, etc.) and human developers working on this codebase. Read it fully before making any changes.
 > For product context (problem, users, flow, design system), read [`CLAUDE.md`](./CLAUDE.md) first.
@@ -7,7 +7,7 @@
 
 ## Project Overview
 
-**KaziPay** is a business management platform for Kenyan creatives (graphic designers, photographers, videographers, illustrators, copywriters). It handles the entire client-to-payment journey: AI-generated proposals and agreements, type-to-sign digital signatures sent via WhatsApp/email, M-Pesa deposits and invoicing, and proof-of-delivery — replacing the messy Google Docs + WhatsApp + manual eTIMS + M-Pesa + prayer stack that creatives currently rely on.
+**Perxli** is a business management platform for Kenyan creatives (graphic designers, photographers, videographers, illustrators, copywriters). It handles the entire client-to-payment journey: AI-generated proposals and agreements, type-to-sign digital signatures sent via WhatsApp/email, M-Pesa deposits and invoicing, and proof-of-delivery — replacing the messy Google Docs + WhatsApp + manual eTIMS + M-Pesa + prayer stack that creatives currently rely on.
 
 **Core promise:** "Get the project formalised, get paid, and have proof of everything."
 
@@ -25,7 +25,7 @@
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Product context: what KaziPay is, user flow, document library, pricing, design system |
+| `CLAUDE.md` | Product context: what Perxli is, user flow, document library, pricing, design system |
 | `AGENTS.md` | ← You are here. Coding rules, patterns, conventions |
 | `docs/dev-roadmap.md` | Current progress and next milestones |
 | `docs/milestones/` | Concrete implementation scopes per phase |
@@ -34,21 +34,21 @@
 | `docs/decisions/` | Architecture Decision Records (ADRs) |
 | `docs/architecture/` | Folder structure, system design, data flow |
 | `docs/deployment/` | Docker, environment setup, CI/CD |
-| `kazipay_landing.html` | Marketing landing page prototype (standalone) |
-| `kazipay_prototype.html` | Creative dashboard prototype (standalone) |
-| `kazipay_client.html` | Client sign-off screen prototype (standalone) |
+| `perxli_landing.html` | Marketing landing page prototype (standalone) |
+| `perxli_prototype.html` | Creative dashboard prototype (standalone) |
+| `perxli_client.html` | Client sign-off screen prototype (standalone) |
 
 ---
 
 ## Folder Structure
 
 ```
-kazi-pay/
+perxli/
 ├── CLAUDE.md                  # Product context (read first)
 ├── AGENTS.md                  # This file
-├── kazipay_landing.html       # Standalone marketing prototype
-├── kazipay_prototype.html     # Standalone creative dashboard prototype
-├── kazipay_client.html        # Standalone client sign-off prototype
+├── perxli_landing.html       # Standalone marketing prototype
+├── perxli_prototype.html     # Standalone creative dashboard prototype
+├── perxli_client.html        # Standalone client sign-off prototype
 ├── docker-compose.yml
 ├── .env.example
 ├── frontend/                  # React + TypeScript (Vite)
@@ -210,7 +210,7 @@ When code exists, follow these rules:
 
 ### Cross-Surface Rules (Critical)
 
-KaziPay has two front-end surfaces (creative dashboard, client share page) that share one backend. Business rules that affect both surfaces must live **once**, in the backend.
+Perxli has two front-end surfaces (creative dashboard, client share page) that share one backend. Business rules that affect both surfaces must live **once**, in the backend.
 
 - **Do not duplicate sensitive business rules between creative-side and client-side code.** The phase state machine, signature audit logic, free-tier feature gating, payment reconciliation, and document status transitions all live in `backend/src/services/`. The frontend reads results — it never re-implements the rule.
 - **Do not bypass backend permission checks with frontend-only visibility.** Hiding the "Generate NDA" button on the free tier is fine for UX, but the backend must still reject `POST /api/v1/documents/generate` for an NDA on a free account with `FREE_TIER_DOC_LOCKED`. Same for project creation limits, Pro-only reminders, and admin actions.
@@ -324,7 +324,7 @@ All routes are prefixed `/api/v1/`. Version bump only on breaking changes.
 
 These are not style preferences — they are product rules that must hold across all surfaces:
 
-- **Never say "AI generates"** in user-facing copy. The activity feed, banners, and tooltips say **"kazipay generates"**. (Reason: positions KaziPay as the brand doing the work, not "some AI tool".)
+- **Never say "AI generates"** in user-facing copy. The activity feed, banners, and tooltips say **"perxli generates"**. (Reason: positions Perxli as the brand doing the work, not "some AI tool".)
 - **Currency is always KES**, stored as integer cents (see ADR-003). Format with thousands separators: `KES 12,500`.
 - **Swahili is allowed and welcome** in UI copy where it feels natural ("Karibu", "Asante", "Hujambo") — but never machine-translate; only use phrases reviewed by a native speaker.
 - **Tone:** direct, confident, warm. Not corporate. Not generic SaaS. Speaks to a young Nairobi creative who's been burned by clients.
@@ -403,5 +403,5 @@ Agents are allowed to update these inline as part of the same PR that lands the 
 4. **Always branch from a freshly-pulled `main` before writing any code.** Never commit to `main`. See **Branching & Workflow** under Coding Standards for the exact sequence (`checkout main` → `pull` → `checkout -b feature/...` → work → push → PR → merge → delete branch).
 5. **Follow the Coding Standards above strictly.** No new patterns without an ADR. No frontend-only enforcement of backend rules. No undocumented schema changes.
 6. **Update the docs in the same PR as the code** — see Documentation Rules above. Roadmap status, milestone notes, ADRs, vision register.
-7. **Respect the "what NOT to build" list in CLAUDE.md** — KaziPay is not a general document generator, not an HR tool, not a marketing-asset builder.
+7. **Respect the "what NOT to build" list in CLAUDE.md** — Perxli is not a general document generator, not an HR tool, not a marketing-asset builder.
 8. When in doubt, keep it simple. Prefer explicit over clever.

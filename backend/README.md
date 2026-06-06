@@ -16,13 +16,13 @@ pnpm install
 docker compose up -d db
 
 # 2. Apply the Prisma migration to the DB
-pnpm --filter @kazipay/backend prisma:migrate
+pnpm --filter @perxli/backend prisma:migrate
 
 # 3. Seed the two demo users (Rowlex Karimi + Amina Otieno)
-pnpm --filter @kazipay/backend prisma:seed
+pnpm --filter @perxli/backend prisma:seed
 
 # 4. Run the backend dev server (hot-reload)
-pnpm --filter @kazipay/backend dev
+pnpm --filter @perxli/backend dev
 ```
 
 Backend listens on `http://localhost:3000`. Health check:
@@ -43,8 +43,8 @@ curl http://localhost:3000/api/v1/health
 
 | Email | Password | State | Use for |
 |-------|----------|-------|---------|
-| `rowlex@demo.kazi.pay` | `Demo1234!` | verified + onboarded | Dashboard testing |
-| `test@demo.kazi.pay` | `Test1234!` | verified, NOT onboarded | Wizard testing without re-registering |
+| `rowlex@demo.perxli.com` | `Demo1234!` | verified + onboarded | Dashboard testing |
+| `test@demo.perxli.com` | `Test1234!` | verified, NOT onboarded | Wizard testing without re-registering |
 
 ## Scripts
 

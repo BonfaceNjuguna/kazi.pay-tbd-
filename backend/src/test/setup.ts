@@ -10,5 +10,5 @@
  */
 process.env.NODE_ENV ??= 'test';
 process.env.DATABASE_URL ??=
-  'postgresql://test:test@localhost:5432/kazipay_test?schema=public';
+  'postgresql://test:test@localhost:5432/perxli_test?schema=public';
 process.env.LOG_LEVEL ??= 'fatal'; // silence pino during tests

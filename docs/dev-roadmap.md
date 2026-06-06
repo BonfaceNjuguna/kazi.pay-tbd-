@@ -1,4 +1,4 @@
-# KaziPay — Development Roadmap
+# Perxli — Development Roadmap
 
 > **For AI agents:** Read this to understand current progress before working on any task.
 > For product context, read [`CLAUDE.md`](../CLAUDE.md).
@@ -14,7 +14,7 @@
 **Last Updated:** 2026-05-30
 **Overall Progress:** 🟡 In Planning
 
-Three standalone HTML prototypes are in place at the project root (`kazipay_landing.html`, `kazipay_prototype.html`, `kazipay_client.html`). Phase 1 turns those prototypes into a real application.
+Three standalone HTML prototypes are in place at the project root (`perxli_landing.html`, `perxli_prototype.html`, `perxli_client.html`). Phase 1 turns those prototypes into a real application.
 
 ---
 
@@ -144,7 +144,7 @@ See [`docs/decisions/`](./decisions/) for all Architecture Decision Records.
 Key settled decisions:
 - [ADR-001](./decisions/ADR-001-stack-selection.md) — Tech stack selection
 - [ADR-002](./decisions/ADR-002-authentication.md) — Auth strategy (JWT + refresh tokens, plus public client-link token model)
-- [ADR-003](./decisions/ADR-003-database-design.md) — Database design principles + KaziPay domain entities
+- [ADR-003](./decisions/ADR-003-database-design.md) — Database design principles + Perxli domain entities
 - [ADR-004](./decisions/ADR-004-api-design.md) — REST API design conventions
 - [ADR-005](./decisions/ADR-005-deployment.md) — Docker-based deployment strategy
 
