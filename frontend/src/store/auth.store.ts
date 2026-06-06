@@ -67,6 +67,14 @@ interface AuthState {
 
   setSession: (params: { user: AuthUser; accessToken: string }) => void;
   setAccessToken: (token: string) => void;
+  /**
+   * Set the user without touching the access token. Used by the boot-time
+   * session restore (`<SessionBootstrap>` in `App.tsx`): a GET /auth/me on
+   * app mount returns just the user, while the access token has already
+   * been re-minted by the axios refresh interceptor as a side-effect of
+   * the 401 → /auth/refresh dance.
+   */
+  setUser: (user: AuthUser) => void;
   logout: () => void;
 }
 
@@ -79,6 +87,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user, accessToken, isAuthenticated: true }),
 
   setAccessToken: (accessToken) => set({ accessToken }),
+
+  setUser: (user) => set({ user, isAuthenticated: true }),
 
   logout: () => set({ user: null, accessToken: null, isAuthenticated: false }),
 }));
