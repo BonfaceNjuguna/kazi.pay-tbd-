@@ -48,6 +48,7 @@ authRouter.post('/refresh', auth.refresh);
 
 authRouter.post(
   '/verify-email',
+  authLimiter,
   validateBody(VerifyEmailSchema),
   auth.verifyEmail,
 );
