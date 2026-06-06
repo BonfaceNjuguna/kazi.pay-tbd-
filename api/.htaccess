@@ -1,0 +1,27 @@
+# .htaccess directives only — no <Directory> blocks (those are valid in
+# httpd.conf, NOT in .htaccess, and trigger a 500 on shared hosting).
+#
+# Block direct web access to credentials, runtime data, vendored library
+# internals. submit.php and test.php stay reachable.
+
+<FilesMatch "^(config\.php|config\.example\.php|subscribers\.csv|submit\.log|\.write-probe)$">
+    Require all denied
+</FilesMatch>
+
+# No directory listings.
+Options -Indexes
+
+RewriteEngine On
+
+# Forward the HTTP Authorization header to PHP-FPM. Without this,
+# $_SERVER['PHP_AUTH_USER']/'PHP_AUTH_PW' are empty on DirectAdmin and
+# Basic Auth on view.php silently fails. Belt-and-braces — both env
+# propagation and the rewrite, since different FPM bridges look at
+# different places.
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+RewriteCond %{HTTP:Authorization} ^(.+)$
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%1]
+
+# Deny everything inside the vendored PHPMailer folder via path match.
+RewriteRule ^phpmailer/ - [F,L]
+RewriteRule ^rate_limit/ - [F,L]

@@ -18,6 +18,14 @@ logs/
 .env.local
 .env.*.local
 
+# Coming-soon form: real SMTP credentials + runtime data
+api/config.php
+api/subscribers.csv
+api/subscribers.csv.tmp
+api/subscribers.lock
+api/submit.log
+api/rate_limit/
+
 # OS / editor
 .DS_Store
 Thumbs.db
