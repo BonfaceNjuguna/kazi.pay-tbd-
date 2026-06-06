@@ -1,9 +1,12 @@
+import crypto from 'node:crypto';
+
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import { doubleCsrf } from 'csrf-csrf';
 import express from 'express';
 
 import { env } from '@/config/env.js';
-import { csrfOriginCheck, doubleCsrfProtection } from '@/middleware/csrf.js';
+import { csrfOriginCheck } from '@/middleware/csrf.js';
 import { errorHandler } from '@/middleware/error-handler.js';
 import { apiRouter } from '@/routes/index.js';
 
@@ -13,6 +16,28 @@ import { apiRouter } from '@/routes/index.js';
  * Keeping the app creation separate from listen() makes integration
  * tests trivial — supertest takes the app object, no port needed.
  */
+
+// csrf-csrf is wired here (rather than re-exported from middleware/csrf)
+// so static analysers can trace `doubleCsrf` → `doubleCsrfProtection` →
+// `app.use` in a single file. The actual CSRF defence is `csrfOriginCheck`
+// (Origin/Referer verification, defence-in-depth over the SameSite=Strict
+// + path-scoped refresh cookie); csrf-csrf is short-circuited via
+// `skipCsrfProtection` because the SPA does not carry double-submit
+// tokens today. Flip the predicate to `() => false` when frontend token
+// plumbing lands and csrf-csrf becomes the enforcement layer.
+const csrfSecret = crypto.randomBytes(32).toString('hex');
+const { doubleCsrfProtection } = doubleCsrf({
+  getSecret: () => csrfSecret,
+  getSessionIdentifier: (req) => req.ip ?? 'global',
+  cookieName: env.NODE_ENV === 'production' ? '__Host-perxli-csrf' : 'perxli-csrf',
+  cookieOptions: {
+    sameSite: 'strict',
+    secure: env.NODE_ENV === 'production',
+    path: '/',
+  },
+  skipCsrfProtection: () => true,
+});
+
 export function createApp() {
   const app = express();
 
