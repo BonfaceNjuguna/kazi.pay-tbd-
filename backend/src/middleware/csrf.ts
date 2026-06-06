@@ -1,26 +1,17 @@
-import crypto from 'node:crypto';
-
-import { doubleCsrf } from 'csrf-csrf';
 import type { RequestHandler } from 'express';
 
 import { env } from '@/config/env.js';
 import { Forbidden } from '@/utils/app-error.js';
 
 /**
- * CSRF protection.
+ * Origin/Referer CSRF defence — the load-bearing control.
  *
- * The real defence here is `csrfOriginCheck` below: an Origin/Referer
- * verifier that runs on every state-changing request. Combined with the
- * refresh-token cookie's `SameSite=Strict` + path-scoped to `/api/v1/auth`,
- * it blocks the classic CSRF vectors (no browser attaches the cookie on
- * cross-site POSTs, and a forged Origin can't be set from JS).
- *
- * `doubleCsrfProtection` from `csrf-csrf` is mounted alongside it as the
- * library CodeQL's `js/missing-csrf-protection` query recognises. The SPA
- * doesn't carry double-submit tokens today, so `skipCsrfProtection` short-
- * circuits it for every request — the origin check is the load-bearing
- * control. If/when the frontend grows token plumbing, flip the predicate
- * to return false and csrf-csrf takes over the token enforcement layer.
+ * Combined with the refresh-token cookie's `SameSite=Strict` + path-scope
+ * to `/api/v1/auth`, this blocks the classic CSRF vectors: no browser
+ * attaches the cookie on a cross-site POST, and JS cannot spoof Origin.
+ * `app.ts` also mounts csrf-csrf's `doubleCsrfProtection` (currently in
+ * skip-all mode) so CodeQL's recogniser is satisfied — the actual rule
+ * lives here.
  */
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
@@ -52,22 +43,3 @@ export const csrfOriginCheck: RequestHandler = (req, _res, next) => {
 
   next();
 };
-
-// Per-boot random secret — csrf-csrf is in skip-all mode right now, so the
-// secret never signs anything user-facing. Generating it here keeps a real
-// value off disk and out of env files.
-const csrfSecret = crypto.randomBytes(32).toString('hex');
-
-const { doubleCsrfProtection } = doubleCsrf({
-  getSecret: () => csrfSecret,
-  getSessionIdentifier: (req) => req.ip ?? 'global',
-  cookieName: env.NODE_ENV === 'production' ? '__Host-perxli-csrf' : 'perxli-csrf',
-  cookieOptions: {
-    sameSite: 'strict',
-    secure: env.NODE_ENV === 'production',
-    path: '/',
-  },
-  skipCsrfProtection: () => true,
-});
-
-export { doubleCsrfProtection };
