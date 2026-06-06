@@ -3,7 +3,7 @@ import cors from 'cors';
 import express from 'express';
 
 import { env } from '@/config/env.js';
-import { csrfProtection } from '@/middleware/csrf.js';
+import { csrfOriginCheck, doubleCsrfProtection } from '@/middleware/csrf.js';
 import { errorHandler } from '@/middleware/error-handler.js';
 import { apiRouter } from '@/routes/index.js';
 
@@ -30,7 +30,8 @@ export function createApp() {
 
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
-  app.use(csrfProtection);
+  app.use(doubleCsrfProtection);
+  app.use(csrfOriginCheck);
 
   app.use('/api/v1', apiRouter);
 
