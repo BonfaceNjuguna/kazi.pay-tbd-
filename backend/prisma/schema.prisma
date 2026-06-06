@@ -1,4 +1,4 @@
-// Prisma schema for KaziPay backend.
+// Prisma schema for Perxli backend.
 //
 // Per ADR-003:
 //   - UUID primary keys (gen_random_uuid)

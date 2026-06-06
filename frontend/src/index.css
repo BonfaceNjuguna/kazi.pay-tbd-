@@ -14,12 +14,12 @@
 @import 'tailwindcss';
 
 /*
- * KaziPay design tokens — Tailwind 4 `@theme` directive.
+ * Perxli design tokens — Tailwind 4 `@theme` directive.
  *
  * Source of truth for these values:
- *   - kazipay_prototype.html  (creative-facing dark theme)
- *   - kazipay_client.html     (client-facing light theme)
- *   - kazipay_landing.html    (marketing dark theme)
+ *   - perxli_prototype.html  (creative-facing dark theme)
+ *   - perxli_client.html     (client-facing light theme)
+ *   - perxli_landing.html    (marketing dark theme)
  *   - CLAUDE.md               (product-level constraints)
  *
  * Naming convention (each `--color-X` becomes `bg-X`, `text-X`, `border-X` utilities):

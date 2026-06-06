@@ -1,14 +1,14 @@
-# CLAUDE.md — KaziPay Project Context
+# CLAUDE.md — Perxli Project Context
 
-## What is KaziPay?
+## What is Perxli?
 
-KaziPay is a business management platform built specifically for Kenyan creatives (graphic designers, photographers, videographers, illustrators, copywriters) that handles the entire client-to-payment journey.
+Perxli is a business management platform built specifically for Kenyan creatives (graphic designers, photographers, videographers, illustrators, copywriters) that handles the entire client-to-payment journey.
 
 **Core promise:** "Get the project formalised, get paid, and have proof of everything."
 
 **The problem it solves:** Kenyan creatives consistently lose money because there is no formal structure between agreeing on a project and getting paid. Clients don't feel financially or legally committed, and creatives have no professional tool built for their context — one that works with M-Pesa, speaks their language, and removes the awkwardness of chasing payment.
 
-**No direct local competitor exists.** The current creative workflow in Kenya is a messy combo of Google Docs for proposals, WhatsApp for client confirmation, manual eTIMS for invoices, M-Pesa for payment, and prayer for follow-up. KaziPay replaces that entire stack.
+**No direct local competitor exists.** The current creative workflow in Kenya is a messy combo of Google Docs for proposals, WhatsApp for client confirmation, manual eTIMS for invoices, M-Pesa for payment, and prayer for follow-up. Perxli replaces that entire stack.
 
 ---
 
@@ -27,7 +27,7 @@ KaziPay is a business management platform built specifically for Kenyan creative
 
 **The project-to-payment loop (what the product actually does):**
 
-1. Creative describes their project → KaziPay AI generates all professional documents instantly
+1. Creative describes their project → Perxli AI generates all professional documents instantly
 2. Creative selects which documents to generate (not everything auto-generated)
 3. Client receives a WhatsApp or email link → reviews documents → signs digitally (type-to-sign)
 4. Deposit requested before work begins (via M-Pesa)
@@ -106,7 +106,7 @@ All documents are AI-generated from the project description. The creative select
 ### Free — KES 0
 - 1 active project at a time
 - 3 document types only: Quotation, Scope of Work, Contract
-- KaziPay branding/watermark on all documents (not the creative's own logo)
+- Perxli branding/watermark on all documents (not the creative's own logo)
 - No custom signature upload
 - No payment reminders
 - No project history beyond 30 days
@@ -129,7 +129,7 @@ All documents are AI-generated from the project description. The creative select
 
 **Strategy notes:**
 - KES 299 is positioned as a launch/early adopter price with room to increase later
-- Free tier watermark acts as organic marketing ("Powered by KaziPay")
+- Free tier watermark acts as organic marketing ("Powered by Perxli")
 - Discounted yearly plan available
 
 ---
@@ -160,7 +160,7 @@ All documents are AI-generated from the project description. The creative select
 - **Creative adds logo + signature** to all documents via brand settings
 - **Document preview + edit** before sending to client
 - **eTIMS** — built in the background from day one, hidden from users at launch, introduced later as a Pro feature ("we handle your compliance for you")
-- Activity feed and banners say "kazipay generates" — NOT "AI generates"
+- Activity feed and banners say "perxli generates" — NOT "AI generates"
 - **Demo profile** used during development: Rowlex Karimi, graphic designer, Nairobi, Kenya, KES currency
 
 ---
@@ -192,18 +192,18 @@ The client receives a WhatsApp or email link that opens a light-mode screen with
 
 Three HTML prototypes have been built (standalone, all CSS/JS inline):
 
-1. **`kazipay_prototype.html`** — Full creative dashboard and tool
+1. **`perxli_prototype.html`** — Full creative dashboard and tool
    - Dashboard, new project wizard (3-step: client info → project details → payment terms)
    - Project detail with phase-based navigation
    - Projects list, settings, brand settings
 
-2. **`kazipay_client.html`** — Client-facing sign-off screen
+2. **`perxli_client.html`** — Client-facing sign-off screen
    - Sender card, project summary, reading progress tracker
    - 4 expandable documents with proper formatting
    - Locked signature (unlocks after all docs read)
    - Confirmation screen
 
-3. **`kazipay_landing.html`** — Marketing landing page
+3. **`perxli_landing.html`** — Marketing landing page
    - Hero with pain-point copy
    - How it works section
    - Document library showcase

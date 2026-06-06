@@ -4,6 +4,6 @@ build
 .vite
 coverage
 pnpm-lock.yaml
-kazipay_landing.html
-kazipay_prototype.html
-kazipay_client.html
+perxli_landing.html
+perxli_prototype.html
+perxli_client.html

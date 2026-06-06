@@ -1,9 +1,9 @@
 {
-  "name": "@kazipay/backend",
+  "name": "@perxli/backend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "KaziPay backend — Node + Express + TypeScript + Prisma. Phase 1.4 auth lives here.",
+  "description": "Perxli backend — Node + Express + TypeScript + Prisma. Phase 1.4 auth lives here.",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc -p tsconfig.build.json",

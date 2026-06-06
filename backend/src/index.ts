@@ -11,7 +11,7 @@ import { createApp } from './app.js';
 async function main() {
   const app = createApp();
   const server = app.listen(env.PORT, () => {
-    logger.info(`KaziPay backend listening on http://localhost:${env.PORT}`);
+    logger.info(`Perxli backend listening on http://localhost:${env.PORT}`);
     logger.info(`Mode: ${env.NODE_ENV} · CORS: ${env.CORS_ORIGINS.join(', ')}`);
   });
 

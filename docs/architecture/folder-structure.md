@@ -7,12 +7,12 @@
 ## Root
 
 ```
-kazi-pay/
+perxli/
 ├── CLAUDE.md                       # Product context (read first)
 ├── AGENTS.md                       # AI agent + developer guide
-├── kazipay_landing.html            # Standalone marketing prototype
-├── kazipay_prototype.html          # Standalone creative dashboard prototype
-├── kazipay_client.html             # Standalone client sign-off prototype
+├── perxli_landing.html            # Standalone marketing prototype
+├── perxli_prototype.html          # Standalone creative dashboard prototype
+├── perxli_client.html             # Standalone client sign-off prototype
 ├── docker-compose.yml              # Production-like multi-service setup
 ├── docker-compose.dev.yml          # Dev overrides (hot reload, exposed ports)
 ├── .env.example                    # All required env vars with descriptions
@@ -25,7 +25,7 @@ kazi-pay/
 └── docs/
 ```
 
-The three `kazipay_*.html` files are standalone — they don't import from each other or from the React app. They're reference prototypes that the real React app should match in design and flow.
+The three `perxli_*.html` files are standalone — they don't import from each other or from the React app. They're reference prototypes that the real React app should match in design and flow.
 
 ---
 

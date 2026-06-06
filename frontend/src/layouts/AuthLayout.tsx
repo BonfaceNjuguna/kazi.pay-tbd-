@@ -15,7 +15,7 @@ export function AuthLayout() {
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
           <span className="text-3xl font-extrabold tracking-tighter">
-            kazi<span className="text-lime">pay</span>
+            Perx<span className="text-lime">li</span>
           </span>
           <p className="mt-2 text-base text-dark-t2">
             Get the project formalised, get paid, and have proof of everything.

@@ -1,5 +1,5 @@
 <!--
-KaziPay PR template.
+Perxli PR template.
 
 Title format (conventional commits — see AGENTS.md § Git Commit Format):
   feat(scope): short imperative description

@@ -9,8 +9,8 @@ This guide reflects the current state of the repo (Phase 1.4 complete). It will 
 ## 1. Clone and install
 
 ```bash
-git clone https://github.com/BonfaceNjuguna/kazi.pay-tbd-.git "kazi.pay"
-cd "kazi.pay"
+git clone https://github.com/BonfaceNjuguna/perxli.com-tbd-.git "perxli.com"
+cd "perxli.com"
 pnpm install
 ```
 
@@ -45,14 +45,14 @@ docker compose up -d db
 Verify it's healthy:
 ```bash
 docker compose ps
-# Should show kazipay-db with status "healthy"
+# Should show perxli-db with status "healthy"
 ```
 
 The container exposes Postgres on **`localhost:5433`** (not 5432 — dodges conflicts with locally-installed Postgres services that many dev machines already have). Connect with TablePlus / DBeaver / `psql`:
 - Host: `localhost`
 - Port: `5433`
-- DB: `kazipay`
-- User: `kazi`
+- DB: `perxli`
+- User: `perxli`
 - Password: `changeme_local`
 
 ---
@@ -63,18 +63,18 @@ First time only (and any time `prisma/schema.prisma` changes):
 
 ```bash
 # Apply migrations
-pnpm --filter @kazipay/backend prisma:migrate
+pnpm --filter @perxli/backend prisma:migrate
 
 # Seed the two demo users
-pnpm --filter @kazipay/backend prisma:seed
+pnpm --filter @perxli/backend prisma:seed
 ```
 
 Demo credentials (also documented in `backend/README.md`):
 
 | Email | Password | State | Use for |
 |-------|----------|-------|---------|
-| `rowlex@demo.kazi.pay` | `Demo1234!` | verified + onboarded | dashboard testing |
-| `test@demo.kazi.pay` | `Test1234!` | verified, NOT onboarded | wizard testing without re-registering |
+| `rowlex@demo.perxli.com` | `Demo1234!` | verified + onboarded | dashboard testing |
+| `test@demo.perxli.com` | `Test1234!` | verified, NOT onboarded | wizard testing without re-registering |
 
 ---
 
@@ -84,7 +84,7 @@ Two terminals — backend in one, frontend in the other.
 
 ### Backend (Terminal A)
 ```bash
-pnpm --filter @kazipay/backend dev
+pnpm --filter @perxli/backend dev
 ```
 Listens on `http://localhost:3000`. Health check:
 ```bash
@@ -94,7 +94,7 @@ On first boot the backend auto-generates a JWT RS256 keypair into `backend/.keys
 
 ### Frontend (Terminal B)
 ```bash
-pnpm --filter @kazipay/frontend dev
+pnpm --filter @perxli/frontend dev
 # or just: pnpm dev (from the repo root)
 ```
 Vite serves at `http://localhost:5173`. Its dev proxy tunnels `/api/*` to the backend on port 3000 — no CORS / env setup needed for the happy path.
@@ -105,8 +105,8 @@ Vite serves at `http://localhost:5173`. Its dev proxy tunnels `/api/*` to the ba
 
 Open `http://localhost:5173` in a browser:
 
-1. **Existing onboarded user** — sign in as `rowlex@demo.kazi.pay` / `Demo1234!` → straight to `/dashboard`
-2. **Onboarding wizard** — sign in as `test@demo.kazi.pay` / `Test1234!` → bounces to `/onboarding` (4-step wizard)
+1. **Existing onboarded user** — sign in as `rowlex@demo.perxli.com` / `Demo1234!` → straight to `/dashboard`
+2. **Onboarding wizard** — sign in as `test@demo.perxli.com` / `Test1234!` → bounces to `/onboarding` (4-step wizard)
 3. **Fresh register + email verify** — `/register` with any new email → bounces to `/verify-email`. The backend logs the verification link to its terminal output:
    ```
    [EmailService:stub] Verification email for X@Y. Visit: http://localhost:5173/verify-email?token=...
@@ -120,7 +120,7 @@ Open `http://localhost:5173` in a browser:
 
 ```bash
 # Open Prisma Studio (DB browser) at http://localhost:5555
-pnpm --filter @kazipay/backend prisma:studio
+pnpm --filter @perxli/backend prisma:studio
 
 # Run all tests
 pnpm test
@@ -144,7 +144,7 @@ For frontend-only iteration, you can run the React app against the MSW mock back
 
 ```bash
 echo "VITE_USE_MSW=true" >> frontend/.env
-pnpm --filter @kazipay/frontend dev
+pnpm --filter @perxli/frontend dev
 ```
 
 MSW intercepts every `/api/*` call. Behaviour matches the real backend's contract. Useful when:
@@ -165,7 +165,7 @@ You're on Node < 20. Upgrade or use `nvm use 20`.
 The DB container isn't running. `docker compose up -d db`, wait for healthy, retry.
 
 **Prisma errors about missing client**
-Run `pnpm --filter @kazipay/backend prisma:generate`.
+Run `pnpm --filter @perxli/backend prisma:generate`.
 
 **Frontend gets `BACKEND_DOWN` 502 on every API call**
 Backend isn't running. Start it (Terminal A above) or flip `VITE_USE_MSW=true` to use the mock.

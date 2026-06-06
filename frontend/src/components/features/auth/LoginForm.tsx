@@ -15,7 +15,7 @@ import type { ApiError } from '@/lib/api';
  * structured message is rendered above the form.
  *
  * Demo creds (per src/mocks/handlers/auth.handlers.ts):
- *   rowlex@demo.kazi.pay / Demo1234!
+ *   rowlex@demo.perxli.com / Demo1234!
  */
 export function LoginForm() {
   const login = useLogin();
@@ -94,7 +94,7 @@ export function LoginForm() {
       </Button>
 
       <p className="text-center text-base text-dark-t2">
-        New to KaziPay?{' '}
+        New to Perxli?{' '}
         <Link to="/register" className="font-semibold text-lime hover:underline">
           Create an account
         </Link>

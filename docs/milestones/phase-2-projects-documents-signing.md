@@ -11,7 +11,7 @@
 
 Deliver the full project lifecycle from "new project" through "client signed", without money moving yet. A creative can create a project (either entry point), generate documents from the 12-item library, preview, edit, send a public link to the client, and the client can read all docs and type-to-sign. Payments are simulated only — real M-Pesa integration lands in Phase 3.
 
-This is the phase where `kazipay_prototype.html` (creative side) and `kazipay_client.html` (client side) become real.
+This is the phase where `perxli_prototype.html` (creative side) and `perxli_client.html` (client side) become real.
 
 ---
 
@@ -22,7 +22,7 @@ A creative + their client can, end-to-end:
 2. **Select and generate documents** from the 12-item library — defaults pre-checked, smart suggestions surfaced.
 3. **Preview and edit** generated documents inline before sending.
 4. **Send a share link** (URL displayed for copy/paste; actual WhatsApp delivery is Phase 3).
-5. **Client opens the link** with no account, reads all documents in a light-mode view that mirrors `kazipay_client.html`.
+5. **Client opens the link** with no account, reads all documents in a light-mode view that mirrors `perxli_client.html`.
 6. **Client types-to-sign** every required document; the project phase advances on the creative's dashboard.
 7. **Track deliverables** through the Delivery phase as `X/Y done`.
 8. The signing produces an immutable `audit_hash` per document.
@@ -55,7 +55,7 @@ A creative + their client can, end-to-end:
 
 ### 2.2 — New Project Wizard
 
-- [ ] 3-step wizard matching `kazipay_prototype.html`:
+- [ ] 3-step wizard matching `perxli_prototype.html`:
   1. Client info (existing client picker + create-new form)
   2. Project details (title, description, deadline, deliverables count)
   3. Payment terms (total in KES, deposit %, optional milestone schedule)
@@ -76,7 +76,7 @@ A creative + their client can, end-to-end:
   - Change Order, Deposit Receipt
   - Invoice, Final Delivery Note, Project Completion Certificate
 - [ ] Free-tier limit enforced: only Quotation, Scope of Work, Contract are generatable
-- [ ] Activity feed entries use **"kazipay generates"** copy — never "AI generates"
+- [ ] Activity feed entries use **"perxli generates"** copy — never "AI generates"
 
 ---
 
@@ -96,7 +96,7 @@ A creative + their client can, end-to-end:
 - [ ] Document preview renders content_html with creative's logo and brand
 - [ ] Inline edit mode — creative can adjust text in editable blocks before sending
 - [ ] Edits persist as `content_json` patch on the document record
-- [ ] Free-tier documents render with KaziPay watermark (logic ships in Phase 3 with the rest of free-tier enforcement, but render path is built here behind a feature flag)
+- [ ] Free-tier documents render with Perxli watermark (logic ships in Phase 3 with the rest of free-tier enforcement, but render path is built here behind a feature flag)
 - [ ] Side-by-side document tab navigation if multiple documents are generated
 
 ---
@@ -113,7 +113,7 @@ A creative + their client can, end-to-end:
 
 ### 2.7 — Client-Facing Reading View
 
-- [ ] Light-mode theme used (matches `kazipay_client.html`)
+- [ ] Light-mode theme used (matches `perxli_client.html`)
 - [ ] Sender card — creative's logo, name, profession, contact
 - [ ] Project summary
 - [ ] Reading progress tracker — scroll position per document determines "read" status
@@ -168,7 +168,7 @@ Each verifiable end-to-end:
 - [ ] Type-to-sign produces one `signatures` row per document with a computed `audit_hash` (sha256 of canonical doc content + signer metadata).
 - [ ] Phase state machine rejects illegal transitions with `INVALID_PHASE_TRANSITION` (e.g., `PROPOSAL` → `DELIVERY` without signing).
 - [ ] Free-tier limits enforced **server-side** (not just hidden in UI): second active project rejected with `FREE_TIER_PROJECT_LIMIT`; locked doc types rejected with `FREE_TIER_DOC_LOCKED`.
-- [ ] Activity feed uses "kazipay generates" copy — verified by a grep in CI or a code-review checklist.
+- [ ] Activity feed uses "perxli generates" copy — verified by a grep in CI or a code-review checklist.
 - [ ] Tests cover: phase transitions (legal + illegal), signature audit hashing, share-token lookup + revocation, free-tier gating, document picker defaults.
-- [ ] Both `kazipay_prototype.html` and `kazipay_client.html` were referenced during implementation and the React app visually matches them.
+- [ ] Both `perxli_prototype.html` and `perxli_client.html` were referenced during implementation and the React app visually matches them.
 - [ ] `docs/dev-roadmap.md`, this milestone document, and `docs/vision-register.md` updated per Documentation Rules.

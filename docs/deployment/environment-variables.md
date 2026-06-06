@@ -12,9 +12,9 @@ Variables marked **required** will cause the backend to fail fast on startup if 
 
 | Variable | Required | Example | Description |
 |----------|----------|---------|-------------|
-| `DATABASE_URL` | ✅ | `postgresql://kazi:secret@db:5432/kazipay` | Full Prisma connection string |
-| `DB_NAME` | ✅ | `kazipay` | PostgreSQL database name (used by Docker `db` service) |
-| `DB_USER` | ✅ | `kazi` | PostgreSQL username |
+| `DATABASE_URL` | ✅ | `postgresql://perxli:secret@db:5432/perxli` | Full Prisma connection string |
+| `DB_NAME` | ✅ | `perxli` | PostgreSQL database name (used by Docker `db` service) |
+| `DB_USER` | ✅ | `perxli` | PostgreSQL username |
 | `DB_PASSWORD` | ✅ | `changeme` | PostgreSQL password |
 
 ### Auth / JWT
@@ -46,7 +46,7 @@ base64 -w 0 public.pem
 | `NODE_ENV` | ✅ | `development` / `production` | Affects logging, error verbosity, cookie security, integration stub vs. real |
 | `PORT` | — | `3000` | Express listen port (default: `3000`) |
 | `FRONTEND_URL` | ✅ | `http://localhost:5173` | Allowed CORS origin (creative side) |
-| `PUBLIC_BASE_URL` | ✅ | `https://kazi.pay` | Used to build share link URLs sent to clients |
+| `PUBLIC_BASE_URL` | ✅ | `https://perxli.com` | Used to build share link URLs sent to clients |
 | `LOG_LEVEL` | — | `info` | Pino log level: `trace`, `debug`, `info`, `warn`, `error` |
 | `DEFAULT_TIMEZONE` | — | `Africa/Nairobi` | Display timezone (storage is always UTC) |
 
@@ -56,7 +56,7 @@ base64 -w 0 public.pem
 |----------|----------|---------|-------------|
 | `STORAGE_DRIVER` | ✅ | `local` / `s3` | `local` writes to a Docker volume; `s3` for production |
 | `STORAGE_LOCAL_PATH` | If `local` | `/data/uploads` | Mount point for local dev uploads |
-| `S3_BUCKET` | If `s3` | `kazipay-prod-uploads` | S3 bucket for logos, signatures, rendered documents |
+| `S3_BUCKET` | If `s3` | `perxli-prod-uploads` | S3 bucket for logos, signatures, rendered documents |
 | `S3_REGION` | If `s3` | `eu-west-1` | S3 region |
 | `S3_ACCESS_KEY_ID` | If `s3` | — | S3 access key |
 | `S3_SECRET_ACCESS_KEY` | If `s3` | — | S3 secret |
@@ -110,7 +110,7 @@ base64 -w 0 public.pem
 | `EMAIL_PROVIDER` | Phase 3 | `sendgrid` / `ses` |
 | `SENDGRID_API_KEY` | If `sendgrid` | SendGrid API key |
 | `AWS_SES_REGION` | If `ses` | AWS SES region |
-| `EMAIL_FROM` | Phase 3 | e.g. `no-reply@kazi.pay` |
+| `EMAIL_FROM` | Phase 3 | e.g. `no-reply@perxli.com` |
 
 #### eTIMS (Phase 4 — backend only at launch)
 
@@ -136,7 +136,7 @@ Vite only exposes variables prefixed with `VITE_` to the browser bundle.
 | Variable | Required | Example | Description |
 |----------|----------|---------|-------------|
 | `VITE_API_URL` | ✅ | `http://localhost:3000` | Backend API base URL |
-| `VITE_APP_NAME` | — | `KaziPay` | App display name |
+| `VITE_APP_NAME` | — | `Perxli` | App display name |
 | `VITE_PUBLIC_BASE_URL` | ✅ | `http://localhost:5173` | Used to build share-link URLs shown in copy-to-clipboard UI |
 | `VITE_ENV` | — | `development` | Used for Sentry or analytics scoping |
 
@@ -146,10 +146,10 @@ Vite only exposes variables prefixed with `VITE_` to the browser bundle.
 
 ```dotenv
 # ─── Database ──────────────────────────────────────────────────
-DB_NAME=kazipay
-DB_USER=kazi
+DB_NAME=perxli
+DB_USER=perxli
 DB_PASSWORD=changeme_local
-DATABASE_URL=postgresql://kazi:changeme_local@db:5432/kazipay
+DATABASE_URL=postgresql://perxli:changeme_local@db:5432/perxli
 
 # ─── JWT / Auth ────────────────────────────────────────────────
 # Generate with: openssl genrsa -out private.pem 2048 && base64 -w 0 private.pem
@@ -174,7 +174,7 @@ STORAGE_LOCAL_PATH=/data/uploads
 
 # ─── Frontend ──────────────────────────────────────────────────
 VITE_API_URL=http://localhost:3000
-VITE_APP_NAME=KaziPay
+VITE_APP_NAME=Perxli
 VITE_PUBLIC_BASE_URL=http://localhost:5173
 
 # ─── Phase 2: AI document generation ───────────────────────────
@@ -202,7 +202,7 @@ AI_PROVIDER=stub
 # ─── Phase 3: Email fallback ───────────────────────────────────
 # EMAIL_PROVIDER=sendgrid
 # SENDGRID_API_KEY=
-# EMAIL_FROM=no-reply@kazi.pay
+# EMAIL_FROM=no-reply@perxli.com
 
 # ─── Phase 4: eTIMS (hidden from users at launch) ──────────────
 # ETIMS_BASE_URL=
@@ -221,5 +221,5 @@ AI_PROVIDER=stub
 - Never commit `.env` to git. It is in `.gitignore`.
 - In production, inject secrets via your cloud provider's secrets manager (AWS Secrets Manager, Fly.io secrets, etc.) — not via `.env` files in the container.
 - Rotate `REFRESH_TOKEN_SECRET` and JWT keys if they are ever exposed. Rotation invalidates all active sessions — users will need to log in again.
-- M-Pesa Daraja credentials and WhatsApp tokens must be rotated immediately if exposed — both can be used to send messages or initiate transactions on KaziPay's behalf.
+- M-Pesa Daraja credentials and WhatsApp tokens must be rotated immediately if exposed — both can be used to send messages or initiate transactions on Perxli's behalf.
 - AI provider keys should be rate-limited at the provider level — a leaked key without a rate cap can run up significant bills before detection.

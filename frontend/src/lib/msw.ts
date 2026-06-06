@@ -5,7 +5,7 @@
  *
  *   1. **Real backend (default in dev)** — Vite's `server.proxy` routes
  *      `/api/*` to http://localhost:3000. MSW does NOT start. To use this
- *      mode, run `pnpm --filter @kazipay/backend dev` alongside the
+ *      mode, run `pnpm --filter @perxli/backend dev` alongside the
  *      frontend dev server (see docs/deployment/local-setup.md).
  *
  *   2. **MSW mock (opt-in)** — set `VITE_USE_MSW=true` in frontend/.env.

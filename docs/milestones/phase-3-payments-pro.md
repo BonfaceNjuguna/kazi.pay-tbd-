@@ -11,7 +11,7 @@
 
 Connect the simulated parts of Phase 2 to real money and real client delivery. Clients pay deposits and invoices via M-Pesa; share links go out over WhatsApp (with email fallback); creatives can upgrade to Single Project or Pro and unlock AI reminders.
 
-After Phase 3, KaziPay is a complete usable product for early-access creatives — but eTIMS and final hardening still come in Phase 4.
+After Phase 3, Perxli is a complete usable product for early-access creatives — but eTIMS and final hardening still come in Phase 4.
 
 ---
 
@@ -23,7 +23,7 @@ A creative + their client can, end-to-end, on a real (sandbox) M-Pesa flow:
 3. **Client pays deposit via M-Pesa STK Push**; creative's dashboard reflects confirmed payment within seconds via callback.
 4. **Deposit Receipt and Invoice auto-generate** on payment confirmation, sent to the client via WhatsApp.
 5. **AI reminders send on schedule** to nudge unpaid invoices, with escalating-but-professional tone.
-6. **Free-tier hard limits hold** for downgraded users: 1 active project, 3 doc types, 30-day archive, KaziPay watermark.
+6. **Free-tier hard limits hold** for downgraded users: 1 active project, 3 doc types, 30-day archive, Perxli watermark.
 
 ---
 
@@ -88,7 +88,7 @@ A creative + their client can, end-to-end, on a real (sandbox) M-Pesa flow:
   - Free — KES 0
   - Single Project — KES 499 one-time
   - Pro — KES 299/month (with discounted yearly)
-- [ ] Upgrade purchase via M-Pesa STK Push (own creative pays into the KaziPay till)
+- [ ] Upgrade purchase via M-Pesa STK Push (own creative pays into the Perxli till)
 - [ ] On payment confirmation, `subscriptions` updated to new tier
 - [ ] Single Project pins to the next created project (`subscriptions.single_project_id` set on first project creation after upgrade)
 - [ ] Pro tier has `current_period_end`; lapsed Pro auto-downgrades to Free at period end
@@ -100,7 +100,7 @@ A creative + their client can, end-to-end, on a real (sandbox) M-Pesa flow:
 
 - [ ] 1 active project at a time — creating a second active project errors with `FREE_TIER_PROJECT_LIMIT`
 - [ ] Only 3 document types generatable on Free (Quotation, Scope of Work, Contract) — other types return `FREE_TIER_DOC_LOCKED`
-- [ ] Documents render with **"Powered by KaziPay"** watermark and use KaziPay branding (not creative's own logo) on Free
+- [ ] Documents render with **"Powered by Perxli"** watermark and use Perxli branding (not creative's own logo) on Free
 - [ ] No custom signature upload — Free uses a default block
 - [ ] No payment reminders
 - [ ] Projects older than 30 days become read-only (archived UI banner with upgrade prompt)
@@ -120,7 +120,7 @@ A creative + their client can, end-to-end, on a real (sandbox) M-Pesa flow:
 ### 3.8 — Activity Feed
 
 - [ ] Per-project activity feed records: project created, document generated, link sent, link viewed, signed, payment initiated, payment confirmed, reminder sent
-- [ ] All entries use the **"kazipay generates"** convention — never "AI generates"
+- [ ] All entries use the **"perxli generates"** convention — never "AI generates"
 - [ ] Timestamps in EAT (Africa/Nairobi) by default
 
 ---

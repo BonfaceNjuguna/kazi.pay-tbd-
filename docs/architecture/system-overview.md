@@ -48,7 +48,7 @@
 
 ## Two Audiences, Two Surfaces
 
-KaziPay has two distinct user-facing surfaces. They share a backend but have different design systems and different auth models. Keep them visibly separated in the codebase.
+Perxli has two distinct user-facing surfaces. They share a backend but have different design systems and different auth models. Keep them visibly separated in the codebase.
 
 | Surface | Audience | Theme | Auth |
 |---------|----------|-------|------|
@@ -76,7 +76,7 @@ KaziPay has two distinct user-facing surfaces. They share a backend but have dif
 ## Request Lifecycle (Public, Client-Side)
 
 ```
-1. Browser opens https://kazi.pay/s/{token}
+1. Browser opens https://perxli.com/s/{token}
 2. NGINX serves the static client-side React bundle
 3. Client app calls GET /api/v1/share/{token}
 4. Share-token middleware looks up the token in project_share_links
@@ -239,5 +239,5 @@ See `AGENTS.md` for the full list. Quick reference:
 - API responses: standard envelope `{ status, data }` or `{ status, message, code }`
 - DB queries: always include `user_id` filter on user-scoped tables
 - Soft deletes: `deletedAt` field; queries always filter `WHERE deleted_at IS NULL`
-- User-facing copy: "kazipay generates", never "AI generates"
+- User-facing copy: "perxli generates", never "AI generates"
 - Icons: inline SVG only — no CDN, no icon font

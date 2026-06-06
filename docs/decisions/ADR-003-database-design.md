@@ -8,7 +8,7 @@
 
 ## Context
 
-KaziPay stores financial data (M-Pesa payments, deposits, invoices), legally-meaningful artifacts (signed contracts, type-to-sign audit trails), and AI-generated content (document JSON + rendered HTML). These require strict data integrity, auditability, and per-creative isolation. Design decisions made now are expensive to undo.
+Perxli stores financial data (M-Pesa payments, deposits, invoices), legally-meaningful artifacts (signed contracts, type-to-sign audit trails), and AI-generated content (document JSON + rendered HTML). These require strict data integrity, auditability, and per-creative isolation. Design decisions made now are expensive to undo.
 
 ---
 
@@ -26,7 +26,7 @@ All currency values are stored as the **lowest denomination integer**, i.e. KES 
 
 ### 2. Per-user isolation via `user_id` column
 
-KaziPay is single-tenant in spirit (one creative = one account), but the same DB serves all creatives. Every user-scoped table has a `user_id` foreign key.
+Perxli is single-tenant in spirit (one creative = one account), but the same DB serves all creatives. Every user-scoped table has a `user_id` foreign key.
 
 **Rationale:** Cross-creative data leaks are catastrophic — a competitor seeing your client list or signed contracts would be a product-ending bug.
 

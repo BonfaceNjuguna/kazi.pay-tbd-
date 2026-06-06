@@ -9,7 +9,7 @@
 
 ## Objective
 
-Production hardening, eTIMS compliance built into the backend (no UI yet — that's the future "we handle your compliance for you" Pro feature), and public launch. By end of Phase 4, KaziPay is deployed on cloud infrastructure, security-audited, and onboarding paying creatives.
+Production hardening, eTIMS compliance built into the backend (no UI yet — that's the future "we handle your compliance for you" Pro feature), and public launch. By end of Phase 4, Perxli is deployed on cloud infrastructure, security-audited, and onboarding paying creatives.
 
 ---
 
@@ -20,7 +20,7 @@ Production hardening, eTIMS compliance built into the backend (no UI yet — tha
 3. **Every invoice generates a stored eTIMS-ready payload** (submission flag off — UI hidden).
 4. **End-to-end test suite (Playwright)** covering the full creative + client loop runs green on every merge to `main`.
 5. **Background job queue (BullMQ + Redis)** absorbs all async work — AI gen, reminders, M-Pesa reconciliation, WhatsApp/email sending.
-6. **Admin dashboard** lets KaziPay staff manage users, refunds, feature flags, and view platform metrics.
+6. **Admin dashboard** lets Perxli staff manage users, refunds, feature flags, and view platform metrics.
 7. **First paying creative outside the team** completes a full project-to-payment loop on production.
 
 ---
@@ -62,7 +62,7 @@ Production hardening, eTIMS compliance built into the backend (no UI yet — tha
 - [ ] Activity feed entries push via WebSocket or SSE to the creative's dashboard
 - [ ] Banner notifications for high-priority events (payment received, client signed)
 - [ ] Notification preferences per user
-- [ ] All copy uses **"kazipay generates"** — enforce via lint rule on copy strings if practical
+- [ ] All copy uses **"perxli generates"** — enforce via lint rule on copy strings if practical
 
 ---
 
