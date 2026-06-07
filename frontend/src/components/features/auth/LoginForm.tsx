@@ -6,6 +6,8 @@ import { Button, Input } from '@/components/ui';
 import { useLogin } from '@/hooks/useAuth';
 import type { ApiError } from '@/lib/api';
 
+import { GoogleSignInButton } from './GoogleSignInButton';
+
 /**
  * Login form.
  *
@@ -51,54 +53,75 @@ export function LoginForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate={false} className="flex flex-col gap-4">
-      {serverError && (
-        <div
-          role="alert"
-          className="rounded-md border border-danger/40 bg-danger-bg px-3 py-2 text-sm font-semibold text-danger"
-        >
-          {serverError}
+    <div className="flex flex-col gap-5">
+      <GoogleSignInButton text="signin_with" context="signin" ariaLabel="Sign in with Google" />
+
+      <OrDivider />
+
+      <form onSubmit={onSubmit} noValidate={false} className="flex flex-col gap-4">
+        {serverError && (
+          <div
+            role="alert"
+            className="rounded-md border border-danger/40 bg-danger-bg px-3 py-2 text-sm font-semibold text-danger"
+          >
+            {serverError}
+          </div>
+        )}
+
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          autoComplete="email"
+          required
+          placeholder="you@example.com"
+        />
+
+        <Input
+          label="Password"
+          type="password"
+          name="password"
+          autoComplete="current-password"
+          required
+          minLength={8}
+          placeholder="••••••••"
+        />
+
+        <div className="-mt-2 text-right">
+          <Link
+            to="/forgot-password"
+            className="text-sm font-semibold text-dark-t2 hover:text-lime"
+          >
+            Forgot password?
+          </Link>
         </div>
-      )}
 
-      <Input
-        label="Email"
-        type="email"
-        name="email"
-        autoComplete="email"
-        required
-        placeholder="you@example.com"
-      />
+        <Button type="submit" fullWidth loading={login.isPending}>
+          Sign in
+        </Button>
 
-      <Input
-        label="Password"
-        type="password"
-        name="password"
-        autoComplete="current-password"
-        required
-        minLength={8}
-        placeholder="••••••••"
-      />
+        <p className="text-center text-base text-dark-t2">
+          New to Perxli?{' '}
+          <Link to="/register" className="font-semibold text-lime hover:underline">
+            Create an account
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
+}
 
-      <div className="-mt-2 text-right">
-        <Link
-          to="/forgot-password"
-          className="text-sm font-semibold text-dark-t2 hover:text-lime"
-        >
-          Forgot password?
-        </Link>
-      </div>
-
-      <Button type="submit" fullWidth loading={login.isPending}>
-        Sign in
-      </Button>
-
-      <p className="text-center text-base text-dark-t2">
-        New to Perxli?{' '}
-        <Link to="/register" className="font-semibold text-lime hover:underline">
-          Create an account
-        </Link>
-      </p>
-    </form>
+/**
+ * Visual separator between the Google button and the email/password form.
+ * Hides the dividing rule on the smallest viewports where the AuthLayout
+ * card already provides enough visual grouping.
+ */
+function OrDivider() {
+  return (
+    <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-dark-t3">
+      <span className="h-px flex-1 bg-dark-border" />
+      <span>or</span>
+      <span className="h-px flex-1 bg-dark-border" />
+    </div>
   );
 }

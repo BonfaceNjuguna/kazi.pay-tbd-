@@ -139,6 +139,16 @@ export async function login(input: {
       'INVALID_CREDENTIALS',
     );
   }
+  if (!user.passwordHash) {
+    // Account exists but has never had a password set — it was created via
+    // Google sign-in. Don't leak this fact ("INVALID_CREDENTIALS" matches
+    // the no-such-user branch above; no-enumeration); the UI can decide
+    // whether to nudge users to retry via Google after repeated failures.
+    throw Unauthorized(
+      'Email or password is incorrect.',
+      'INVALID_CREDENTIALS',
+    );
+  }
   const ok = await verifyPassword(input.password, user.passwordHash);
   if (!ok) {
     throw Unauthorized(
@@ -157,7 +167,7 @@ export async function login(input: {
   return { user, tokens };
 }
 
-async function issueTokens(
+export async function issueTokens(
   user: User,
   meta: RequestMeta,
 ): Promise<AuthSessionTokens> {
@@ -241,6 +251,9 @@ export async function forgotPassword(email: string) {
   // No-enumeration: always succeed for the caller.
   const user = await usersRepo.findByEmail(email);
   if (!user) return;
+  // OAuth-only accounts have no password to reset — silently no-op so we
+  // don't email the user with a meaningless link OR leak the account type.
+  if (!user.passwordHash) return;
   const raw = generateRefreshToken();
   const tokenHash = hashRefreshToken(raw);
   await verifyRepo.createPasswordReset({

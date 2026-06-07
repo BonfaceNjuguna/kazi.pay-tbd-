@@ -7,6 +7,7 @@ import { requireUser } from '@/middleware/require-user.js';
 import { validateBody } from '@/middleware/validate.js';
 import {
   ForgotPasswordSchema,
+  GoogleSignInSchema,
   LoginSchema,
   RegisterSchema,
   ResendVerificationSchema,
@@ -43,6 +44,12 @@ authRouter.post(
   auth.register,
 );
 authRouter.post('/login', authLimiter, validateBody(LoginSchema), auth.login);
+authRouter.post(
+  '/google',
+  authLimiter,
+  validateBody(GoogleSignInSchema),
+  auth.googleSignIn,
+);
 authRouter.post('/logout', auth.logout);
 authRouter.post('/refresh', auth.refresh);
 

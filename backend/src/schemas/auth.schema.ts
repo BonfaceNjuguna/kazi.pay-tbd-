@@ -41,3 +41,12 @@ export const ResetPasswordSchema = z.object({
   password: z.string().min(8).max(200),
 });
 export type ResetPasswordInput = z.infer<typeof ResetPasswordSchema>;
+
+// Google ID tokens are JWTs — three base64url segments separated by dots,
+// typically ~900-1500 bytes. The cap is generous so we don't reject
+// future Google payload growth, but tight enough that a request body
+// can't smuggle a megabyte through this field.
+export const GoogleSignInSchema = z.object({
+  idToken: z.string().min(20).max(4096),
+});
+export type GoogleSignInInput = z.infer<typeof GoogleSignInSchema>;

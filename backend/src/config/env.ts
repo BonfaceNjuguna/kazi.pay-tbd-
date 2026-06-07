@@ -38,6 +38,13 @@ const schema = z.object({
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(900_000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(100),
   AUTH_RATE_LIMIT_MAX: z.coerce.number().int().positive().default(10),
+
+  // Google OAuth — required for "Sign in with Google" to function. Same value
+  // is exposed to the frontend as VITE_GOOGLE_CLIENT_ID. ID-token verification
+  // does NOT need the Google client *secret*; that's the GIS advantage.
+  // Optional in dev so the backend boots without it; the /auth/google route
+  // will return 503 if hit when unset.
+  GOOGLE_CLIENT_ID: z.string().optional(),
 });
 
 const parsed = schema.safeParse(process.env);

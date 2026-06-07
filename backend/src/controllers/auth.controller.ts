@@ -1,12 +1,14 @@
 import type { RequestHandler } from 'express';
 
 import * as authService from '@/services/auth.service.js';
+import * as oauthService from '@/services/oauth.service.js';
 import * as usersRepo from '@/repositories/users.repository.js';
 import { success } from '@/utils/api-response.js';
 import { Unauthorized } from '@/utils/app-error.js';
 
 import type {
   ForgotPasswordInput,
+  GoogleSignInInput,
   LoginInput,
   RegisterInput,
   ResendVerificationInput,
@@ -47,6 +49,35 @@ export const login: RequestHandler = async (req, res, next) => {
       success({
         user: usersRepo.toPublic(user),
         accessToken: tokens.accessToken,
+      }),
+    );
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const googleSignIn: RequestHandler = async (req, res, next) => {
+  try {
+    const { idToken } = req.body as GoogleSignInInput;
+    const meta = authService.extractRequestMeta(req);
+    const { user, tokens, isNew } = await oauthService.signInWithGoogle(
+      idToken,
+      meta,
+    );
+
+    res.cookie(
+      authService.REFRESH_COOKIE_NAME,
+      tokens.refreshToken,
+      authService.refreshCookieOptions(tokens.refreshExpiresAt),
+    );
+
+    // 200 for both new and returning users. `isNew` lets the frontend
+    // decide whether to send the user to /onboarding or straight to /.
+    res.json(
+      success({
+        user: usersRepo.toPublic(user),
+        accessToken: tokens.accessToken,
+        isNew,
       }),
     );
   } catch (err) {
