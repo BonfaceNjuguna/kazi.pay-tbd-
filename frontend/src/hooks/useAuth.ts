@@ -52,6 +52,29 @@ export function useLogin() {
   });
 }
 
+// ── Google sign-in ─────────────────────────────────────────────────────
+
+/**
+ * Same shape as `useLogin` — calls POST /auth/google with the GIS-issued
+ * ID token, stores the returned session, navigates onward. Auto-link is
+ * handled server-side; from the UI's point of view, this is just "log in
+ * via Google" whether the account is new or pre-existing.
+ */
+export function useGoogleSignIn() {
+  const setSession = useAuthStore((s) => s.setSession);
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: authService.googleSignIn,
+    onSuccess: ({ user, accessToken }) => {
+      setSession({ user, accessToken });
+      qc.setQueryData(ME_QUERY_KEY, user);
+      navigate(postAuthDestination(user), { replace: true });
+    },
+  });
+}
+
 // ── Register ───────────────────────────────────────────────────────────
 
 export function useRegister() {

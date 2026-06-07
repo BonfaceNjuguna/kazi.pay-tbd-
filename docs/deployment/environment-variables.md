@@ -85,6 +85,19 @@ Verification + password-reset emails go through the `hello@perxli.com` mailbox o
 | `MAIL_FROM` | ✅ | `hello@perxli.com` | `From:` address on outbound transactional mail |
 | `MAIL_FROM_NAME` | — | `Perxli` | Display name on the `From:` header |
 
+### Google OAuth ("Sign in with Google")
+
+| Variable | Required | Example | Description |
+|----------|----------|---------|-------------|
+| `GOOGLE_CLIENT_ID` | If feature enabled | `1234567890-abcd.apps.googleusercontent.com` | Web Application client ID from Google Cloud Console. Used to validate the `aud` claim on ID tokens. Public — same value mirrors to the frontend as `VITE_GOOGLE_CLIENT_ID`. If unset, `POST /api/v1/auth/google` returns 503 `GOOGLE_DISABLED` and the frontend button hides itself. |
+
+**Setup**: at [console.cloud.google.com](https://console.cloud.google.com) → APIs & Services → Credentials → Create Credentials → OAuth client ID → "Web application". Add Authorized JavaScript origins:
+- `http://localhost:5173` (dev)
+- `https://stage.tool.perxli.com` (once stage is live)
+- `https://tool.perxli.com` (once prod is live)
+
+Copy the Client ID into `GOOGLE_CLIENT_ID` (backend `.env`) and `VITE_GOOGLE_CLIENT_ID` (frontend `.env`). The "client secret" Google gives you is **not** needed — ID-token verification uses Google's public JWKs.
+
 ### Integrations (Phase 2+)
 
 #### AI Provider (Phase 2)
@@ -154,6 +167,7 @@ Vite only exposes variables prefixed with `VITE_` to the browser bundle.
 | `VITE_APP_NAME` | — | `Perxli` | App display name |
 | `VITE_PUBLIC_BASE_URL` | ✅ | `http://localhost:5173` | Used to build share-link URLs shown in copy-to-clipboard UI |
 | `VITE_ENV` | — | `development` | Used for Sentry or analytics scoping |
+| `VITE_GOOGLE_CLIENT_ID` | If feature enabled | `1234567890-abcd.apps.googleusercontent.com` | Mirrors the backend's `GOOGLE_CLIENT_ID`. When unset, the "Sign in with Google" button hides itself; email/password auth keeps working. |
 
 ---
 

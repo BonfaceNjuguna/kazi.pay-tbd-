@@ -6,6 +6,8 @@ import { Button, Input } from '@/components/ui';
 import { useRegister } from '@/hooks/useAuth';
 import type { ApiError } from '@/lib/api';
 
+import { GoogleSignInButton } from './GoogleSignInButton';
+
 /**
  * Register form.
  *
@@ -46,56 +48,73 @@ export function RegisterForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      {serverError && (
-        <div
-          role="alert"
-          className="rounded-md border border-danger/40 bg-danger-bg px-3 py-2 text-sm font-semibold text-danger"
-        >
-          {serverError}
-        </div>
-      )}
+    <div className="flex flex-col gap-5">
+      <GoogleSignInButton text="signup_with" context="signup" ariaLabel="Sign up with Google" />
 
-      <Input
-        label="Your full name"
-        type="text"
-        name="fullName"
-        autoComplete="name"
-        required
-        minLength={2}
-        placeholder="Rowlex Karimi"
-      />
+      <OrDivider />
 
-      <Input
-        label="Email"
-        type="email"
-        name="email"
-        autoComplete="email"
-        required
-        placeholder="you@example.com"
-      />
+      <form onSubmit={onSubmit} className="flex flex-col gap-4">
+        {serverError && (
+          <div
+            role="alert"
+            className="rounded-md border border-danger/40 bg-danger-bg px-3 py-2 text-sm font-semibold text-danger"
+          >
+            {serverError}
+          </div>
+        )}
 
-      <Input
-        label="Password"
-        type="password"
-        name="password"
-        autoComplete="new-password"
-        required
-        minLength={8}
-        placeholder="At least 8 characters"
-        hint="8+ characters. Use a phrase you'll actually remember."
-      />
+        <Input
+          label="Your full name"
+          type="text"
+          name="fullName"
+          autoComplete="name"
+          required
+          minLength={2}
+          placeholder="Rowlex Karimi"
+        />
 
-      <Button type="submit" fullWidth loading={register.isPending}>
-        Create my account
-      </Button>
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          autoComplete="email"
+          required
+          placeholder="you@example.com"
+        />
 
-      <p className="text-center text-base text-dark-t2">
-        Already have an account?{' '}
-        <Link to="/login" className="font-semibold text-lime hover:underline">
-          Sign in
-        </Link>
-      </p>
-    </form>
+        <Input
+          label="Password"
+          type="password"
+          name="password"
+          autoComplete="new-password"
+          required
+          minLength={8}
+          placeholder="At least 8 characters"
+          hint="8+ characters. Use a phrase you'll actually remember."
+        />
+
+        <Button type="submit" fullWidth loading={register.isPending}>
+          Create my account
+        </Button>
+
+        <p className="text-center text-base text-dark-t2">
+          Already have an account?{' '}
+          <Link to="/login" className="font-semibold text-lime hover:underline">
+            Sign in
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
+}
+
+/** Mirror of LoginForm's OrDivider — kept local so both can evolve. */
+function OrDivider() {
+  return (
+    <div className="flex items-center gap-3 text-xs font-semibold uppercase tracking-wider text-dark-t3">
+      <span className="h-px flex-1 bg-dark-border" />
+      <span>or</span>
+      <span className="h-px flex-1 bg-dark-border" />
+    </div>
   );
 }

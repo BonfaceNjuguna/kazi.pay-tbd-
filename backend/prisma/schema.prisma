@@ -34,12 +34,26 @@ enum SubscriptionPlan {
 // ────────────────────────────────────────────────────────────────────
 
 model User {
-  id           String @id @default(uuid()) @db.Uuid
-  email        String @unique @db.VarChar(255)
-  passwordHash String @map("password_hash")
-  fullName     String @map("full_name") @db.VarChar(255)
+  id    String @id @default(uuid()) @db.Uuid
+  email String @unique @db.VarChar(255)
+  // Nullable since 2026-06: a user who signs up via Google OAuth has no
+  // password. A `null` here means "no password set — login via federated
+  // provider only." Password-reset flows must check this and refuse to
+  // hash-compare when null.
+  passwordHash String? @map("password_hash")
+  fullName     String  @map("full_name") @db.VarChar(255)
+
+  // Google OAuth — the `sub` claim from a verified Google ID token. Unique
+  // per Google account, immutable, opaque. Set on first Google sign-in
+  // (either by creating a fresh user or by linking to an existing record
+  // whose `email` matches the verified Google email). Subsequent Google
+  // sign-ins look up by `googleSub`, not by email, so an email change in
+  // Google doesn't break the link.
+  googleSub String? @unique @map("google_sub") @db.VarChar(255)
 
   // Set by /auth/verify-email when the user follows the link in their email.
+  // Google sign-ups skip this — Google returns `email_verified: true` in
+  // the ID token, so we trust it on first authentication.
   emailVerified Boolean @default(false) @map("email_verified")
 
   // Set during the /onboarding wizard (steps 1–4). Empty strings + plan FREE
