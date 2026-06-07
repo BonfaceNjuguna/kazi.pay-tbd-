@@ -8,4 +8,5 @@ export { Badge, type BadgeProps } from './Badge';
 export { Checkbox, type CheckboxProps } from './Checkbox';
 export { Modal, type ModalProps } from './Modal';
 export { Spinner, type SpinnerProps } from './Spinner';
+export { Logo, type LogoProps } from './Logo';
 export * from './icons';

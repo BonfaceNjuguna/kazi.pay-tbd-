@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 
-import { IconLogout } from '@/components/ui';
+import { IconLogout, Logo } from '@/components/ui';
 import { useLogout } from '@/hooks/useAuth';
 import { useAuthStore } from '@/store/auth.store';
 
@@ -42,9 +42,10 @@ function TopBar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 md:px-6">
         <Link
           to="/onboarding"
-          className="flex items-center gap-2 text-lg font-extrabold tracking-tighter"
+          className="flex items-center"
+          aria-label="Perxli"
         >
-          Perx<span className="text-lime">li</span>
+          <Logo size="md" />
         </Link>
 
         {user && (

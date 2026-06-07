@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 
-import { IconLogout } from '@/components/ui';
+import { IconLogout, Logo } from '@/components/ui';
 import { useLogout } from '@/hooks/useAuth';
 import { cn } from '@/lib/cn';
 import { useAuthStore } from '@/store/auth.store';
@@ -72,16 +72,7 @@ function TopNav() {
 }
 
 function Brand() {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-lime">
-        <span className="text-base font-extrabold text-dark-surface">P</span>
-      </div>
-      <span className="text-lg font-extrabold tracking-tighter">
-        Perx<span className="text-lime">li</span>
-      </span>
-    </div>
-  );
+  return <Logo size="md" />;
 }
 
 function TopNavLink({ to, children }: { to: string; children: React.ReactNode }) {
