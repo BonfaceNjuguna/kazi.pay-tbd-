@@ -3,7 +3,13 @@
   "compilerOptions": {
     "noEmit": false,
     "declaration": false,
-    "sourceMap": true
+    "sourceMap": true,
+    // Override the wider rootDir in tsconfig.json (which is "." so that
+    // prisma + vitest configs typecheck too). For the build we only emit
+    // src/, so rootDir narrows to ./src and the output structure matches
+    // what package.json's `start` script expects (dist/index.js, not
+    // dist/src/index.js).
+    "rootDir": "./src"
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist", "**/*.test.ts", "vitest.config.ts"]

@@ -1,0 +1,235 @@
+name: Deploy
+
+# Auto-deploy on merge:
+#   - push to `develop` → stage.tool.perxli.com (perxli-stage stack)
+#   - push to `main`    → tool.perxli.com       (perxli-prod  stack)
+#
+# Workflow:
+#   1. Wait for CI green (lint/typecheck/test/build) via needs:.
+#   2. Build backend + frontend images in parallel; push to GHCR with
+#      both `sha-<commit>` (immutable handle, used for rollback) and
+#      `latest-<env>` (floating, used by docker compose pull).
+#   3. SSH into the Contabo VPS as `deploy@VPS_HOST`, cd to the per-env
+#      directory under /opt/perxli/, run `prisma migrate deploy`, then
+#      `docker compose pull && up -d --remove-orphans`.
+#
+# Per ADR-006: app secrets (DB password, JWT keys, SMTP password) NEVER
+# come from GitHub Actions — they live on the VPS in /opt/perxli/{env}/.env.
+# Actions only carries the SSH credentials needed to log into the host.
+
+on:
+  push:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        type: choice
+        options: [stage, prod]
+
+concurrency:
+  # One deploy per environment at a time. Cancel in-flight on a new push.
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write   # for `docker/login-action` against ghcr.io
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_BACKEND:  ghcr.io/${{ github.repository_owner }}/perxli-backend
+  IMAGE_FRONTEND: ghcr.io/${{ github.repository_owner }}/perxli-frontend
+
+jobs:
+  resolve-env:
+    # Maps branch → target environment exactly once for downstream jobs.
+    # workflow_dispatch input overrides the branch mapping.
+    runs-on: ubuntu-latest
+    outputs:
+      environment: ${{ steps.pick.outputs.environment }}
+      compose_dir: ${{ steps.pick.outputs.compose_dir }}
+      latest_tag:  ${{ steps.pick.outputs.latest_tag }}
+      site_url:    ${{ steps.pick.outputs.site_url }}
+    steps:
+      - id: pick
+        run: |
+          if [[ -n "${{ inputs.environment }}" ]]; then
+            ENV="${{ inputs.environment }}"
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            ENV="prod"
+          elif [[ "${{ github.ref }}" == "refs/heads/develop" ]]; then
+            ENV="stage"
+          else
+            echo "Push to a branch that doesn't map to an env — refusing."
+            exit 1
+          fi
+          echo "environment=$ENV" >> "$GITHUB_OUTPUT"
+          echo "compose_dir=/opt/perxli/$ENV" >> "$GITHUB_OUTPUT"
+          echo "latest_tag=latest-$ENV" >> "$GITHUB_OUTPUT"
+          if [[ "$ENV" == "prod" ]]; then
+            echo "site_url=https://tool.perxli.com" >> "$GITHUB_OUTPUT"
+          else
+            echo "site_url=https://stage.tool.perxli.com" >> "$GITHUB_OUTPUT"
+          fi
+          echo "Resolved environment: $ENV"
+
+  build-backend:
+    needs: resolve-env
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build + push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./backend/Dockerfile
+          push: true
+          tags: |
+            ${{ env.IMAGE_BACKEND }}:sha-${{ github.sha }}
+            ${{ env.IMAGE_BACKEND }}:${{ needs.resolve-env.outputs.latest_tag }}
+          cache-from: type=gha,scope=backend-${{ needs.resolve-env.outputs.environment }}
+          cache-to:   type=gha,scope=backend-${{ needs.resolve-env.outputs.environment }},mode=max
+
+  build-frontend:
+    needs: resolve-env
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build + push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./frontend/Dockerfile
+          push: true
+          # Build args become inlined Vite envs — see frontend/Dockerfile.
+          # VITE_API_URL stays empty so the SPA talks to same-origin /api/v1,
+          # which DA NGINX proxies to the backend container.
+          build-args: |
+            VITE_API_URL=
+            VITE_PUBLIC_BASE_URL=${{ needs.resolve-env.outputs.site_url }}
+            VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+            VITE_APP_NAME=Perxli
+            VITE_ENV=${{ needs.resolve-env.outputs.environment }}
+          tags: |
+            ${{ env.IMAGE_FRONTEND }}:sha-${{ github.sha }}
+            ${{ env.IMAGE_FRONTEND }}:${{ needs.resolve-env.outputs.latest_tag }}
+          cache-from: type=gha,scope=frontend-${{ needs.resolve-env.outputs.environment }}
+          cache-to:   type=gha,scope=frontend-${{ needs.resolve-env.outputs.environment }},mode=max
+
+  ship-compose-template:
+    # Ships the current compose file from the repo to the VPS so the
+    # topology is always in sync with the branch. Per ADR-006: the repo
+    # is the source of truth for what the stack looks like; the VPS just
+    # runs the latest committed template.
+    needs: [resolve-env, build-backend, build-frontend]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.VPS_SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+      - name: Upload compose template
+        env:
+          ENV:  ${{ needs.resolve-env.outputs.environment }}
+          DIR:  ${{ needs.resolve-env.outputs.compose_dir }}
+          HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          scp -i ~/.ssh/id_ed25519 \
+            "deploy/docker-compose.${ENV}.yml" \
+            "deploy@${HOST}:${DIR}/docker-compose.yml"
+
+  deploy:
+    needs: [resolve-env, build-backend, build-frontend, ship-compose-template]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: ${{ needs.resolve-env.outputs.environment }}
+      url:  ${{ needs.resolve-env.outputs.site_url }}
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          echo "${{ secrets.VPS_SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
+
+      - name: Authenticate Docker to GHCR on the VPS
+        env:
+          HOST:  ${{ secrets.VPS_HOST }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          # Use a fresh token from this run rather than persisting a PAT
+          # on the VPS — minimises blast radius if the VPS is ever read.
+          ssh -i ~/.ssh/id_ed25519 deploy@${HOST} \
+            "echo '${TOKEN}' | docker login ghcr.io -u ${ACTOR} --password-stdin"
+
+      - name: Pull, migrate, restart
+        env:
+          HOST: ${{ secrets.VPS_HOST }}
+          DIR:  ${{ needs.resolve-env.outputs.compose_dir }}
+          TAG:  sha-${{ github.sha }}
+        run: |
+          # Set IMAGE_TAG to the immutable SHA tag so a rollback never
+          # silently grabs the wrong image even if `latest-*` rolls
+          # forward mid-deploy.
+          ssh -i ~/.ssh/id_ed25519 deploy@${HOST} bash -se <<EOF
+            set -euo pipefail
+            cd '${DIR}'
+            export IMAGE_TAG='${TAG}'
+
+            # Pull the freshly-pushed images.
+            docker compose pull
+
+            # Migrations run BEFORE swapping the app container — fail
+            # loud and stop the deploy if the schema can't roll forward.
+            # --rm so the migrator container is gc'd; the persistent
+            # backend container is started by the next 'up -d'.
+            docker compose run --rm backend npx prisma migrate deploy
+
+            # Recreate containers with the new images.
+            docker compose up -d --remove-orphans
+
+            # Trim old images so /var/lib/docker doesn't grow unbounded.
+            # Keeps anything tagged (incl. sha-<previous>) for rollback.
+            docker image prune -f
+          EOF
+
+      - name: Smoke check
+        env:
+          URL: ${{ needs.resolve-env.outputs.site_url }}
+        run: |
+          # Hit /api/v1/health through the public URL — proves DA NGINX
+          # is forwarding correctly AND the backend container is up.
+          for attempt in 1 2 3 4 5; do
+            if curl -fsS "${URL}/api/v1/health" >/dev/null; then
+              echo "Smoke check passed (attempt $attempt)."
+              exit 0
+            fi
+            echo "Smoke check failed (attempt $attempt) — retrying in 6s..."
+            sleep 6
+          done
+          echo "Smoke check failed after retries."
+          exit 1

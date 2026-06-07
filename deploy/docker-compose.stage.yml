@@ -1,0 +1,111 @@
+# Perxli — STAGING stack. Deployed to /opt/perxli/stage/ on the Contabo
+# VPS per ADR-006. Identical to prod except for the image tags pulled
+# (latest-stage vs latest-prod) and the host port bindings (3002/4002 vs
+# 3001/4001) so the two stacks coexist without colliding.
+#
+# Secrets (DB password, JWT keys, SMTP creds, etc.) come from
+# /opt/perxli/stage/.env which is gitignored and chmod 600 on the VPS.
+# The variable list lives in docs/deployment/environment-variables.md.
+#
+# Container topology — see ADR-006:
+#   - perxli-stage-frontend (nginx)  → 127.0.0.1:3002
+#   - perxli-stage-backend  (node)   → 127.0.0.1:4002
+#   - perxli-stage-db       (postgres, private network only)
+
+name: perxli-stage
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: perxli-stage-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${DB_NAME:-perxli}
+      POSTGRES_USER:     ${DB_USER:-perxli}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+    volumes:
+      - perxli_stage_pgdata:/var/lib/postgresql/data
+    # Deliberately NO host port binding — only the backend in this stack
+    # (over the private network) can reach the DB. Host-side admin tools
+    # use `docker exec perxli-stage-db psql ...` instead.
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-perxli} -d ${DB_NAME:-perxli}']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: ghcr.io/bonfacenjuguna/perxli-backend:${IMAGE_TAG:-latest-stage}
+    container_name: perxli-stage-backend
+    restart: unless-stopped
+    pull_policy: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${DB_USER:-perxli}:${DB_PASSWORD}@db:5432/${DB_NAME:-perxli}?schema=public
+
+      # Cookies + CORS — match the public URL Direct Admin terminates TLS at.
+      CORS_ORIGINS:   https://stage.tool.perxli.com
+      FRONTEND_URL:   https://stage.tool.perxli.com
+      PUBLIC_BASE_URL: https://stage.tool.perxli.com
+
+      # Auth secrets — long random values, per-environment. Never share with prod.
+      JWT_PRIVATE_KEY:        ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY:         ${JWT_PUBLIC_KEY}
+      REFRESH_TOKEN_SECRET:   ${REFRESH_TOKEN_SECRET}
+      ACCESS_TOKEN_TTL_MIN:   ${ACCESS_TOKEN_TTL_MIN:-15}
+      REFRESH_TOKEN_TTL_DAYS: ${REFRESH_TOKEN_TTL_DAYS:-7}
+
+      # Rate limits — tighter in prod via the prod .env if needed.
+      RATE_LIMIT_WINDOW_MS:  ${RATE_LIMIT_WINDOW_MS:-900000}
+      RATE_LIMIT_MAX:        ${RATE_LIMIT_MAX:-100}
+      AUTH_RATE_LIMIT_MAX:   ${AUTH_RATE_LIMIT_MAX:-10}
+
+      # Outbound transactional mail.
+      MAIL_DRIVER:     ${MAIL_DRIVER:-smtp}
+      SMTP_HOST:       ${SMTP_HOST:-mail.perxli.com}
+      SMTP_PORT:       ${SMTP_PORT:-587}
+      SMTP_SECURE:     ${SMTP_SECURE:-false}
+      SMTP_USER:       ${SMTP_USER}
+      SMTP_PASSWORD:   ${SMTP_PASSWORD}
+      MAIL_FROM:       ${MAIL_FROM:-hello@perxli.com}
+      MAIL_FROM_NAME:  ${MAIL_FROM_NAME:-Perxli}
+
+      # Google OAuth — same client ID baked into the frontend bundle.
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      # Uploads (logos, signatures, etc.) — bind-mounted so the VPS owns
+      # the data even if the container is rebuilt. Backed up alongside DB.
+      - ./data/uploads:/data/uploads
+    ports:
+      # localhost-only — Direct Admin's NGINX proxies to this port.
+      - '127.0.0.1:4002:3000'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/api/v1/health || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    image: ghcr.io/bonfacenjuguna/perxli-frontend:${IMAGE_TAG:-latest-stage}
+    container_name: perxli-stage-frontend
+    restart: unless-stopped
+    pull_policy: always
+    ports:
+      # localhost-only — DA NGINX proxies here.
+      - '127.0.0.1:3002:80'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost/healthz || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  perxli_stage_pgdata:
+    name: perxli_stage_pgdata

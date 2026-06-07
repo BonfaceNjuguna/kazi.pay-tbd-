@@ -1,0 +1,99 @@
+# Perxli — PRODUCTION stack. Deployed to /opt/perxli/prod/ on the
+# Contabo VPS per ADR-006. Identical to stage except for the image tag
+# (latest-prod), host port bindings (3001/4001), and the disjoint
+# volume + container names so the two stacks coexist on one VPS.
+#
+# Secrets come from /opt/perxli/prod/.env (gitignored, chmod 600).
+# JWT keys + REFRESH_TOKEN_SECRET must be DIFFERENT from stage —
+# a stage compromise must not mint prod-valid tokens.
+#
+# Container topology — see ADR-006:
+#   - perxli-prod-frontend (nginx)  → 127.0.0.1:3001
+#   - perxli-prod-backend  (node)   → 127.0.0.1:4001
+#   - perxli-prod-db       (postgres, private network only)
+
+name: perxli-prod
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: perxli-prod-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       ${DB_NAME:-perxli}
+      POSTGRES_USER:     ${DB_USER:-perxli}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set in .env}
+    volumes:
+      - perxli_prod_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER:-perxli} -d ${DB_NAME:-perxli}']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    image: ghcr.io/bonfacenjuguna/perxli-backend:${IMAGE_TAG:-latest-prod}
+    container_name: perxli-prod-backend
+    restart: unless-stopped
+    pull_policy: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${DB_USER:-perxli}:${DB_PASSWORD}@db:5432/${DB_NAME:-perxli}?schema=public
+
+      CORS_ORIGINS:    https://tool.perxli.com
+      FRONTEND_URL:    https://tool.perxli.com
+      PUBLIC_BASE_URL: https://tool.perxli.com
+
+      JWT_PRIVATE_KEY:        ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY:         ${JWT_PUBLIC_KEY}
+      REFRESH_TOKEN_SECRET:   ${REFRESH_TOKEN_SECRET}
+      ACCESS_TOKEN_TTL_MIN:   ${ACCESS_TOKEN_TTL_MIN:-15}
+      REFRESH_TOKEN_TTL_DAYS: ${REFRESH_TOKEN_TTL_DAYS:-7}
+
+      RATE_LIMIT_WINDOW_MS: ${RATE_LIMIT_WINDOW_MS:-900000}
+      RATE_LIMIT_MAX:       ${RATE_LIMIT_MAX:-100}
+      AUTH_RATE_LIMIT_MAX:  ${AUTH_RATE_LIMIT_MAX:-10}
+
+      MAIL_DRIVER:    ${MAIL_DRIVER:-smtp}
+      SMTP_HOST:      ${SMTP_HOST:-mail.perxli.com}
+      SMTP_PORT:      ${SMTP_PORT:-587}
+      SMTP_SECURE:    ${SMTP_SECURE:-false}
+      SMTP_USER:      ${SMTP_USER}
+      SMTP_PASSWORD:  ${SMTP_PASSWORD}
+      MAIL_FROM:      ${MAIL_FROM:-hello@perxli.com}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-Perxli}
+
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      - ./data/uploads:/data/uploads
+    ports:
+      - '127.0.0.1:4001:3000'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/api/v1/health || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    image: ghcr.io/bonfacenjuguna/perxli-frontend:${IMAGE_TAG:-latest-prod}
+    container_name: perxli-prod-frontend
+    restart: unless-stopped
+    pull_policy: always
+    ports:
+      - '127.0.0.1:3001:80'
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -qO- http://localhost/healthz || exit 1']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  perxli_prod_pgdata:
+    name: perxli_prod_pgdata

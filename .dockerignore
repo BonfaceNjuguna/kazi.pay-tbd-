@@ -1,0 +1,65 @@
+# Repo-root .dockerignore — applied when the build context is `.` (the
+# repo root), which is how backend/Dockerfile and frontend/Dockerfile
+# are invoked. The per-package .dockerignore files are unused in this
+# setup; keeping them around as documentation of intent.
+#
+# CRITICAL: node_modules. The host's node_modules has pnpm symlinks
+# pointing at Windows-style paths (D:\...). Letting these into the build
+# context means COPY overwrites the freshly-installed in-container
+# node_modules with broken symlinks. Catastrophic.
+
+# Dependencies (always recreated inside the image)
+node_modules
+**/node_modules
+.pnpm-store
+
+# Build outputs
+dist
+**/dist
+.vite
+**/.vite
+*.tsbuildinfo
+**/*.tsbuildinfo
+
+# Secrets — must never reach an image layer
+.env
+.env.*
+**/.env
+**/.env.*
+backend/.keys
+client_secret_*.json
+
+# Test + coverage output
+coverage
+**/coverage
+.nyc_output
+
+# Editor + OS noise
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Git metadata — image doesn't need it
+.git
+.gitignore
+.github
+.husky
+
+# Static prototypes + docs — irrelevant to the runtime image
+*.html
+docs
+README.md
+**/README.md
+AGENTS.md
+CLAUDE.md
+
+# Other static deploys + tooling that isn't part of either image
+api
+deploy
+perxli_*.svg
+perxli_*.html
+
+# Workspace-relative noise
+.cache
+**/.cache

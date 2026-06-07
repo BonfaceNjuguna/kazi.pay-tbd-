@@ -10,9 +10,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, develop]
   push:
-    branches: [main]
+    branches: [main, develop]
 
 # Cancel in-progress runs when a new commit lands on the same branch.
 # Saves CI minutes when developers push iteratively.
