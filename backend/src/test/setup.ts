@@ -12,3 +12,8 @@ process.env.NODE_ENV ??= 'test';
 process.env.DATABASE_URL ??=
   'postgresql://test:test@localhost:5432/perxli_test?schema=public';
 process.env.LOG_LEVEL ??= 'fatal'; // silence pino during tests
+// OAuth tests need a non-empty client ID so getClient() doesn't throw
+// GOOGLE_DISABLED — env.ts parses process.env once at import, before any
+// test file's body can set it. Any syntactically-valid value works; the
+// verifier itself is mocked.
+process.env.GOOGLE_CLIENT_ID ??= 'test-client-id.apps.googleusercontent.com';

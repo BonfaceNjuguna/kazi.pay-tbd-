@@ -9,6 +9,11 @@
       content="Perxli — get the project formalised, get paid, and have proof of everything. Built for Kenyan creatives."
     />
     <title>Perxli</title>
+
+    <!-- Google Identity Services — provides window.google.accounts.id for
+         the "Sign in with Google" button. async+defer so it never blocks
+         the SPA boot. -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
   <body class="bg-dark-surface text-dark-t1 font-sans antialiased">
     <div id="root"></div>

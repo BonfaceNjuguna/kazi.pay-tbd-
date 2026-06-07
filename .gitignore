@@ -18,6 +18,14 @@ logs/
 .env.local
 .env.*.local
 
+# Google OAuth client credentials downloaded from the Cloud Console — the
+# JSON file is named `client_secret_<client-id>.apps.googleusercontent.com.json`
+# and contains a client secret we don't need (ID-token verification uses
+# public JWKs). Even though we don't USE it, the file lying around the
+# repo is a leak risk — gitignore it everywhere.
+client_secret_*.json
+client_secret_*.apps.googleusercontent.com.json
+
 # OS / editor
 .DS_Store
 Thumbs.db

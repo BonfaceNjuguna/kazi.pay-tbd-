@@ -97,6 +97,24 @@ export async function login(input: LoginInput): Promise<AuthSession> {
 }
 
 /**
+ * Result of a successful POST /auth/google. Shape is `AuthSession` plus an
+ * `isNew` flag the caller uses to decide whether to send the user to
+ * `/onboarding` (fresh JIT-provisioned account) or straight to `/` (returning
+ * user or an existing email/password user we just linked Google to).
+ */
+export interface GoogleSignInResponse extends AuthSession {
+  isNew: boolean;
+}
+
+export async function googleSignIn(idToken: string): Promise<GoogleSignInResponse> {
+  const { data } = await api.post<ApiSuccess<GoogleSignInResponse>>(
+    '/auth/google',
+    { idToken },
+  );
+  return data.data;
+}
+
+/**
  * Result of a successful POST /auth/register. NO session is issued —
  * the account is created with `emailVerified: false` and the user must
  * click the link in the verification email before they can log in.
