@@ -160,6 +160,8 @@ function pretty_dt(string $iso): string
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Subscribers — Perxli admin</title>
 <meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/svg+xml" href="/perxli_favicon.svg">
+<meta name="theme-color" content="#141414">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -176,9 +178,7 @@ body{font-family:'Manrope',-apple-system,BlinkMacSystemFont,sans-serif;backgroun
 .wrap{max-width:1100px;margin:0 auto}
 .top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.logo-mark{width:32px;height:32px;background:var(--lime);border-radius:8px;text-align:center;line-height:32px;font-weight:900;color:#141414;font-size:16px}
-.logo-text{font-weight:800;font-size:17px;letter-spacing:-.5px}
-.logo-text span{color:var(--lime)}
+.logo img{height:30px;width:auto;display:block}
 .logo-sub{font-size:11px;color:var(--text-dim);font-weight:600;text-transform:uppercase;letter-spacing:1.5px;margin-left:6px}
 .export-btn{background:var(--lime);color:#141414;border:none;padding:11px 20px;border-radius:9px;font-family:inherit;font-weight:800;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:7px;transition:background .2s,transform .15s}
 .export-btn:hover{background:#c5e832;transform:translateY(-1px)}
@@ -234,8 +234,7 @@ td.ip{color:var(--text-muted);font-family:'SF Mono',ui-monospace,Menlo,monospace
 
   <div class="top">
     <div class="logo">
-      <span class="logo-mark">P</span>
-      <span class="logo-text">perxli<span>.</span></span>
+      <img src="/perxli_logo.svg" alt="Perxli">
       <span class="logo-sub">subscribers</span>
     </div>
     <a class="export-btn" href="?export=1">
