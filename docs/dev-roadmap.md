@@ -11,10 +11,10 @@
 ## Current Status
 
 **Active Phase:** Phase 1 — Foundation & Auth
-**Last Updated:** 2026-05-30
-**Overall Progress:** 🟡 In Planning
+**Last Updated:** 2026-06-07
+**Overall Progress:** 🟡 In Progress
 
-Three standalone HTML prototypes are in place at the project root (`perxli_landing.html`, `perxli_prototype.html`, `perxli_client.html`). Phase 1 turns those prototypes into a real application.
+Three standalone HTML prototypes are in place at the project root (`perxli_landing.html`, `perxli_prototype.html`, `perxli_client.html`). Phase 1 turns those prototypes into a real application. The Phase 1 auth stack has merged to `main`; the next focus is end-to-end verification on the new staging environment (§1.11 — Containerization & Deploy, pulled forward from Phase 4 per [ADR-006](./decisions/ADR-006-contabo-deployment.md)).
 
 ---
 
@@ -37,7 +37,7 @@ Per the **Documentation Rules** in `AGENTS.md`, the PR that lands code also upda
 
 | Phase | Name | Status | Target | Coded | Verified |
 |-------|------|--------|--------|-------|----------|
-| 1 | Foundation & Auth | 🟡 In Progress | Q3 2026 | ~90% (1.1 + 1.2 + 1.3 + 1.4 + 1.5 + 1.6 + 1.7 + 1.8 + 1.10) | 0% |
+| 1 | Foundation & Auth | 🟡 In Progress | Q3 2026 | ~85% (1.1 + 1.2 + 1.3 + 1.4 + 1.5 + 1.6 + 1.7 + 1.8 + 1.10; 1.11 added per ADR-006) | 0% |
 | 2 | Projects, Documents & Signing | ⬜ Pending | Q4 2026 | 0% | 0% |
 | 3 | Payments, WhatsApp & Pro Tier | ⬜ Pending | Q1 2027 | 0% | 0% |
 | 4 | eTIMS, Polish & Launch | ⬜ Pending | Q2 2027 | 0% | 0% |
@@ -63,6 +63,7 @@ Per the **Documentation Rules** in `AGENTS.md`, the PR that lands code also upda
 - 🟡 1.8 Auth UI _(login, register, forgot/reset, ProtectedRoute, sign-out, axios refresh wiring, MSW handlers, 16 tests — landed on `feature/phase-1.8-auth-ui`; CI green pending the lockfile + fix/ci-workflow-errors prerequisites)_
 - ⬜ 1.9 Dashboard zero-state + Brand Settings page
 - 🟡 1.10 CI pipeline & security _(CI + Docker + CodeQL + Gitleaks + Dependabot + PR template + CODEOWNERS placeholder + branch-protection guide all landed; required-status-checks must be set in GitHub UI per `docs/deployment/main-branch-protection.md`)_
+- ⬜ 1.11 Containerization & production deploy _(backend + frontend Dockerfiles, prod compose, GHCR build + push, SSH deploy to Contabo VPS, `develop` → stage / `main` → prod via DirectAdmin NGINX reverse proxy — see [ADR-006](./decisions/ADR-006-contabo-deployment.md))_
 
 → Full scope: [`docs/milestones/phase-1-foundation.md`](./milestones/phase-1-foundation.md)
 

@@ -70,6 +70,21 @@ base64 -w 0 public.pem
 | `AUTH_RATE_LIMIT_MAX` | — | `5` | Max auth attempts per 15 min per IP |
 | `SHARE_LINK_RATE_LIMIT_MAX` | — | `60` | Max requests per minute per IP on `GET /api/v1/share/:token` |
 
+### Outbound Mail (SMTP)
+
+Verification + password-reset emails go through the `hello@perxli.com` mailbox on `mail.perxli.com:587` (STARTTLS). Same setup the coming-soon form uses — see [ADR-006](../decisions/ADR-006-contabo-deployment.md). Locally the backend can log emails to console instead of sending: set `MAIL_DRIVER=log` and leave the `SMTP_*` vars unset.
+
+| Variable | Required | Example | Description |
+|----------|----------|---------|-------------|
+| `MAIL_DRIVER` | ✅ | `smtp` / `log` | `log` prints the email to stdout instead of sending (dev convenience) |
+| `SMTP_HOST` | If `smtp` | `mail.perxli.com` | SMTP server hostname |
+| `SMTP_PORT` | If `smtp` | `587` | `587` for STARTTLS, `465` for implicit TLS |
+| `SMTP_SECURE` | If `smtp` | `false` | `false` for STARTTLS (port 587), `true` for SMTPS (port 465) |
+| `SMTP_USER` | If `smtp` | `hello@perxli.com` | SMTP auth username |
+| `SMTP_PASSWORD` | If `smtp` | — | SMTP auth password (DirectAdmin mailbox password) |
+| `MAIL_FROM` | ✅ | `hello@perxli.com` | `From:` address on outbound transactional mail |
+| `MAIL_FROM_NAME` | — | `Perxli` | Display name on the `From:` header |
+
 ### Integrations (Phase 2+)
 
 #### AI Provider (Phase 2)
@@ -216,10 +231,57 @@ AI_PROVIDER=stub
 
 ---
 
+## Production & Staging
+
+These live in `/opt/perxli/{prod,stage}/.env` on the Contabo VPS only — never in GitHub Actions secrets, never in the image. See [ADR-006](../decisions/ADR-006-contabo-deployment.md) and [contabo-setup.md](./contabo-setup.md) for placement, file permissions, and the JWT key generation procedure.
+
+The two environments share the same variable list; values differ.
+
+### Differences vs local dev
+
+| Variable | Local (`.env`) | Stage (`/opt/perxli/stage/.env`) | Prod (`/opt/perxli/prod/.env`) |
+|---|---|---|---|
+| `NODE_ENV` | `development` | `production` | `production` |
+| `DATABASE_URL` | `postgresql://perxli:changeme@localhost:5433/perxli` | `postgresql://perxli:<gen>@db:5432/perxli` (compose-network hostname) | same shape, different password |
+| `FRONTEND_URL` (CORS allowlist) | `http://localhost:5173` | `https://stage.tool.perxli.com` | `https://tool.perxli.com` |
+| `PUBLIC_BASE_URL` | `http://localhost:5173` | `https://stage.tool.perxli.com` | `https://tool.perxli.com` |
+| `VITE_API_URL` (build-time) | `http://localhost:3000` | `https://stage.tool.perxli.com` | `https://tool.perxli.com` |
+| `JWT_PRIVATE_KEY` / `JWT_PUBLIC_KEY` | dev keys, OK to share | **generated fresh per environment** | **generated fresh per environment** |
+| `REFRESH_TOKEN_SECRET` | dev value | independent value | independent value |
+| `MAIL_DRIVER` | `log` (prints to console) | `smtp` | `smtp` |
+| `SMTP_*` | unset (driver is `log`) | real `hello@perxli.com` creds | real `hello@perxli.com` creds |
+| `IMAGE_TAG` | n/a (running outside compose) | `latest-stage` (default) or pinned SHA | `latest-prod` (default) or pinned SHA |
+
+### Variables introduced by the deploy stack
+
+| Variable | Where | Description |
+|---|---|---|
+| `IMAGE_TAG` | `/opt/perxli/{env}/.env` | The GHCR tag the compose file pulls. Default `latest-{env}` so a fresh `docker compose pull` always grabs the newest pushed image. For rollback, pin to `sha-<commit>` (see ADR-006 §Rollback). |
+| `COMPOSE_PROJECT_NAME` | `/opt/perxli/{env}/.env` | `perxli-prod` or `perxli-stage` — namespaces container + network names so the two environments coexist without collision. |
+| `PROD_FRONTEND_PORT` / `STAGE_FRONTEND_PORT` | host-only | `3001` / `3002` — frontend container's host-side bind. DirectAdmin NGINX proxies to these. |
+| `PROD_BACKEND_PORT` / `STAGE_BACKEND_PORT` | host-only | `4001` / `4002` — backend container's host-side bind. |
+
+### Why two separate JWT keypairs
+
+Stage and prod **must not share `JWT_PRIVATE_KEY` / `JWT_PUBLIC_KEY` / `REFRESH_TOKEN_SECRET`**. If they did, a stage compromise would mint tokens valid in prod (and vice versa). Generate one keypair per environment per the procedure in [contabo-setup.md §Step 7](./contabo-setup.md#step-7--populate-env-files-on-the-vps).
+
+### Secrets in GitHub Actions vs on the VPS
+
+| Lives in GitHub Actions secrets | Lives in `/opt/perxli/{env}/.env` on the VPS |
+|---|---|
+| `VPS_HOST`, `VPS_SSH_KEY`, `VPS_SSH_KNOWN_HOSTS` (CI needs them to SSH into the host) | Everything else: DB password, JWT keys, refresh secret, SMTP password, etc. |
+
+This split keeps the app's runtime secrets off any platform other than the host that actually runs the app. The deploy workflow's only job is "log in, pull, restart" — it never sees JWT keys or DB passwords.
+
+---
+
 ## Security Notes
 
 - Never commit `.env` to git. It is in `.gitignore`.
-- In production, inject secrets via your cloud provider's secrets manager (AWS Secrets Manager, Fly.io secrets, etc.) — not via `.env` files in the container.
+- On the Contabo VPS, `.env` files live at `/opt/perxli/{prod,stage}/.env`, `chmod 600`, owned by the `deploy` user. Only that user (and root) can read them.
+- Per ADR-006, the app's runtime secrets never enter GitHub Actions — only the SSH credentials needed for the deploy step do.
 - Rotate `REFRESH_TOKEN_SECRET` and JWT keys if they are ever exposed. Rotation invalidates all active sessions — users will need to log in again.
+- Stage and prod **must use independent JWT keypairs and refresh secrets**. A stage compromise must not let an attacker mint tokens accepted by prod.
+- The SMTP password is the DirectAdmin mailbox password. If you rotate the mailbox in DirectAdmin (recommended after any disclosure), update both `/opt/perxli/{prod,stage}/.env` and the coming-soon site's `api/config.php` in the same maintenance window.
 - M-Pesa Daraja credentials and WhatsApp tokens must be rotated immediately if exposed — both can be used to send messages or initiate transactions on Perxli's behalf.
 - AI provider keys should be rate-limited at the provider level — a leaked key without a rate cap can run up significant bills before detection.

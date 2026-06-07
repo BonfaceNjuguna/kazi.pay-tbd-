@@ -56,10 +56,10 @@ These are tempting to scope-creep into Phase 1 but must wait:
 
 ### 1.2 — Docker Environment
 
-**Status:** 🟡 In progress (baseline `db` service shipped; backend/frontend/nginx Dockerfiles deferred)
+**Status:** 🟡 In progress (baseline `db` service shipped; Dockerfiles + production compose moved to §1.11)
 
-- [ ] `Dockerfile` for backend (multi-stage: builder + runner) — _deferred; backend runs locally via `pnpm dev` for Phase 1, containerised in Phase 4 prep_
-- [ ] `Dockerfile` for frontend (multi-stage: builder + NGINX serve) — _deferred to Phase 4_
+- [ ] `Dockerfile` for backend (multi-stage: builder + runner) — _moved to §1.11_
+- [ ] `Dockerfile` for frontend (multi-stage: builder + NGINX serve) — _moved to §1.11_
 - [x] `docker-compose.yml` with `db` (PostgreSQL 16) service · `localhost:5432` exposed for dev tools · healthcheck · named volume for persistence (`perxli_postgres_data`)
 - [x] Root `.env.example` documenting `DB_NAME`/`DB_USER`/`DB_PASSWORD` (consumed by compose)
 - [ ] `docker-compose.dev.yml` override — not needed yet; backend runs outside Docker in Phase 1
@@ -284,6 +284,73 @@ These are tempting to scope-creep into Phase 1 but must wait:
 
 ---
 
+### 1.11 — Containerization & Production Deploy
+
+**Status:** ⬜ Not started
+**Architectural decision:** [ADR-006 — Contabo VPS Deployment](../decisions/ADR-006-contabo-deployment.md)
+**Scope shift:** ADR-005 originally deferred backend + frontend Dockerfiles and the production host decision to "Phase 4 prep." Phase 1 finished functionally (auth merged); the verification loop is the next bottleneck, so we pull the deploy work forward into Phase 1 as §1.11. The "Phase 4 prep" note in 1.2 is closed by this milestone — no Phase 4 deploy work remaining.
+
+#### Container artifacts
+
+- [ ] `backend/Dockerfile` — multi-stage: `builder` runs `pnpm install --frozen-lockfile` + `pnpm build` + `prisma generate`; `runner` is `node:20-alpine` with pruned production deps + `dist/` + the Prisma client. Final image < 200 MB.
+- [ ] `frontend/Dockerfile` — multi-stage: `builder` runs `pnpm install` + `pnpm build` (Vite); `runner` is `nginx:alpine` serving `dist/` with a Vite-friendly `try_files $uri $uri/ /index.html;` fallback so the SPA's client-side router gets every unmatched route. Final image < 50 MB.
+- [ ] `docker-compose.prod.yml` — overlay file. Pulls images from `ghcr.io/bonfacenjuguna/perxli-{backend,frontend}:${IMAGE_TAG}`, binds containers to `127.0.0.1:${PROD_FRONTEND_PORT}` and `:${PROD_BACKEND_PORT}` (never `0.0.0.0`), wires the Postgres container into a named volume, mounts `/opt/perxli/${ENV}/data` for uploads.
+- [ ] `.dockerignore` files in `backend/` and `frontend/` — exclude `node_modules`, `dist`, `.env*`, `.git`, tests. Build context size sanity-checked (< 2 MB each).
+
+#### CI/CD pipeline
+
+- [ ] `.github/workflows/deploy.yml` — triggered on push to `develop` and `main`. Jobs:
+  - **build-backend**: build + push `ghcr.io/bonfacenjuguna/perxli-backend:sha-${SHA}` + the floating `latest-${ENV}` tag using `docker/build-push-action`. Multi-arch unnecessary (Contabo is x86_64).
+  - **build-frontend**: same for frontend, with build args for `VITE_API_URL` per environment.
+  - **deploy**: needs the two build jobs. Uses `appleboy/ssh-action` to SSH into the VPS as `deploy@${VPS_HOST}` and run `cd /opt/perxli/${ENV} && docker compose pull && docker compose run --rm backend npx prisma migrate deploy && docker compose up -d --remove-orphans && docker image prune -f`. Fails the workflow if any step exits non-zero.
+- [ ] CI gating: `deploy.yml` declares `needs: [Build, Test, Typecheck, Lint]` against the existing `ci.yml` jobs so a red CI never reaches `deploy.yml`.
+- [ ] `.github/workflows/docker.yml` (existing skeleton) — wire up the actual `docker build` smoke check for PRs that touch Dockerfiles (path-filtered), so PRs catch build breaks before merge.
+
+#### VPS bootstrap (one-time manual, fully documented)
+
+- [ ] Dedicated `deploy` user on the VPS — no shell login password, SSH-key-only, sudo restricted to `docker compose` invocations under `/opt/perxli/` via a tightly-scoped `sudoers.d` snippet (or run docker rootless if the host's kernel supports it — decision recorded in the runbook based on what's installed).
+- [ ] `/opt/perxli/{prod,stage}/` directory layout per ADR-006 §"Environment Layout on the VPS".
+- [ ] DirectAdmin custom NGINX snippets for `tool.perxli.com` and `stage.tool.perxli.com` — installed via DirectAdmin's **Custom HTTPD Config** UI so they survive DA updates. Templates in the runbook.
+- [ ] DNS A records: `tool.perxli.com` + `stage.tool.perxli.com` → VPS IP.
+- [ ] Let's Encrypt certificates for both subdomains — issued via DirectAdmin's built-in flow (auto-renewing).
+- [ ] Nightly `pg_dump` cron for both Postgres containers, 14-day rolling retention under `/var/backups/perxli/`. Runbook documents how to restore.
+
+#### Branch model
+
+- [ ] `develop` branch created from `main`. Same protection rules as `main` (require CI green, require PR) minus the review requirement (a single approver flow is fine for stage — drop "require pull request review" for `develop` only).
+- [ ] PR template's "Test Plan" section updated to call out the stage smoke-test step.
+
+#### Secrets & env
+
+- [ ] GitHub Actions secrets populated: `VPS_HOST`, `VPS_SSH_KEY`, `VPS_SSH_KNOWN_HOSTS`. Documented in `docs/deployment/contabo-setup.md`.
+- [ ] `/opt/perxli/prod/.env` and `/opt/perxli/stage/.env` populated with prod/stage values — variable list per [environment-variables.md](../deployment/environment-variables.md). Both files `chmod 600`, owned by `deploy:deploy`.
+- [ ] JWT keypair generated **separately per environment** — `prod` and `stage` cannot share signing keys (one's leaked secrets must not compromise the other).
+
+#### Verification (Definition of Done)
+
+- [ ] Push to `develop` lands a green deploy and `stage.tool.perxli.com` serves the new build within 5 minutes.
+- [ ] Push to `main` lands a green deploy and `tool.perxli.com` serves the new build within 5 minutes.
+- [ ] `https://tool.perxli.com/api/health` returns 200 with the expected JSON envelope.
+- [ ] HTTPS works on both subdomains (browser shows valid cert).
+- [ ] Register → verify email → login → land on dashboard works end-to-end on `stage.tool.perxli.com`.
+- [ ] A deliberate failure on stage (e.g., bad env var) leaves the previous container running and the deploy workflow shows red — no silent partial state.
+- [ ] One full rollback rehearsal: pin the prod image to the previous SHA, redeploy, confirm the old build is serving. Runbook updated with the actual commands used.
+
+**Implementation notes**
+- Use `127.0.0.1` not `localhost` in proxy_pass targets — DirectAdmin's NGINX resolves the latter through `/etc/hosts` and we don't want to depend on that record.
+- Backend container needs `NODE_ENV=production` set explicitly. Several middleware (cookie `secure` flag, error verbosity) branch on it.
+- Frontend's `VITE_API_URL` is baked at build time — the prod and stage images are not interchangeable. The image-tag-per-environment in GHCR makes this honest.
+- Prisma's `migrate deploy` is run *before* the new app container starts to avoid Prisma Client / DB schema drift mid-request. The compose snippet uses `docker compose run --rm backend npx prisma migrate deploy` instead of an `entrypoint.sh` so failures are loud and the next step doesn't run.
+- The `docker image prune -f` at the end of every deploy keeps the VPS from filling up with old images. Anchored on the 5–10 most-recent tags via GHCR's retention policy + the SHA-pinned rollback safety net.
+
+**Deliberately not in scope here:**
+- Multi-region replication / DR site — single VPS is fine at this stage (ADR-006 §"What's deliberately out of scope here").
+- Blue-green deploys / zero-downtime — sub-second downtime acceptable pre-launch.
+- Self-hosted metrics stack — Phase 4 observability milestone.
+- Managed Postgres migration — when we have real customer data, not before.
+
+---
+
 ## Definition of Done
 
 Each of these must be **verifiable end-to-end**, not just code-complete:
@@ -298,4 +365,5 @@ Each of these must be **verifiable end-to-end**, not just code-complete:
 - [ ] Dashboard renders the dark theme (`#141414` bg, `#D4F53C` + `#8B5CF6` accents, Manrope font) and shows the zero-project state.
 - [ ] CI is green on `main`: lint, typecheck, unit tests, Docker build all pass.
 - [ ] Peer review sign-off on the auth implementation (ADR-002 conformance, bcrypt cost, cookie flags, rate limits).
+- [ ] `stage.tool.perxli.com` and `tool.perxli.com` both serve the latest `develop` / `main` build over HTTPS, with the full register → verify → login → dashboard flow verified on stage before any `develop` → `main` promotion (§1.11).
 - [ ] `docs/dev-roadmap.md` and this milestone document are updated per the Documentation Rules in `AGENTS.md`.
