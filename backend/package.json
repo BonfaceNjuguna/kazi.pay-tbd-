@@ -47,7 +47,7 @@
     "@types/node": "^20.14.15",
     "@types/supertest": "^6.0.2",
     "eslint": "^10.4.1",
-    "globals": "^15.0.0",
+    "globals": "^17.6.0",
     "prisma": "^6.0.0",
     "supertest": "^7.0.0",
     "tsx": "^4.19.0",
